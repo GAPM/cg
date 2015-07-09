@@ -7,4 +7,7 @@ SUBDIRS(bitc_test)
 
 ENABLE_TESTING()
 
-ADD_TEST(basic bitc_test/bitc_test)
+ADD_TEST(bitarray bitc_test/bitarray_test)
+ADD_TEST(bitarray_big bitc_test/bitarray_test_big)
+ADD_TEST(bitmatrix bitc_test/bitmatrix_test)
+ADD_TEST(bitmatrix_big bitc_test/bitmatrix_test_big)

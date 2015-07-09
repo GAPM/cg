@@ -1,6 +1,12 @@
 
 #include "bitarray.h"
 
+/*
+ * n >> 3 == n / 8
+ * n & 7 == n % 8
+ *
+ */
+
 bitarray *ba_new(size_t size) {
     size_t bytes = ceil(size / 8.0);
 
