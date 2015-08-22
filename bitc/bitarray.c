@@ -2,9 +2,10 @@
 #include "bitarray.h"
 
 /*
- * n >> 3 == n / 8
- * n & 7 == n % 8
+ * Operaciones con enteros transformadas en operaciones de bits:
  *
+ *     n >> 3 == n / 8
+ *     n & 7 == n % 8
  */
 
 bitarray *ba_new(size_t size) {
@@ -28,6 +29,12 @@ void ba_set(bitarray *ba, size_t i, bool v) {
     } else {
         ba->array[i >> 3] &= ~(MSK >> (i & 7));
     }
+}
+
+bitarray *ba_clone(bitarray *ba) {
+    bitarray *n = ba_new(ba->size);
+    memcpy(n->array, ba->array, ceil(ba->size / 8.0));
+    return n;
 }
 
 void ba_free(bitarray *ba) {

@@ -3,5 +3,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
 PROJECT(bitc)
 
 AUX_SOURCE_DIRECTORY(. SRC_LIST)
-ADD_LIBRARY(bitc SHARED bitarray.c bitmatrix.c)
+
+ADD_LIBRARY(bitc STATIC bitarray.c bitmatrix.c)
+
 TARGET_LINK_LIBRARIES(bitc m)
