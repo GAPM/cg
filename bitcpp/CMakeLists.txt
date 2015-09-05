@@ -5,5 +5,14 @@ PROJECT(bitcpp)
 AUX_SOURCE_DIRECTORY(. SRC_LIST)
 
 ADD_LIBRARY(bitcpp STATIC bitarray.cpp bitmatrix.cpp)
+
 SET_PROPERTY(TARGET bitcpp PROPERTY CXX_STANDARD_REQUIRED ON)
 SET_PROPERTY(TARGET bitcpp PROPERTY CXX_STANDARD 11)
+
+ADD_EXECUTABLE(bitcpp_test test.cpp)
+
+TARGET_LINK_LIBRARIES(bitcpp_test bitcpp)
+
+ENABLE_TESTING()
+
+ADD_TEST(bitcpp bitcpp_test)

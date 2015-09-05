@@ -5,5 +5,11 @@ PROJECT(bitc)
 AUX_SOURCE_DIRECTORY(. SRC_LIST)
 
 ADD_LIBRARY(bitc STATIC bitarray.c bitmatrix.c)
+ADD_EXECUTABLE(bitc_test test.c)
 
 TARGET_LINK_LIBRARIES(bitc m)
+TARGET_LINK_LIBRARIES(bitc_test bitc)
+
+ENABLE_TESTING()
+
+ADD_TEST(bitc bitc_test)

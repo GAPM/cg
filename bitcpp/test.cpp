@@ -1,35 +1,34 @@
-#include <assert.h>
-
+#include <cassert>
 #include "bitmatrix.h"
 
-#define MAXARRAY 25000000
-#define MAXMATRIX 5000
+#define MAXARRAY 50000000
+#define MAXMATRIX 10000
 
 int main() {
-    bitarray *ba = ba_new(MAXARRAY);
-    bitmatrix *bm = bm_new(MAXMATRIX, MAXMATRIX);
+    bitarray *ba = new bitarray(MAXARRAY);
+    bitmatrix *bm = new bitmatrix(MAXMATRIX, MAXMATRIX);
 
     int i;
     int j;
 
     for (i = 0; i < MAXARRAY; ++i) {
         if (i % 2 == 0) {
-            ba_set(ba, i, true);
+            ba->set(i, true);
         }
     }
 
     for (i = 0; i < MAXARRAY; ++i) {
         if (i % 2 == 0) {
-            assert(ba_get(ba, i) == true);
+            assert(ba->get(i) == true);
         } else {
-            assert(ba_get(ba, i) == false);
+            assert(ba->get(i) == false);
         }
     }
 
     for (i = 0; i < MAXMATRIX; ++i) {
         for (j = 0; j < MAXMATRIX; ++j) {
             if (i == j) {
-                bm_set(bm, i, j, true);
+                bm->set(i, j, true);
             }
         }
     }
@@ -37,13 +36,13 @@ int main() {
     for (i = 0; i < MAXMATRIX; ++i) {
         for (j = 0; j < MAXMATRIX; ++j) {
             if (i == j) {
-                assert(bm_get(bm, i, j) == true);
+                assert(bm->get(i, j) == true);
             } else {
-                assert(bm_get(bm, i, j) == false);
+                assert(bm->get(i, j) == false);
             }
         }
     }
 
-    ba_free(ba);
-    bm_free(bm);
+    delete ba;
+    delete bm;
 }

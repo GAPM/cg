@@ -3,7 +3,7 @@
 bitarray::bitarray(std::size_t size) {
     std::size_t bytes = ceil(size / 8.0);
     this->_size = bytes;
-    this->array = new byte[bytes]();
+    this->array = new unsigned char[bytes]();
 }
 
 bitarray::~bitarray() {

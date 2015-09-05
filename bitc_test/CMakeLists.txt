@@ -1,9 +1,0 @@
-
-CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
-PROJECT(bitc_test)
-
-INCLUDE_DIRECTORIES(../bitc)
-
-ADD_EXECUTABLE(bitc_test bitc_test.c)
-
-TARGET_LINK_LIBRARIES(bitc_test bitc)

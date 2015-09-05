@@ -21,6 +21,12 @@ void bm_set(bitmatrix *bm, size_t r, size_t c, bool v) {
     ba_set(bm->array, r * bm->rows + c, v);
 }
 
+bitmatrix *bm_clone(bitmatrix *bm) {
+	bitmatrix *n = bm_new(bm->rows, bm->columns);
+	n->array =  ba_clone(bm->array);
+	return n;
+}
+
 void bm_free(bitmatrix *bm) {
     ba_free(bm->array);
     free(bm);

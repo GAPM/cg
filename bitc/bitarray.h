@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MSK 0b10000000
+#define __MSK 0b10000000
 
 typedef struct {
     size_t size;
