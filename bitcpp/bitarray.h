@@ -2,8 +2,9 @@
 #define BITARRAY_H
 
 #include <cmath>
+#include <memory>
 
-#define MSK 0b10000000
+#define __MSK__ 0b10000000
 
 class bitarray {
 public:
@@ -16,7 +17,7 @@ public:
     std::size_t size();
 private:
     std::size_t _size;
-    unsigned char *array;
+    std::unique_ptr<unsigned char[]> array;
 };
 
 #endif

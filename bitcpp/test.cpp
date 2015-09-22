@@ -1,12 +1,14 @@
 #include <cassert>
+#include <memory>
+
 #include "bitmatrix.h"
 
-#define MAXARRAY 50000000
+#define MAXARRAY 100000000
 #define MAXMATRIX 10000
 
 int main() {
-    bitarray *ba = new bitarray(MAXARRAY);
-    bitmatrix *bm = new bitmatrix(MAXMATRIX, MAXMATRIX);
+    std::unique_ptr<bitarray> ba (new bitarray(MAXARRAY));
+    std::unique_ptr<bitmatrix> bm (new bitmatrix(MAXMATRIX, MAXMATRIX));
 
     int i;
     int j;
@@ -19,9 +21,9 @@ int main() {
 
     for (i = 0; i < MAXARRAY; ++i) {
         if (i % 2 == 0) {
-            assert(ba->get(i) == true);
+            assert(ba->get(i));
         } else {
-            assert(ba->get(i) == false);
+            assert(!ba->get(i));
         }
     }
 
@@ -36,13 +38,10 @@ int main() {
     for (i = 0; i < MAXMATRIX; ++i) {
         for (j = 0; j < MAXMATRIX; ++j) {
             if (i == j) {
-                assert(bm->get(i, j) == true);
+                assert(bm->get(i, j));
             } else {
-                assert(bm->get(i, j) == false);
+                assert(!bm->get(i, j));
             }
         }
     }
-
-    delete ba;
-    delete bm;
 }

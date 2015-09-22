@@ -1,6 +1,8 @@
 #ifndef BITMATRIX_H
 #define BITMATRIX_H
 
+#include <memory>
+
 #include "bitarray.h"
 
 class bitmatrix {
@@ -16,7 +18,7 @@ public:
 private:
     std::size_t _rows;
     std::size_t _columns;
-    bitarray *array;
+    std::unique_ptr<bitarray> array;
 };
 
 #endif

@@ -3,12 +3,10 @@
 bitmatrix::bitmatrix(std::size_t r, std::size_t c) {
     this->_rows = r;
     this->_columns = c;
-    this->array = new bitarray(r * c);
+    this->array = std::unique_ptr<bitarray>(new bitarray(r * c));
 }
 
-bitmatrix::~bitmatrix() {
-    delete this->array;
-}
+bitmatrix::~bitmatrix() {}
 
 bool bitmatrix::get(std::size_t r, std::size_t c) {
     return this->array->get(r * this->rows() + c);
