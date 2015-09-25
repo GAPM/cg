@@ -2,6 +2,7 @@
 #include <chrono>
 #include <iostream>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "bitarray.h"
@@ -10,10 +11,18 @@
 
 using namespace std;
 
-void testBitArray() {
-    unique_ptr<bitarray> ba(new bitarray(MAX));
-
+void measure(void (*f)(), string name) {
     auto start = chrono::high_resolution_clock::now();
+
+    f();
+
+    auto end = chrono::high_resolution_clock::now();
+    auto dur = chrono::duration_cast<chrono::milliseconds>(end - start);
+    cout << name << ": " << dur.count() << " ms" << endl;
+}
+
+inline void testBitArray() {
+    unique_ptr<bitarray> ba(new bitarray(MAX));
 
     for (size_t i = 0; i < ba->size(); ++i) {
         if (i % 2 == 0) {
@@ -28,16 +37,10 @@ void testBitArray() {
             assert(!ba->get(i));
         }
     }
-
-    auto end = chrono::high_resolution_clock::now();
-    auto dur = chrono::duration_cast<chrono::milliseconds>(end - start);
-    cout << "bitarray: " << dur.count() << " ms" << endl;
 }
 
-void testRawArray() {
+inline void testRawArray() {
     unique_ptr<bool[]> ba(new bool[MAX]());
-
-    auto start = chrono::high_resolution_clock::now();
 
     for (size_t i = 0; i < MAX; ++i) {
         if (i % 2 == 0) {
@@ -52,16 +55,10 @@ void testRawArray() {
             assert(!ba[i]);
         }
     }
-
-    auto end = chrono::high_resolution_clock::now();
-    auto dur = chrono::duration_cast<chrono::milliseconds>(end - start);
-    cout << "raw array: " << dur.count() << " ms" << endl;
 }
 
-void testStdVector() {
+inline void testStdVector() {
     vector<bool> ba(MAX);
-
-    auto start = chrono::high_resolution_clock::now();
 
     for (size_t i = 0; i < ba.size(); ++i) {
         if (i % 2 == 0) {
@@ -76,14 +73,10 @@ void testStdVector() {
             assert(!ba[i]);
         }
     }
-
-    auto end = chrono::high_resolution_clock::now();
-    auto dur = chrono::duration_cast<chrono::milliseconds>(end - start);
-    cout << "std vector: " << dur.count() << " ms" << endl;
 }
 
 int main(void) {
-    testBitArray();
-    testRawArray();
-    testStdVector();
+    measure(testBitArray, "bitarray");
+    measure(testRawArray, "raw array");
+    measure(testStdVector, "std vector");
 }
