@@ -6,6 +6,8 @@
 
 #define __MSK__ 0b10000000
 
+typedef unsigned char byte_t;
+
 class bitarray {
 public:
     bitarray(std::size_t);
@@ -17,7 +19,7 @@ public:
     std::size_t size();
 private:
     std::size_t _size;
-    std::unique_ptr<unsigned char[]> array;
+    std::unique_ptr<byte_t[]> array;
 };
 
 #endif
