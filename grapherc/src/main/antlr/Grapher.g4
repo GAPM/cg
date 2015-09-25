@@ -4,14 +4,14 @@ INCLUDE : 'include' ;
 LPAREN : '(' ;
 RPAREN : ')' ;
 SEMI : ';' ;
-I8 : 'i8' ;
-I16 : 'i16' ;
-I32 : 'i32' ;
-I64 : 'i64' ;
-F32 : 'f32' ;
-F64 : 'f64' ;
-U32 : 'u32' ;
-U64 : 'u64' ;
+INT8 : 'int8' ;
+INT16 : 'int16' ;
+INT32 : 'int32' ;
+INT64 : 'int64' ;
+FLOAT : 'float' ;
+DOUBLE : 'double' ;
+UINT32 : 'uint32' ;
+UINT64 : 'uint64' ;
 CHAR : 'char' ;
 STRING : 'string' ;
 GRAPH : 'graph' ;
@@ -66,14 +66,14 @@ singleInclude: 'include' StringLit;
 multiInclude: 'include' '(' StringLit+ ')';
 includes: (singleInclude | multiInclude) ';';
 
-primitiveType: 'i8'
-             | 'i16'
-             | 'i32'
-             | 'i64'
-             | 'f32'
-             | 'f64'
-             | 'u32'
-             | 'u64'
+primitiveType: 'int8'
+             | 'int16'
+             | 'int32'
+             | 'int64'
+             | 'float'
+             | 'double'
+             | 'uint32'
+             | 'uint64'
              | 'char'
              | 'string'
              | 'graph'
