@@ -1,10 +1,7 @@
 #ifndef BITARRAY_H
 #define BITARRAY_H
 
-#include <cmath>
 #include <memory>
-
-#define __MSK__ 0b10000000
 
 typedef unsigned char byte_t;
 
