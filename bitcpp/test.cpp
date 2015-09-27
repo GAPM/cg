@@ -1,7 +1,7 @@
 #include <cassert>
 #include <memory>
 
-#include "bitmatrix.h"
+#include "bitarray.h"
 
 #define MAXARRAY 100000000
 
