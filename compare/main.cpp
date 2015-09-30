@@ -22,19 +22,21 @@ void measure(void (*f)(), string name) {
 }
 
 inline void testBitArray() {
-    unique_ptr<bitarray> ba(new bitarray(MAX));
+    bitarray ba(MAX);
+    size_t i;
+    size_t size = ba.size();
 
-    for (size_t i = 0; i < ba->size(); ++i) {
+    for (i = 0; i < size; ++i) {
         if (i % 2 == 0) {
-            ba->set(i, true);
+            ba.set(i, true);
         }
     }
 
-    for (size_t i = 0; i < ba->size(); ++i) {
+    for (i = 0; i < size; ++i) {
         if (i % 2 == 0) {
-            assert(ba->get(i));
+            assert(ba.get(i));
         } else {
-            assert(!ba->get(i));
+            assert(!ba.get(i));
         }
     }
 }
