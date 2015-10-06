@@ -48,8 +48,8 @@ fragment HexDigit: [0-9a-fA-F];
 Identifier: Letter (Letter | DecimalDigit)*;
 
 fragment DecimalLit: [1-9] DecimalDigit*;
-fragment OctalLit: '0' OctalDigit*;
-fragment HexLit: '0' [xX] HexDigit*;
+fragment OctalLit: '0' [oO] OctalDigit+;
+fragment HexLit: '0' [xX] HexDigit+;
 IntLit: DecimalLit | OctalLit | HexLit;
 
 fragment Decimals: DecimalDigit DecimalDigit*;
