@@ -4,23 +4,27 @@
 #include <string>
 
 enum token_type {
-    tok_eof,
-    tok_err,
-    tok_integer,
-    tok_double,
-    tok_id,
+  tok_eof,
+  tok_err,
 
-    tok_add,
-    tok_sub,
-    tok_mul,
-    tok_div
+  tok_integer,
+  tok_double,
+  tok_id,
+  tok_str,
+
+  tok_dot,
+
+  tok_add,
+  tok_sub,
+  tok_mul,
+  tok_div
 };
 
 struct token {
-    token_type type;
-    std::string text;
-};
+  token_type type;
+  std::string text;
 
-extern const std::string token_type_string[];
+  operator std::string();
+};
 
 #endif // GRAPHERC_TOKEN

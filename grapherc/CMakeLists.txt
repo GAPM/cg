@@ -1,6 +1,18 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
 PROJECT(grapherc)
 
+SET(SOURCES
+  lexer.cpp
+  token.cpp
+
+  test.cpp
+)
+
+SET(HEADERS
+  lexer.h
+  token.h
+)
+
 ADD_LIBRARY(grpc lexer.cpp token.cpp)
 SET_PROPERTY(TARGET grpc PROPERTY CXX_STANDARD_REQUIRED ON)
 SET_PROPERTY(TARGET grpc PROPERTY CXX_STANDARD 11)

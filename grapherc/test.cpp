@@ -1,17 +1,16 @@
 #include <iostream>
 #include <locale>
-
-using namespace std;
+#include <sstream>
 
 #include "lexer.h"
 
+using namespace std;
+
 int main(void) {
-    lexer l ("test.txt");
+  lexer l("test.txt");
+  token t;
 
-    token t = l.next();
-
-    while (t.type != token_type::tok_eof) {
-        cout << token_type_string[t.type] << " " << t.text << endl;
-        t = l.next();
-    }
+  while ((t = l.next()).type != token_type::tok_eof) {
+    cout << string(t) << endl;
+  }
 }
