@@ -1,8 +1,11 @@
-
+// C/C++ with QtCreator
 *.o
 CMakeLists.txt.user
 
+// Idea, Gradle and Maven
 build
 .gradle
 .idea
 *.iml
+grpc/target
+grpc/dependency-reduced-pom.xml
