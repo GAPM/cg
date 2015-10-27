@@ -1,0 +1,13 @@
+
+CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
+PROJECT(bitc)
+
+ADD_LIBRARY(bitc STATIC bitarray.c)
+ADD_EXECUTABLE(bitc_test test.c)
+
+TARGET_LINK_LIBRARIES(bitc m)
+TARGET_LINK_LIBRARIES(bitc_test bitc)
+
+ENABLE_TESTING()
+
+ADD_TEST(bitc bitc_test)

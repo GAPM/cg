@@ -2,6 +2,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
 PROJECT(grapher)
 
+SUBDIRS(bitc)
 SUBDIRS(bitcpp)
 SUBDIRS(compare)
 SUBDIRS(std)
