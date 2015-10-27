@@ -1,4 +1,0 @@
-#ifndef GRAPHER_STD_BASE
-#define GRAPHER_STD_BASE
-
-#endif //GRAPHER_STD_BASE
