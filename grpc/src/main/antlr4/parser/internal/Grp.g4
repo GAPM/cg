@@ -1,43 +1,5 @@
-grammar Grapher;
+grammar Grp;
 
-INCLUDE : 'include' ;
-LPAREN : '(' ;
-RPAREN : ')' ;
-SEMI : ';' ;
-INT8 : 'int8' ;
-INT16 : 'int16' ;
-INT32 : 'int32' ;
-INT64 : 'int64' ;
-FLOAT : 'float' ;
-DOUBLE : 'double' ;
-UINT32 : 'uint32' ;
-UINT64 : 'uint64' ;
-CHAR : 'char' ;
-STRING : 'string' ;
-GRAPH : 'graph' ;
-WGRAPH : 'wgraph' ;
-DIGRAPH : 'digraph' ;
-WDIGRAPH : 'wdigraph' ;
-VOID : 'void' ;
-BOOL : 'bool' ;
-LBRACK : '[' ;
-RBRACK : ']' ;
-MAP : 'map' ;
-MUL : '*' ;
-VAR : 'var' ;
-DOT : '.' ;
-COMMA : ',' ;
-ADD : '+' ;
-SUB : '-' ;
-POW : '**' ;
-DIV : '/' ;
-MOD : '%' ;
-BITAND : '&' ;
-BITXOR : '^' ;
-BITOR : '|' ;
-RETURN : 'return' ;
-BREAK : 'break' ;
-CONTINUE : 'continue' ;
 WS: [ \t\r\n] -> skip;
 
 fragment Letter: [a-zA-Z_];
@@ -72,6 +34,8 @@ primitiveType: 'int8'
              | 'int64'
              | 'float'
              | 'double'
+             | 'uint8'
+             | 'uint16'
              | 'uint32'
              | 'uint64'
              | 'char'
@@ -84,12 +48,11 @@ primitiveType: 'int8'
              | 'bool'
              ;
 arrayType: '[' IntLit ']' type;
-mapType: 'map' '[' type ']' type;
 pointerType: '*' type;
+
 type: primitiveType
     | arrayType
     | pointerType
-    | mapType
     | Identifier
     ;
 
@@ -111,7 +74,8 @@ funcCall: Identifier '(' paramsList ')';
 
 atom: Identifier #Identifier
     | literal #LiteralAtom
-    | '(' arith_expr ')' #Assoc
+    | '(' expr_stmt')' #AssocAtom
+    | funcCall #FuncCallAtom
     ;
 
 atom_expr: atom selector #AtomSelector
@@ -124,7 +88,7 @@ factor_expr: '+' atom_expr #Possitive
            | atom_expr #AtomExpr
            ;
 
-pow_expr: pow_expr '**' factor_expr
+pow_expr: factor_expr '**' pow_expr
         | factor_expr
         ;
 
@@ -160,7 +124,8 @@ flow_stmt: break_stmt
          | return_stmt
          ;
 
-simple_stmt: expr_stmt
-           | flow_stmt
+simple_stmt: expr_stmt ';'
+           | flow_stmt ';'
            ;
 
+init: simple_stmt;

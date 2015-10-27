@@ -4,8 +4,6 @@ PROJECT(grapher)
 
 SUBDIRS(bitcpp)
 SUBDIRS(compare)
-SUBDIRS(grapherc)
 SUBDIRS(std)
 
 ENABLE_TESTING()
-
