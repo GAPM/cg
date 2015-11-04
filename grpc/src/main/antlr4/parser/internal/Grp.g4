@@ -1,5 +1,40 @@
 grammar Grp;
 
+INCLUDE : 'include' ;
+LPAREN : '(' ;
+RPAREN : ')' ;
+SEMI : ';' ;
+INT8 : 'int8' ;
+INT16 : 'int16' ;
+INT32 : 'int32' ;
+INT64 : 'int64' ;
+FLOAT : 'float' ;
+DOUBLE : 'double' ;
+UINT8 : 'uint8' ;
+UINT16 : 'uint16' ;
+UINT32 : 'uint32' ;
+UINT64 : 'uint64' ;
+CHAR : 'char' ;
+STRING : 'string' ;
+VOID : 'void' ;
+BOOL : 'bool' ;
+LBRACK : '[' ;
+RBRACK : ']' ;
+MUL : '*' ;
+VAR : 'var' ;
+DOT : '.' ;
+COMMA : ',' ;
+ADD : '+' ;
+SUB : '-' ;
+T__1 : '**' ;
+DIV : '/' ;
+MOD : '%' ;
+BITAND : '&' ;
+CARET : '^' ;
+BITOR : '|' ;
+RETURN : 'return' ;
+BREAK : 'break' ;
+CONTINUE : 'continue' ;
 WS: [ \t\r\n] -> skip;
 
 fragment Letter: [a-zA-Z_];
@@ -40,10 +75,6 @@ primitiveType: 'int8'
              | 'uint64'
              | 'char'
              | 'string'
-             | 'graph'
-             | 'wgraph'
-             | 'digraph'
-             | 'wdigraph'
              | 'void'
              | 'bool'
              ;
