@@ -1,0 +1,32 @@
+apply plugin: 'antlr'
+apply plugin: 'application'
+apply plugin: 'java'
+apply plugin: 'idea'
+
+repositories {
+    mavenCentral()
+}
+
+mainClassName = "main.Main"
+
+dependencies {
+    antlr 'org.antlr:antlr4:4.5.1-1'
+    testCompile 'junit:junit:4.12'
+}
+
+generateGrammarSource {
+    arguments += ["-package", "parser.internal"]
+}
+
+task execJar(type: Jar) {
+    baseName = project.name + '-all'
+    manifest {
+        attributes 'Main-Class': 'main.Main'
+    }
+    from {
+        configurations.compile.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+    with jar
+}
