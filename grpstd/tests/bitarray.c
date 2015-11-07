@@ -5,7 +5,7 @@
 #define MAXARRAY 100000000
 
 int main() {
-    bitarray *ba = ba_new(MAXARRAY);
+    struct bitarray *ba = ba_new(MAXARRAY);
 
     int i;
 
