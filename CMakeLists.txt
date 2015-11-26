@@ -1,9 +1,9 @@
+cmake_minimum_required(VERSION 3.0)
+project(grapher)
 
-CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
-PROJECT(grapher)
+set(CMAKE_INSTALL_PREFIX dist)
 
-SUBDIRS(grpstd)
+subdirs(grp)
+subdirs(grpc)
 
-IF(test)
-    ENABLE_TESTING()
-ENDIF()
+enable_testing()

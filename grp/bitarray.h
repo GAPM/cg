@@ -1,13 +1,13 @@
-
 #ifndef BITARRAY_H
 #define BITARRAY_H
 
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdlib.h>
 
 struct bitarray {
     size_t size;
-    unsigned char *array;
+    uint8_t *array;
 };
 
 // ba_new allocates a new bitarray of size s and returns a pointer to it

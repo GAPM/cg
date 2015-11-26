@@ -1,4 +1,3 @@
-
 #include "bitarray.h"
 
 #include <limits.h>
@@ -11,7 +10,7 @@
  */
 
 struct bitarray *ba_new(size_t s) {
-    size_t bytes = ceil(s / CHAR_BIT);
+    size_t bytes = ceil(s / 8.0);
 
     struct bitarray *n = calloc(1, sizeof(struct bitarray));
     if (n == NULL) {
@@ -29,14 +28,14 @@ struct bitarray *ba_new(size_t s) {
 }
 
 bool ba_get(struct bitarray *ba, size_t i) {
-    return ba->array[i / CHAR_BIT] & (1 << (i % CHAR_BIT));
+    return ba->array[i >> 3] & (1 << (i & 7));
 }
 
 void ba_set(struct bitarray *ba, size_t i, bool v) {
     if (v) {
-        ba->array[i / CHAR_BIT] |= (1 << (i % CHAR_BIT));
+        ba->array[i >> 3] |= (1 << (i & 7));
     } else {
-        ba->array[i / CHAR_BIT] &= ~(1 << (i % CHAR_BIT));
+        ba->array[i >> 3] &= ~(1 << (i & 7));
     }
 }
 
