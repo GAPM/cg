@@ -4,7 +4,7 @@
 #include "graph.h"
 
 int main(void) {
-    struct graph *g = gr_new(5, 4,
+    struct graph *gr = gr_new(5, 5, 4,
         (struct label){0, "1"},
         (struct label){1, "2"},
         (struct label){2, "3"},
@@ -15,10 +15,17 @@ int main(void) {
         (struct edge){4, 0, true},
         (struct edge){0, 2, false});
 
-    assert(gr_is_connected(g, 0, 1) == true);
-    assert(gr_is_connected(g, 2, 3) == true);
-    assert(gr_is_connected(g, 4, 0) == true);
-    assert(gr_is_connected(g, 0, 2) == false);
+    assert(gr_is_connected(gr, 0, 1) == true);
+    assert(gr_is_connected(gr, 2, 3) == true);
+    assert(gr_is_connected(gr, 3, 2) == true);
+    assert(gr_is_connected(gr, 4, 0) == true);
+    assert(gr_is_connected(gr, 0, 2) == false);
 
-    printf("%p\n", g);
+    assert(gr_is_connected_l(gr, "1", "2") == true);
+    assert(gr_is_connected_l(gr, "3", "4") == true);
+    assert(gr_is_connected_l(gr, "4", "3") == true);
+    assert(gr_is_connected_l(gr, "5", "1") == true);
+    assert(gr_is_connected_l(gr, "1", "3") == false);
+
+    gr_free(gr);
 }

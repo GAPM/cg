@@ -1,14 +1,17 @@
 #include "graph.h"
 
 #include <stdarg.h>
+#include <string.h>
 
-struct graph *gr_new(size_t num_nodes, size_t num_edges, ...) {
+struct graph *gr_new(size_t num_nodes, size_t nlabels, size_t num_edges, ...) {
     int i;
 
     struct graph *n = calloc(1, sizeof(struct graph));
     if (n == NULL) {
         return NULL;
     }
+
+    n->nlabels = nlabels;
 
     n->adj = bm_new(num_nodes, num_nodes);
     if (n->adj == NULL) {
@@ -26,7 +29,7 @@ struct graph *gr_new(size_t num_nodes, size_t num_edges, ...) {
     va_list args;
     va_start(args, num_edges);
 
-    for (i = 0; i < num_nodes; ++i) {
+    for (i = 0; i < nlabels; ++i) {
         n->labels[i] = va_arg(args, struct label);
     }
 
@@ -44,4 +47,30 @@ struct graph *gr_new(size_t num_nodes, size_t num_edges, ...) {
 
 bool gr_is_connected(struct graph *gr, size_t s, size_t e) {
     return bm_get(gr->adj, s, e);
+}
+
+bool gr_is_connected_l(struct graph *gr, char* s, char *e) {
+    size_t i;
+    size_t ls;
+    size_t le;
+
+    for (i = 0; i < gr->nlabels; ++i) {
+        if (strcmp(s, gr->labels[i].label) == 0) {
+            ls = gr->labels[i].id;
+        }
+    }
+
+    for (i = 0; i < gr->nlabels; ++i) {
+        if (strcmp(e, gr->labels[i].label) == 0) {
+            le = gr->labels[i].id;
+        }
+    }
+
+    return gr_is_connected(gr, ls, le);
+}
+
+void gr_free(struct graph *gr) {
+    free(gr->labels);
+    bm_free(gr->adj);
+    free(gr);
 }
