@@ -1,29 +1,28 @@
-#ifndef GRAPH_H
-#define GRAPH_H
+#ifndef GRP_GRAPH_H
+#define GRP_GRAPH_H
 
+#include <stdbool.h>
 #include <stdlib.h>
-#include "bitarray.h"
 
-struct node {
+#include "bitmatrix.h"
+
+struct label {
     size_t id;
     const char *label;
 };
 
-struct node_list {
-    size_t size;
-    struct node **list;
+struct edge {
+    size_t s;
+    size_t e;
+    bool v;
 };
 
 struct graph {
-    size_t id;             // Current node ID
-    struct node *nodes;    // Nodes descriptions
-    struct bitarray *adjm; // Adjacency matrix
+    struct label *labels;
+    struct bitmatrix *adj; // Adjacency matrix
 };
 
-struct node *nd_new(size_t id, const char *label);
-void nd_free(struct node *);
-struct node_list *ndl_new(size_t n, ...);
-void ndl_free(struct node_list *);
-struct graph *gr_new(struct node *nodes);
+struct graph *gr_new(size_t, size_t, ...);
+bool gr_is_connected(struct graph *, size_t, size_t);
 
-#endif // GRAPH_H
+#endif // GRP_GRAPH_H

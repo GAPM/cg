@@ -1,5 +1,5 @@
-#ifndef BITARRAY_H
-#define BITARRAY_H
+#ifndef GRP_BITARRAY_H
+#define GRP_BITARRAY_H
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -28,4 +28,4 @@ size_t ba_size(struct bitarray *ba);
 // ba_free deallocates the memory occupied by bitarray ba
 void ba_free(struct bitarray *ba);
 
-#endif // BITARRAY_H
+#endif // GRP_BITARRAY_H

@@ -1,22 +1,24 @@
 #include <assert.h>
 #include <stdio.h>
-#include <string.h>
+
 #include "graph.h"
 
-size_t next_id(size_t *i) { return (*i)++; }
-
 int main(void) {
-    size_t i = 0;
-    struct node_list *ndl =
-        ndl_new(5, nd_new(next_id(&i), "A"), nd_new(next_id(&i), "B"),
-                nd_new(next_id(&i), "C"), nd_new(next_id(&i), "D"),
-                nd_new(next_id(&i), "E"));
+    struct graph *g = gr_new(5, 4,
+        (struct label){0, "1"},
+        (struct label){1, "2"},
+        (struct label){2, "3"},
+        (struct label){3, "4"},
+        (struct label){4, "5"},
+        (struct edge){0, 1, true},
+        (struct edge){2, 3, true},
+        (struct edge){4, 0, true},
+        (struct edge){0, 2, false});
 
-    assert(ndl->list[0]->id == 0 && strcmp(ndl->list[0]->label, "A") == 0);
-    assert(ndl->list[1]->id == 1 && strcmp(ndl->list[1]->label, "B") == 0);
-    assert(ndl->list[2]->id == 2 && strcmp(ndl->list[2]->label, "C") == 0);
-    assert(ndl->list[3]->id == 3 && strcmp(ndl->list[3]->label, "D") == 0);
-    assert(ndl->list[4]->id == 4 && strcmp(ndl->list[4]->label, "E") == 0);
+    assert(gr_is_connected(g, 0, 1) == true);
+    assert(gr_is_connected(g, 2, 3) == true);
+    assert(gr_is_connected(g, 4, 0) == true);
+    assert(gr_is_connected(g, 0, 2) == false);
 
-    ndl_free(ndl);
+    printf("%p\n", g);
 }

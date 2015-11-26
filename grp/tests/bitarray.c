@@ -2,7 +2,7 @@
 
 #include "bitarray.h"
 
-#define MAXARRAY 100000000
+#define MAXARRAY 10000
 
 int main() {
     struct bitarray *ba = ba_new(MAXARRAY);

@@ -2,51 +2,46 @@
 
 #include <stdarg.h>
 
-struct node *nd_new(size_t id, const char *label) {
-    struct node *n = calloc(1, sizeof(struct node));
-    n->id = id;
-    n->label = label;
-    return n;
-}
+struct graph *gr_new(size_t num_nodes, size_t num_edges, ...) {
+    int i;
 
-void nd_free(struct node *nd) { free(nd); }
-
-struct node_list *ndl_new(size_t n, ...) {
-    size_t i;
-
-    struct node_list *ndl = calloc(1, sizeof(struct node_list));
-    if (ndl == NULL) {
+    struct graph *n = calloc(1, sizeof(struct graph));
+    if (n == NULL) {
         return NULL;
     }
 
-    ndl->list = calloc(n, sizeof(struct node *));
-    if (ndl->list == NULL) {
-        free(ndl);
+    n->adj = bm_new(num_nodes, num_nodes);
+    if (n->adj == NULL) {
+        free(n);
         return NULL;
     }
 
-    ndl->size = n;
+    n->labels = calloc(num_nodes, sizeof(struct label));
+    if (n->labels == NULL) {
+        bm_free(n->adj);
+        free(n);
+        return NULL;
+    }
 
     va_list args;
-    va_start(args, n);
+    va_start(args, num_edges);
 
-    struct node *tmp;
-    for (i = 0; i < n; ++i) {
-        tmp = va_arg(args, struct node *);
-        ndl->list[i] = tmp;
+    for (i = 0; i < num_nodes; ++i) {
+        n->labels[i] = va_arg(args, struct label);
+    }
+
+    for (i = 0; i < num_edges; ++i) {
+        struct edge edg = va_arg(args, struct edge);
+
+        bm_set(n->adj, edg.s, edg.e, edg.v);
+        bm_set(n->adj, edg.e, edg.s, edg.v);
     }
 
     va_end(args);
-    return ndl;
+
+    return n;
 }
 
-void ndl_free(struct node_list *ndl) {
-    size_t i;
-
-    for (i = 0; i < ndl->size; ++i) {
-        free(ndl->list[i]);
-    }
-
-    free(ndl->list);
-    free(ndl);
+bool gr_is_connected(struct graph *gr, size_t s, size_t e) {
+    return bm_get(gr->adj, s, e);
 }
