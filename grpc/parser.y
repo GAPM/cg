@@ -3,7 +3,6 @@
 #include <stdio.h>
 
 #include "ast.h"
-#include "helper.h"
 
 extern int yylineno;
 extern void yyerror(char*);
@@ -12,8 +11,10 @@ extern int yylex();
 
 %union {
     char *t;
+    struct arg *ag;
     struct arg_list *al;
-    struct literal *lt;
+    struct atom *at;
+    struct expr *ex;
 }
 
 %token FUNC
@@ -29,8 +30,10 @@ extern int yylex();
 
 %token ERR
 
+%type<ag> arg;
 %type<al> arg_list;
-%type<lt> literal;
+%type<at> atom;
+%type<ex> expr;
 
 %start init
 
@@ -41,33 +44,41 @@ extern int yylex();
 
 %%
 
-arg_list:              { $$ = NULL; }
-         | ID arg_list { $$ = new_arg_list($1, $2); }
+arg: ID { $$ = new_arg(0, $1); }
+   ;
+
+arg_list:  arg              { $$ = new_arg_list(NULL, $1); }
+         | arg_list ',' arg { $$ = new_arg_list($1, $3); }
          ;
 
-expr: expr '+' expr
-    | expr '-' expr
-    | expr '*' expr
-    | expr '/' expr
-    | expr '%' expr
-    | expr POW expr
-    | '(' expr ')'
-    | '-' expr %prec UNEG
-    | '+' expr %prec UPOS
-    | literal
+expr: expr '+' expr       { $$ = new_expr(EXP_ADD, $1, $3, NULL); }
+    | expr '-' expr       { $$ = new_expr(EXP_SUB, $1, $3, NULL); }
+    | expr '*' expr       { $$ = new_expr(EXP_MUL, $1, $3, NULL); }
+    | expr '/' expr       { $$ = new_expr(EXP_DIV, $1, $3, NULL); }
+    | expr '%' expr       { $$ = new_expr(EXP_MOD, $1, $3, NULL); }
+    | expr POW expr       { $$ = new_expr(EXP_POW, $1, $3, NULL); }
+    | '(' expr ')'        { $$ = new_expr(EXP_ASSOC, $2, NULL, NULL); }
+    | '-' expr %prec UNEG { $$ = new_expr(EXP_UNEG, $2, NULL, NULL); }
+    | '+' expr %prec UPOS { $$ = new_expr(EXP_UPOS, $2, NULL, NULL); }
+    | atom                { $$ = new_expr(EXP_AT, NULL, NULL, $1); }
     ;
 
-literal: STRING { $$ = new_literal(STRING_LIT, $1); }
-       | INT    { $$ = new_literal(INTEGER_LIT, $1); }
-       | FLOAT  { $$ = new_literal(FLOAT_LIT, $1); }
-       | CHAR   { $$ = new_literal(CHAR_LIT, $1); }
-       ;
+//expr_list:
+//         | expr ',' expr_list
+//         ;
+
+atom: STRING { $$ = new_atom(AT_STRING, $1); }
+    | INT    { $$ = new_atom(AT_INTEGER, $1); }
+    | FLOAT  { $$ = new_atom(AT_FLOAT, $1); }
+    | CHAR   { $$ = new_atom(AT_CHAR, $1); }
+    | ID     { $$ = new_atom(AT_VAR, $1); }
+    ;
 
 fdef: FUNC ID '(' arg_list ')' '{' inst_list '}'
     ;
 
 inst: fdef
-   | expr ';';
+    | expr ';';
 
 inst_list:
         | inst inst_list

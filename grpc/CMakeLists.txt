@@ -19,7 +19,7 @@ flex_target(lexer lexer.l ${CMAKE_CURRENT_BINARY_DIR}/lexer.c)
 add_executable(grpc
                ${FLEX_lexer_OUTPUTS}
                ${BISON_parser_OUTPUTS}
-           ast.c cmd.c grpc.c helper.c)
+               ast.c cmd.c grpc.c)
 set_property(TARGET grpc PROPERTY C_STANDARD 11)
 
 install(TARGETS grpc DESTINATION bin)
