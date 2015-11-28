@@ -12,10 +12,10 @@
 
 %%
 
-"**"   { return POW; }
-"func" { return FUNC; }
-"dec"  { return DEC; }
-"body" { return BODY; }
+"**"     { return R_POW; }
+"bool"   { return R_BOOL; }
+"double" { return R_DOUBLE; }
+"int"    { return R_INT; }
 
 \'.\' {
     yylval.t = yytext;

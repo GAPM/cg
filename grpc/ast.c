@@ -2,18 +2,37 @@
 
 #include <stdlib.h>
 
-struct arg *new_arg(enum type t, char *name) {
+enum type *new_type(enum type ty) {
+    enum type *n = calloc(1, sizeof(enum type));
+
+    if (n == NULL) {
+        return NULL;
+    }
+
+    *n = ty;
+    return n;
+}
+
+void free_type(enum type *ty) {
+    if (ty != NULL) {
+        free(ty);
+    }
+}
+
+struct arg *new_arg(enum type *ty, char *name) {
     struct arg *n = calloc(1, sizeof(struct arg));
     if (n == NULL) {
         return n;
     }
 
+    n->ty = ty;
     n->name = name;
     return n;
 }
 
 void free_arg(struct arg *ag) {
     if (ag != NULL) {
+        free_type(ag->ty);
         free(ag);
     }
 }
@@ -35,8 +54,27 @@ struct arg_list *new_arg_list(struct arg_list *ls, struct arg *ag) {
 void free_arg_list(struct arg_list *al) {
     if (al != NULL) {
         free_arg_list(al->ls);
+        free(al);
     }
-    free(al);
+}
+
+struct expr_list *new_expr_list(struct expr_list *ls, struct expr *ex) {
+    struct expr_list *n = calloc(1, sizeof(struct expr_list));
+
+    if (n == NULL) {
+        return NULL;
+    }
+
+    n->ls = ls;
+    n->ex = ex;
+    return n;
+}
+
+void free_expr_list(struct expr_list *ls) {
+    if (ls != NULL) {
+        free_expr_list(ls->ls);
+        free(ls);
+    }
 }
 
 struct atom *new_atom(enum type t, char *text) {

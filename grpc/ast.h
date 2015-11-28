@@ -21,18 +21,21 @@ enum type {
     EXP_ASSOC,
     EXP_AT,
 
-    T_INT,
-    T_DOUBLE,
-    T_BOOL,
-    T_GRAPH,
+    TYPE_INT,
+    TYPE_DOUBLE,
+    TYPE_BOOL,
+    TYPE_GRAPH, // Most important TODO in the entire codebase
 };
 
+enum type *new_type(enum type);
+void free_type(enum type *);
+
 struct arg {
-    enum type t;
+    enum type *ty;
     char *name;
 };
 
-struct arg *new_arg(enum type, char *);
+struct arg *new_arg(enum type *, char *);
 void free_arg(struct arg *);
 
 struct arg_list {
@@ -42,6 +45,14 @@ struct arg_list {
 
 struct arg_list *new_arg_list(struct arg_list *, struct arg *);
 void free_arg_list(struct arg_list *);
+
+struct expr_list {
+    struct expr *ex;
+    struct expr_list *ls;
+};
+
+struct expr_list *new_expr_list(struct expr_list *, struct expr *);
+void free_expr_list(struct expr_list *);
 
 struct atom {
     enum type t;
@@ -60,11 +71,5 @@ struct expr {
 
 struct expr *new_expr(enum type, struct expr *, struct expr *, struct atom *);
 void free_expr(struct expr *);
-
-struct func_call {
-    enum type t;
-    char *name;
-    struct expr args[];
-};
 
 #endif // GRPC_AST_H
