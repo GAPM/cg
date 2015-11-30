@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "ast.h"
 #include "cmd.h"
 
 extern int yyparse();
 extern FILE *yyin;
+extern struct stmt_list *result;
 
 void print_error(const char *str) { fprintf(stderr, "%s\n", str); }
 

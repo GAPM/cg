@@ -7,6 +7,8 @@
 extern int yylineno;
 extern void yyerror(char*);
 extern int yylex();
+
+struct stmt_list *result;
 %}
 
 %union {
@@ -16,6 +18,10 @@ extern int yylex();
     struct atom *at;
     struct expr *ex;
     struct expr_list *el;
+    struct stmt *st;
+    struct stmt_list *sl;
+    struct fdef *fd;
+    struct fcall *fc;
     enum type *ty;
 }
 
@@ -38,6 +44,10 @@ extern int yylex();
 %type<ex> expr;
 %type<el> expr_list;
 %type<ty> type;
+%type<st> stmt;
+%type<sl> stmt_list;
+%type<fd> fdef;
+%type<fc> fcall;
 
 %start init
 
@@ -78,25 +88,26 @@ expr_list:                    { $$ = NULL; }
          | expr_list ',' expr { $$ = new_expr_list($1, $3); }
          ;
 
-atom: STRING { $$ = new_atom(AT_STRING, $1); }
-    | INT    { $$ = new_atom(AT_INTEGER, $1); }
-    | FLOAT  { $$ = new_atom(AT_FLOAT, $1); }
-    | CHAR   { $$ = new_atom(AT_CHAR, $1); }
-    | ID     { $$ = new_atom(AT_VAR, $1); }
-    | fcall  { $$ = NULL; }
+atom: STRING { $$ = new_atom(AT_STRING, $1, NULL); }
+    | INT    { $$ = new_atom(AT_INTEGER, $1, NULL); }
+    | FLOAT  { $$ = new_atom(AT_FLOAT, $1, NULL); }
+    | CHAR   { $$ = new_atom(AT_CHAR, $1, NULL); }
+    | ID     { $$ = new_atom(AT_VAR, $1, NULL); }
+    | fcall  { $$ = new_atom(AT_FCALL, NULL, $1); }
     ;
 
-fdef: type ID '(' arg_list ')' '{' inst_list '}'
+fdef: type ID '(' arg_list ')' '{' stmt_list '}' { $$ = new_fdef($1, $2, $4, $7); }
     ;
 
-fcall: ID '(' expr_list ')'
+fcall: ID '(' expr_list ')' { $$ = new_fcall($1, $3); }
      ;
 
-inst: fdef
-    | expr ';';
+stmt: fdef     { $$ = new_stmt(STMT_FDEF, $1, NULL); }
+    | expr ';' { $$ = new_stmt(STMT_EXP, NULL, $1); }
+    ;
 
-inst_list: inst
-         | inst_list inst
+stmt_list: stmt           { $$ = new_stmt_list(NULL, $1); }
+         | stmt_list stmt { $$ = new_stmt_list($1, $2); }
          ;
 
-init: inst_list {  };
+init: stmt_list { result = $1; }
