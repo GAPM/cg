@@ -7,6 +7,7 @@
 extern int yyparse();
 extern FILE *yyin;
 extern struct stmt_list *result;
+extern int yydebug;
 
 void print_error(const char *str) { fprintf(stderr, "%s\n", str); }
 
@@ -16,6 +17,7 @@ void fatal_error(const char *str) {
 }
 
 int main(int argc, char **argv) {
+    yydebug = 0;
     int n_pos_args = count_pos_args(argc, argv);
 
     if (n_pos_args == 0) {
@@ -31,4 +33,6 @@ int main(int argc, char **argv) {
     if (yyin) {
         yyparse();
     }
+
+    printf("%p\n", result);
 }

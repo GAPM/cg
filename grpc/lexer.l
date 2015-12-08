@@ -12,7 +12,18 @@
 
 %%
 
-"**"     { return R_POW; }
+"("      { return LPAREN; }
+")"      { return RPAREN; }
+"{"      { return LBRACE; }
+"}"      { return RBRACE; }
+";"      { return SEMCLN; }
+","      { return COMMA; }
+"**"     { return OP_POW; }
+"+"      { return OP_SUM; }
+"-"      { return OP_SUB; }
+"*"      { return OP_MUL; }
+"/"      { return OP_DIV; }
+"%"      { return OP_MOD; }
 "bool"   { return R_BOOL; }
 "double" { return R_DOUBLE; }
 "int"    { return R_INT; }
@@ -47,7 +58,3 @@
 . { return yytext[0]; }
 
 %%
-
-void yyerror(const char *msg) {
-    fprintf(stderr, "%d: %s\n", yylineno, msg);
-}

@@ -5,7 +5,7 @@
 
 bool is_positional(char *arg) {
     char first = arg[0];
-    return isalpha(first);
+    return first != '-';
 }
 
 int count_pos_args(int argc, char **argv) {
