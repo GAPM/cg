@@ -4,6 +4,5 @@ project(grapher)
 set(CMAKE_INSTALL_PREFIX dist)
 
 subdirs(grp)
-subdirs(grpc)
 
 enable_testing()
