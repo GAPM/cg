@@ -37,7 +37,7 @@ fragment HexDigit: [0-9a-fA-F];
 Identifier: Letter (Letter | DecimalDigit)*;
 
 BoolLit: 'true' | 'false';
-fragment DecimalLit: [1-9] DecimalDigit*;
+fragment DecimalLit: [0-9] DecimalDigit*;
 fragment OctalLit: '0' [oO] OctalDigit+;
 fragment HexLit: '0' [xX] HexDigit+;
 IntLit: DecimalLit | OctalLit | HexLit;
@@ -86,8 +86,9 @@ expr: atom
     | expr ('*'|'/'|'%') expr
     | expr ('+'|'-') expr
     ;
-
 exprList: (expr (',' expr)*)?;
+
+vdec: 'var' Identifier type ('=' expr)?;
 
 fdef: type Identifier '(' argList ')' '{' stmt* '}';
 
@@ -96,6 +97,7 @@ fcall: Identifier '(' exprList ')';
 assign: expr '=' expr;
 
 stmt: fdef
+    | vdec ';'
     | expr ';'
     | assign ';'
     ;

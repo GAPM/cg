@@ -1,8 +1,7 @@
 package jgrpc.main;
 
-import jgrpc.lib.Compiler;
-import jgrpc.lib.GlobalDeclarations;
-import jgrpc.lib.ex.ParsingException;
+import jdk.nashorn.internal.codegen.CompilationException;
+import jgrpc.lib.comp.Compiler;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -11,8 +10,8 @@ import org.apache.commons.cli.Options;
 import java.io.File;
 import java.util.Optional;
 
-public class Main {
-    public static Optional<String> findExec(String name) {
+class App {
+    private static Optional<String> findExec(String name) {
         String path = System.getenv("PATH");
         String[] dirs = path.split(File.pathSeparator);
         File f;
@@ -47,11 +46,9 @@ public class Main {
         Compiler compiler = new Compiler(cmd.getArgs()[0]);
 
         try {
-            compiler.parse();
-        } catch (ParsingException e) {
-            System.exit(-1);
+            compiler.compile();
+        } catch (CompilationException e) {
+            System.err.println(e.getMessage());
         }
-
-        compiler.executePhase(GlobalDeclarations.class);
     }
 }

@@ -7,5 +7,5 @@ build
 .gradle
 .idea
 *.iml
-grpc/target
-grpc/dependency-reduced-pom.xml
+jgrpc/target
+jgrpc/dependency-reduced-pom.xml

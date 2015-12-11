@@ -1,15 +1,15 @@
 package jgrpc.lib.sym;
 
 public class Function extends Symbol {
-    @Override
-    public Type getType() {
-        return Type.FUNC;
-    }
+    public Type retType;
 
-    public Function(String n, Type rt   ) {
-        name = n;
+    public Function(String n, Type rt, String s, Location l) {
+        super(n, s, l);
         retType = rt;
     }
 
-    public Type retType;
+    @Override
+    public SymType getType() {
+        return SymType.FUNC;
+    }
 }

@@ -2,8 +2,6 @@ package jgrpc.lib.sym;
 
 
 public enum Type {
-    ERROR,
-    FUNC,
     INT8,
     INT32,
     INT64,
@@ -13,5 +11,6 @@ public enum Type {
     UINT32,
     UINT64,
     BOOL,
-    VOID
+    VOID,
+    ERROR
 }
