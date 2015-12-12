@@ -1,37 +1,51 @@
 grammar Grp;
 
-INT8 : 'int8' ;
+ADD : '+' ;
+AND : '&&' ;
+BANG : '!' ;
+BOOL : 'bool' ;
+BREAK : 'break' ;
+CHAR : 'char' ;
+COMMA : ',' ;
+CONTINUE : 'continue' ;
+DIV : '/' ;
+DOUBLE : 'double' ;
+ELSE : 'else' ;
+EQUAL : '=' ;
+EQUAL_EQUAL : '==' ;
+FLOAT : 'float' ;
+FOR : 'for' ;
+GE : '>=' ;
+GT : '>' ;
+IF : 'if' ;
 INT16 : 'int16' ;
 INT32 : 'int32' ;
 INT64 : 'int64' ;
-FLOAT : 'float' ;
-DOUBLE : 'double' ;
-UINT8 : 'uint8' ;
+INT8 : 'int8' ;
+LBRACE : '{' ;
+LE : '<=' ;
+LPAREN : '(' ;
+LT : '<' ;
+MOD : '%' ;
+MUL : '*' ;
+NOT_EQUAL : '!=' ;
+OR : '||' ;
+POW : '**' ;
+RBRACE : '}' ;
+RETURN : 'return' ;
+RPAREN : ')' ;
+SEMI : ';' ;
+STEP : 'step' ;
+STRING : 'string' ;
+SUB : '-' ;
+TO : 'to' ;
 UINT16 : 'uint16' ;
 UINT32 : 'uint32' ;
 UINT64 : 'uint64' ;
-CHAR : 'char' ;
-STRING : 'string' ;
-VOID : 'void' ;
-BOOL : 'bool' ;
-COMMA : ',' ;
-SUB : '-' ;
-ADD : '+' ;
-LPAREN : '(' ;
-RPAREN : ')' ;
-POW : '**' ;
-MUL : '*' ;
-DIV : '/' ;
-MOD : '%' ;
-LBRACE : '{' ;
-RBRACE : '}' ;
-EQUAL : '=' ;
-SEMI : ';' ;
+UINT8 : 'uint8' ;
 VAR : 'var' ;
-RETURN : 'return' ;
-CONTINUE : 'continue' ;
-BREAK : 'break' ;
-
+VOID : 'void' ;
+WHILE : 'while' ;
 WS: [ \t\r\n] -> skip;
 
 fragment Letter: [a-zA-Z_];
@@ -76,21 +90,24 @@ type: 'int8'
 arg: type Identifier;
 argList: (arg (',' arg)*)?;
 
-atom: IntLit
-    | FloatLit
-    | BoolLit
-    | Identifier
-    | fcall
-    | type '(' expr ')'
+atom: IntLit            #Integer
+    | FloatLit          #FloatingPoint
+    | BoolLit           #Boolean
+    | Identifier        #VarName
+    | fcall             #FunctionCall
+    | type '(' expr ')' #Cast
     ;
 
-expr: atom
-    | '-' expr
-    | '+' expr
-    | '(' expr ')'
-    | <assoc=right> expr '**' expr
-    | expr ('*'|'/'|'%') expr
-    | expr ('+'|'-') expr
+expr: atom                               #Atomic
+    | <assoc=right>op=('-'|'+'|'!') expr #Unary
+    | '(' expr ')'                       #Assoc
+    | <assoc=right> expr '**' expr       #Pow
+    | expr op=('*'|'/'|'%') expr         #MulDivMod
+    | expr op=('+'|'-') expr             #AddSub
+    | expr op=('>'|'<'|'>='|'<=') expr   #Comparison
+    | expr op=('=='|'!=') expr           #Equality
+    | expr '&&' expr                     #LogicAnd
+    | expr '||' expr                     #LogicOr
     ;
 exprList: (expr (',' expr)*)?;
 
@@ -128,5 +145,4 @@ stmt: simpleStmt ';'
     | compoundStmt
     ;
 
-init: (fdef | vdec ';')*
-    ;
+init: (fdef | vdec ';')*;
