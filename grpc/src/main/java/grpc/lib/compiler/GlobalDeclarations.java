@@ -1,8 +1,8 @@
-package jgrpc.lib.compiler;
+package grpc.lib.compiler;
 
-import jgrpc.lib.internal.GrpLexer;
-import jgrpc.lib.internal.GrpParser;
-import jgrpc.lib.symbol.*;
+import grpc.lib.internal.GrpLexer;
+import grpc.lib.internal.GrpParser;
+import grpc.lib.symbol.*;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.LinkedList;

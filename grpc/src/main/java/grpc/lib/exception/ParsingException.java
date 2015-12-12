@@ -1,4 +1,4 @@
-package jgrpc.lib.exception;
+package grpc.lib.exception;
 
 /**
  * Exception thrown to notify that syntax errors were found during parsing

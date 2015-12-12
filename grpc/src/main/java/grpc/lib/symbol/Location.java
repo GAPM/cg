@@ -1,4 +1,4 @@
-package jgrpc.lib.symbol;
+package grpc.lib.symbol;
 
 import org.antlr.v4.runtime.tree.TerminalNode;
 

@@ -1,4 +1,4 @@
-package jgrpc.lib.symbol;
+package grpc.lib.symbol;
 
 /**
  * Symbol class from which all other symbols in the symbol table inherit

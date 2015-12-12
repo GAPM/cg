@@ -1,4 +1,4 @@
-package jgrpc.lib.result;
+package grpc.lib.result;
 
 public class UnitResult {
 }

@@ -1,4 +1,4 @@
-package jgrpc.lib.symbol;
+package grpc.lib.symbol;
 
 import java.util.LinkedList;
 

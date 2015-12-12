@@ -1,7 +1,7 @@
-package jgrpc.main;
+package grpc.main;
 
 import jdk.nashorn.internal.codegen.CompilationException;
-import jgrpc.lib.compiler.Compiler;
+import grpc.lib.compiler.Compiler;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;

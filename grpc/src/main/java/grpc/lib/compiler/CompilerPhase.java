@@ -1,9 +1,9 @@
-package jgrpc.lib.compiler;
+package grpc.lib.compiler;
 
-import jgrpc.lib.internal.GrpBaseListener;
-import jgrpc.lib.result.UnitResult;
-import jgrpc.lib.symbol.Location;
-import jgrpc.lib.symbol.SymTab;
+import grpc.lib.internal.GrpBaseListener;
+import grpc.lib.result.UnitResult;
+import grpc.lib.symbol.Location;
+import grpc.lib.symbol.SymTab;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 
 import java.util.LinkedList;

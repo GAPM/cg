@@ -1,11 +1,11 @@
-package jgrpc.lib.compiler;
+package grpc.lib.compiler;
 
-import jgrpc.lib.exception.CompilerException;
-import jgrpc.lib.exception.ParsingException;
-import jgrpc.lib.internal.GrpLexer;
-import jgrpc.lib.internal.GrpParser;
-import jgrpc.lib.result.UnitResult;
-import jgrpc.lib.symbol.SymTab;
+import grpc.lib.exception.CompilerException;
+import grpc.lib.exception.ParsingException;
+import grpc.lib.internal.GrpLexer;
+import grpc.lib.internal.GrpParser;
+import grpc.lib.result.UnitResult;
+import grpc.lib.symbol.SymTab;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -18,7 +18,7 @@ import java.io.InputStream;
 import java.util.Optional;
 
 /**
- * jgrpc, the Java GRP compiler
+ * grpc, the Java GRP compiler
  */
 public class Compiler {
     private String path;
