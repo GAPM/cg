@@ -1,16 +1,23 @@
 package jgrpc.main;
 
 import jdk.nashorn.internal.codegen.CompilationException;
-import jgrpc.lib.comp.Compiler;
+import jgrpc.lib.compiler.Compiler;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Optional;
 
 class App {
+    /**
+     * Finds the path of an executable
+     *
+     * @param name The executable name
+     * @return An optional that may or may not contains the executable path
+     */
     private static Optional<String> findExec(String name) {
         String path = System.getenv("PATH");
         String[] dirs = path.split(File.pathSeparator);
@@ -43,10 +50,21 @@ class App {
             System.exit(1);
         }
 
-        Compiler compiler = new Compiler(cmd.getArgs()[0]);
+        String fileName = cmd.getArgs()[0];
+        Optional<Compiler> compiler = Optional.empty();
 
         try {
-            compiler.compile();
+            compiler = Optional.of(new Compiler(fileName));
+        } catch (IOException e) {
+            String err = String.format("ERROR: can't open %s", fileName);
+            System.err.println(err);
+            System.exit(1);
+        }
+
+        try {
+            if (compiler.isPresent()) {
+                compiler.get().compile();
+            }
         } catch (CompilationException e) {
             System.err.println(e.getMessage());
         }

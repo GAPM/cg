@@ -1,4 +1,4 @@
-package jgrpc.lib.sym;
+package jgrpc.lib.symbol;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -20,14 +20,17 @@ public class SymTab {
      */
     public Optional<Symbol> getSymbol(String name, String scope, SymType type) {
         return symTab.stream()
-                .filter(s -> s.name.equals(name))
-                .filter(s -> s.scope.equals(scope))
-                .filter(s -> s.getType() == type || type == SymType.ANY)
+                .filter(s -> s.getName().equals(name))
+                .filter(s -> s.getScope().equals(scope))
+                .filter(s -> s.getSymType() == type || type == SymType.ANY)
                 .findFirst();
     }
 
-    public Optional<Symbol> getSymbol(String name, String scope) {
-        return getSymbol(name, scope, SymType.ANY);
+    public Symbol[] getSymbols(String name, SymType type) {
+        return symTab.stream()
+                .filter(s -> s.getName().equals(name))
+                .filter(s -> s.getSymType() == type || type == SymType.ANY)
+                .toArray(Symbol[]::new);
     }
 
     public void addSymbol(Symbol s) {

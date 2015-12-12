@@ -27,6 +27,11 @@ LBRACE : '{' ;
 RBRACE : '}' ;
 EQUAL : '=' ;
 SEMI : ';' ;
+VAR : 'var' ;
+RETURN : 'return' ;
+CONTINUE : 'continue' ;
+BREAK : 'break' ;
+
 WS: [ \t\r\n] -> skip;
 
 fragment Letter: [a-zA-Z_];
@@ -76,6 +81,7 @@ atom: IntLit
     | BoolLit
     | Identifier
     | fcall
+    | type '(' expr ')'
     ;
 
 expr: atom
@@ -96,10 +102,25 @@ fcall: Identifier '(' exprList ')';
 
 assign: expr '=' expr;
 
-stmt: fdef
-    | vdec ';'
-    | expr ';'
-    | assign ';'
+ifc: 'if' '(' expr ')' '{' stmt* '}' elsec?;
+elsec: 'else' '{' stmt* '}';
+
+controlStmt: 'return' expr?
+           | 'continue'
+           | 'break'
+           ;
+
+compoundStmt: ifc;
+
+simpleStmt: vdec
+          | assign
+          | controlStmt
+          | expr
+          ;
+
+stmt: simpleStmt ';'
+    | compoundStmt
     ;
 
-init: stmt*;
+init: (fdef | vdec ';')*
+    ;

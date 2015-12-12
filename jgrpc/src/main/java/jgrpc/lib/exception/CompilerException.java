@@ -1,4 +1,4 @@
-package jgrpc.lib.ex;
+package jgrpc.lib.exception;
 
 public class CompilerException extends Exception {
     public CompilerException(String msg) {

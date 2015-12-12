@@ -1,4 +1,4 @@
-package jgrpc.lib.sym;
+package jgrpc.lib.symbol;
 
 public enum SymType {
     ANY,

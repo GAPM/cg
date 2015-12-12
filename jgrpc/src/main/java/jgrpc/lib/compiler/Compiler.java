@@ -1,13 +1,15 @@
-package jgrpc.lib.comp;
+package jgrpc.lib.compiler;
 
-import jgrpc.lib.ex.CompilerException;
-import jgrpc.lib.ex.ParsingException;
+import jgrpc.lib.exception.CompilerException;
+import jgrpc.lib.exception.ParsingException;
 import jgrpc.lib.internal.GrpLexer;
 import jgrpc.lib.internal.GrpParser;
-import jgrpc.lib.sym.SymTab;
+import jgrpc.lib.result.UnitResult;
+import jgrpc.lib.symbol.SymTab;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeProperty;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import java.io.FileInputStream;
@@ -23,7 +25,7 @@ public class Compiler {
     private SymTab symTab;
     private GrpParser parser;
     private ParseTree tree;
-    private boolean parsed;
+    private ParseTreeProperty<UnitResult> results;
 
     /**
      * Initialize the compiler for a single file
@@ -31,9 +33,10 @@ public class Compiler {
      * @param path The path to the file to be compiled
      * @throws IOException if the file does not exists
      */
-    public Compiler(String path) throws IOException, ParsingException {
+    public Compiler(String path) throws IOException {
         this.path = path;
         symTab = new SymTab();
+        results = new ParseTreeProperty<>();
         InputStream is = new FileInputStream(this.path);
         ANTLRInputStream input = new ANTLRInputStream(is);
         GrpLexer lexer = new GrpLexer(input);
@@ -47,13 +50,10 @@ public class Compiler {
      * @throws ParsingException if syntax errors are found in the file
      */
     private void parse() throws ParsingException {
-        if (!parsed) {
-            tree = parser.init();
-            parsed = true;
+        tree = parser.init();
 
-            if (parser.getNumberOfSyntaxErrors() > 0) {
-                throw new ParsingException();
-            }
+        if (parser.getNumberOfSyntaxErrors() > 0) {
+            throw new ParsingException();
         }
     }
 
@@ -75,12 +75,15 @@ public class Compiler {
 
         if (listener.isPresent()) {
             CompilerPhase phase = listener.get();
+
             phase.setSymbolTable(symTab);
+            phase.setResults(results);
             phase.setPath(path);
+
             walker.walk(phase, tree);
 
             if (phase.errorCount() > 0) {
-                System.err.println("\n" + phaseClass.getName() + ":");
+                // System.err.println("\n" + phaseClass.getName() + ":");
                 phase.getErrorList().forEach(System.err::println);
             }
         }
@@ -94,5 +97,6 @@ public class Compiler {
     public void compile() throws CompilerException {
         parse();
         executePhase(GlobalDeclarations.class);
+        executePhase(TypeChecking.class);
     }
 }

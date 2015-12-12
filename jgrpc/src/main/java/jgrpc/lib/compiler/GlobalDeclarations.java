@@ -1,10 +1,11 @@
-package jgrpc.lib.comp;
+package jgrpc.lib.compiler;
 
 import jgrpc.lib.internal.GrpLexer;
 import jgrpc.lib.internal.GrpParser;
-import jgrpc.lib.sym.*;
+import jgrpc.lib.symbol.*;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import java.util.LinkedList;
 import java.util.Optional;
 
 public class GlobalDeclarations extends CompilerPhase {
@@ -38,6 +39,17 @@ public class GlobalDeclarations extends CompilerPhase {
         }
     }
 
+    public void redeclarationError(Location first, Location last, String name, SymType type) {
+        String t = (type == SymType.FUNC)
+                ? "function with same signature"
+                : "global variable";
+
+        String e = String.format("Redeclaration of %s `%s`. ", t, name);
+        e += String.format("Previously declared at %s", last);
+
+        addError(first, e);
+    }
+
     @Override
     public void exitFdef(GrpParser.FdefContext ctx) {
         super.exitFdef(ctx);
@@ -46,18 +58,41 @@ public class GlobalDeclarations extends CompilerPhase {
         String name = ctx.Identifier().getText();
         Type rType = getType(ctx.type());
         Location location = new Location(ctx.Identifier());
+        LinkedList<Variable> args = new LinkedList<>();
 
-        // Search for a function with the same name and scope
-        Optional<Symbol> qry = symbolTable.getSymbol(name, "global", SymType.FUNC);
-        if (!qry.isPresent()) {
-            Function function = new Function(name, rType, "global", location);
-            symbolTable.addSymbol(function);
+        // The argument list gets populated
+        for (GrpParser.ArgContext arg : ctx.argList().arg()) {
+            String argName = arg.Identifier().getText();
+            Type argType = getType(arg.type());
+            Location argLoc = new Location(arg.Identifier());
+            Variable v = new Variable(argName, argType, name, argLoc);
+            args.add(v);
+        }
+
+        Function function = new Function(name, rType, location, args);
+
+        // Search for a function with the same name and signature
+        Symbol[] qry = symbolTable.getSymbols(name, SymType.FUNC);
+        Location l = null;
+
+        if (qry.length > 0) {
+            for (Symbol s : qry) {
+                Function f = (Function) s;
+                if (function.equals(f)) {
+                    l = f.getLocation();
+                    break;
+                }
+            }
+        }
+
+        if (l != null) {
+            redeclarationError(location, l, name, SymType.FUNC);
         } else {
-            // Error reporting
-            Function f = (Function) qry.get();
-            String e = String.format("Redeclaration of function `%s`. ", name);
-            e += String.format("Previosly declared at %s", f.location);
-            addError(location, e);
+            // Both the functions and the args are added to the symbol table
+            symbolTable.addSymbol(function);
+            for (Variable v : args) {
+                symbolTable.addSymbol(v);
+            }
         }
     }
 
@@ -75,9 +110,7 @@ public class GlobalDeclarations extends CompilerPhase {
             symbolTable.addSymbol(variable);
         } else {
             Variable v = (Variable) qry.get();
-            String e = String.format("Redeclaration of global var `%s`. ", name);
-            e += String.format("Previosly declared at %s", v.location);
-            addError(location, e);
+            redeclarationError(location, v.getLocation(), name, SymType.VAR);
         }
     }
 }
