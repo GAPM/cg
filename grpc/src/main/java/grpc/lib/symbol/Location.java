@@ -1,5 +1,6 @@
 package grpc.lib.symbol;
 
+import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 public class Location {
@@ -11,8 +12,12 @@ public class Location {
         this.columnno = columnno;
     }
 
-    public Location(TerminalNode tn) {
-        this(tn.getSymbol().getLine(), tn.getSymbol().getCharPositionInLine());
+    public Location(Token token) {
+        this(token.getLine(), token.getCharPositionInLine());
+    }
+
+    public Location(TerminalNode terminalNode) {
+        this(terminalNode.getSymbol());
     }
 
     @Override

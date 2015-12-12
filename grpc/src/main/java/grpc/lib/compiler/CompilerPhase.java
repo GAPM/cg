@@ -11,8 +11,8 @@ import java.util.LinkedList;
 public class CompilerPhase extends GrpBaseListener {
     protected SymTab symbolTable;
     protected String path;
+    protected ParseTreeProperty<UnitResult> results;
     private LinkedList<String> errorList;
-    private ParseTreeProperty<UnitResult> results;
 
     public CompilerPhase() {
         errorList = new LinkedList<>();

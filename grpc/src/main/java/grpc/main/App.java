@@ -1,7 +1,7 @@
 package grpc.main;
 
-import jdk.nashorn.internal.codegen.CompilationException;
 import grpc.lib.compiler.Compiler;
+import grpc.lib.exception.CompilerException;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -65,7 +65,7 @@ class App {
             if (compiler.isPresent()) {
                 compiler.get().compile();
             }
-        } catch (CompilationException e) {
+        } catch (CompilerException e) {
             System.err.println(e.getMessage());
         }
     }

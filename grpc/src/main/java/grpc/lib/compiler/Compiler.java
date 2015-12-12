@@ -12,6 +12,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,7 +22,7 @@ import java.util.Optional;
  * grpc, the Java GRP compiler
  */
 public class Compiler {
-    private String path;
+    private File file;
     private SymTab symTab;
     private GrpParser parser;
     private ParseTree tree;
@@ -34,10 +35,10 @@ public class Compiler {
      * @throws IOException if the file does not exists
      */
     public Compiler(String path) throws IOException {
-        this.path = path;
+        this.file = new File(path);
         symTab = new SymTab();
         results = new ParseTreeProperty<>();
-        InputStream is = new FileInputStream(this.path);
+        InputStream is = new FileInputStream(this.file);
         ANTLRInputStream input = new ANTLRInputStream(is);
         GrpLexer lexer = new GrpLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -78,7 +79,7 @@ public class Compiler {
 
             phase.setSymbolTable(symTab);
             phase.setResults(results);
-            phase.setPath(path);
+            phase.setPath(file.getName());
 
             walker.walk(phase, tree);
 
@@ -97,6 +98,7 @@ public class Compiler {
     public void compile() throws CompilerException {
         parse();
         executePhase(GlobalDeclarations.class);
+        executePhase(Structure.class);
         executePhase(TypeChecking.class);
     }
 }

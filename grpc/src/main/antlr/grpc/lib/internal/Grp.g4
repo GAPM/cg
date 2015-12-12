@@ -105,12 +105,18 @@ assign: expr '=' expr;
 ifc: 'if' '(' expr ')' '{' stmt* '}' elsec?;
 elsec: 'else' '{' stmt* '}';
 
-controlStmt: 'return' expr?
-           | 'continue'
-           | 'break'
+forc: 'for' assign 'to' expr ('step' expr)? '{' stmt* '}';
+whilec: 'while' '(' expr ')' '{' stmt* '}';
+
+controlStmt: 'return' expr? #Return
+           | 'continue'     #Continue
+           | 'break'        #Break
            ;
 
-compoundStmt: ifc;
+compoundStmt: ifc
+            | forc
+            | whilec
+            ;
 
 simpleStmt: vdec
           | assign
