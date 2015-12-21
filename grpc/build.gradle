@@ -1,19 +1,18 @@
 apply plugin: 'antlr'
 apply plugin: 'application'
-apply plugin: 'java'
 apply plugin: 'idea'
+apply plugin: 'scala'
 
 repositories {
     mavenCentral()
 }
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-mainClassName = "grpc.main.App"
+mainClassName = "grpc.main.Exec"
 
 dependencies {
     antlr 'org.antlr:antlr4:4.5.1-1'
     compile 'commons-cli:commons-cli:1.3.1'
+    compile 'org.scala-lang:scala-library:2.12.0-M3'
     testCompile 'junit:junit:4.12'
 }
 

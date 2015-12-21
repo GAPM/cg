@@ -18,6 +18,7 @@ FOR : 'for' ;
 GE : '>=' ;
 GT : '>' ;
 IF : 'if' ;
+INT : 'int' ;
 INT16 : 'int16' ;
 INT32 : 'int32' ;
 INT64 : 'int64' ;
@@ -30,7 +31,6 @@ MOD : '%' ;
 MUL : '*' ;
 NOT_EQUAL : '!=' ;
 OR : '||' ;
-POW : '**' ;
 RBRACE : '}' ;
 RETURN : 'return' ;
 RPAREN : ')' ;
@@ -38,7 +38,9 @@ SEMI : ';' ;
 STEP : 'step' ;
 STRING : 'string' ;
 SUB : '-' ;
+POW : '**' ;
 TO : 'to' ;
+UINT : 'uint' ;
 UINT16 : 'uint16' ;
 UINT32 : 'uint32' ;
 UINT64 : 'uint64' ;
@@ -71,31 +73,37 @@ FloatLit: Decimals '.' Decimals Exponent?
 CharLit: '\'' . '\'';
 StringLit: '"' (.)*? '"';
 
-type: 'int8'
-    | 'int16'
-    | 'int32'
-    | 'int64'
-    | 'float'
-    | 'double'
-    | 'uint8'
-    | 'uint16'
-    | 'uint32'
-    | 'uint64'
-    | 'char'
-    | 'string'
-    | 'void'
-    | 'bool'
-    ;
+typ: 'int'
+   | 'int8'
+   | 'int16'
+   | 'int32'
+   | 'int64'
+   | 'float'
+   | 'double'
+   | 'uint'
+   | 'uint8'
+   | 'uint16'
+   | 'uint32'
+   | 'uint64'
+   | 'char'
+   | 'string'
+   | 'void'
+   | 'bool'
+   | 'string'
+   | 'char'
+   ;
 
-arg: type Identifier;
+arg: typ Identifier;
 argList: (arg (',' arg)*)?;
 
 atom: IntLit            #Integer
     | FloatLit          #FloatingPoint
     | BoolLit           #Boolean
+    | CharLit           #Character
+    | StringLit         #StringAtom
     | Identifier        #VarName
     | fcall             #FunctionCall
-    | type '(' expr ')' #Cast
+    | typ '(' expr ')'  #Cast
     ;
 
 expr: atom                               #Atomic
@@ -111,9 +119,9 @@ expr: atom                               #Atomic
     ;
 exprList: (expr (',' expr)*)?;
 
-vdec: 'var' Identifier type ('=' expr)?;
+vdec: 'var' Identifier typ ('=' expr)?;
 
-fdef: type Identifier '(' argList ')' '{' stmt* '}';
+fdef: typ Identifier '(' argList ')' '{' stmt* '}';
 
 fcall: Identifier '(' exprList ')';
 
