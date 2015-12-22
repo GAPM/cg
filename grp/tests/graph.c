@@ -2,8 +2,10 @@
 #include <stdio.h>
 
 #include "graph.h"
+#include "init.h"
 
 int main(void) {
+    init();
     struct graph *gr = gr_new(5, 5, 4,
         (struct label){0, "1"},
         (struct label){1, "2"},

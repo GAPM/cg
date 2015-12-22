@@ -49,21 +49,27 @@ bool gr_is_connected(struct graph *gr, size_t s, size_t e) {
     return bm_get(gr->adj, s, e);
 }
 
-bool gr_is_connected_l(struct graph *gr, char* s, char *e) {
+bool gr_is_connected_l(struct graph *gr, char *s, char *e) {
     size_t i;
-    size_t ls;
-    size_t le;
+    size_t ls = -1;
+    size_t le = -1;
 
     for (i = 0; i < gr->nlabels; ++i) {
         if (strcmp(s, gr->labels[i].label) == 0) {
             ls = gr->labels[i].id;
         }
     }
+    if (ls == -1) {
+        return false;
+    }
 
     for (i = 0; i < gr->nlabels; ++i) {
         if (strcmp(e, gr->labels[i].label) == 0) {
             le = gr->labels[i].id;
         }
+    }
+    if (le == -1) {
+        return false;
     }
 
     return gr_is_connected(gr, ls, le);

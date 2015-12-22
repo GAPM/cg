@@ -1,10 +1,12 @@
 #include <assert.h>
 
 #include "bitarray.h"
+#include "init.h"
 
 #define MAXARRAY 10000
 
 int main() {
+    init();
     struct bitarray *ba = ba_new(MAXARRAY);
 
     int i;

@@ -12,9 +12,9 @@ struct label {
 };
 
 struct edge {
-    size_t s;
-    size_t e;
-    bool v;
+    size_t s; // start node ID
+    size_t e; // end node ID
+    bool v;   // are they connected?
 };
 
 struct graph {
