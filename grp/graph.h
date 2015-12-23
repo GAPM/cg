@@ -2,13 +2,12 @@
 #define GRP_GRAPH_H
 
 #include <stdbool.h>
-#include <stdlib.h>
 
 #include "bitmatrix.h"
 
 struct label {
     size_t id;
-    const char *label;
+    const char *label; //TODO this must be a wchar_t* or struct str*
 };
 
 struct edge {

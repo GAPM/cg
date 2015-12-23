@@ -1,6 +1,7 @@
 #include "graph.h"
 
 #include <stdarg.h>
+#include <stdlib.h>
 #include <string.h>
 
 struct graph *gr_new(size_t num_nodes, size_t nlabels, size_t num_edges, ...) {
