@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 #include "graph.h"
-#include "init.h"
+#include "grp.h"
 
 int main(void) {
     init();

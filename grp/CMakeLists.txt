@@ -6,7 +6,7 @@ add_library(grp STATIC
     bitarray.c
     bitmatrix.c
     graph.c
-    init.c
+    grp.c
     str.c)
 set_property(TARGET grp PROPERTY C_STANDARD 11)
 target_link_libraries(grp m)
@@ -16,7 +16,7 @@ install(FILES
     bitarray.h
     bitmatrix.h
     graph.h
-    init.h
+    grp.h
     str.h
     DESTINATION include)
 
