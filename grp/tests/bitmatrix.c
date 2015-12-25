@@ -7,7 +7,7 @@
 
 int main() {
     init();
-    struct bitmatrix *bm = bm_new(MAXMATRIX, MAXMATRIX);
+    bitmatrix_t bm = bm_new(MAXMATRIX, MAXMATRIX);
 
     size_t i;
     size_t j;

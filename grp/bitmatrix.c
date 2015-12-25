@@ -1,7 +1,7 @@
 #include "bitmatrix.h"
 
-struct bitmatrix *bm_new(size_t r, size_t c) {
-    struct bitmatrix *bm = calloc(1, sizeof(struct bitmatrix));
+bitmatrix_t bm_new(size_t r, size_t c) {
+    bitmatrix_t bm = calloc(1, sizeof(struct bitmatrix_t));
     if (bm == NULL) {
         return NULL;
     }
@@ -17,15 +17,32 @@ struct bitmatrix *bm_new(size_t r, size_t c) {
     return bm;
 }
 
-bool bm_get(struct bitmatrix *bm, size_t r, size_t c) {
+bool bm_get(bitmatrix_t bm, size_t r, size_t c) {
     return ba_get(bm->matrix, r * bm->rows + c);
 }
 
-void bm_set(struct bitmatrix *bm, size_t r, size_t c, bool v) {
+void bm_set(bitmatrix_t bm, size_t r, size_t c, bool v) {
     ba_set(bm->matrix, r * bm->rows + c, v);
 }
 
-void bm_free(struct bitmatrix *bm) {
+bitmatrix_t bm_copy(bitmatrix_t bm) {
+    bitmatrix_t n = calloc(1, sizeof(struct bitmatrix_t));
+    if (bm == NULL) {
+        return NULL;
+    }
+
+    n->rows = bm->rows;
+    n->columns = bm->columns;
+    n->matrix = ba_copy(bm->matrix);
+    if (n->matrix == NULL) {
+        free(n);
+        return NULL;
+    }
+
+    return n;
+}
+
+void bm_free(bitmatrix_t bm) {
     ba_free(bm->matrix);
     free(bm);
 }

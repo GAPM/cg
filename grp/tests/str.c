@@ -7,16 +7,16 @@
 int main(void) {
     init();
 
-    struct str *s = str_new(L"Simón");
-    struct str *o = str_new(L"Oroño");
-    struct str *w = str_new(L" ");
+    str_t s = str_new(L"Simón");
+    str_t o = str_new(L"Oroño");
+    str_t w = str_new(L" ");
 
     assert(str_length(s) == 5);
     assert(str_length(o) == 5);
     assert(str_length(w) == 1);
 
-    struct str *a = str_cat(s, w);
-    struct str *b = str_cat(a, o);
+    str_t a = str_cat(s, w);
+    str_t b = str_cat(a, o);
 
     assert(str_length(b) == 11);
 

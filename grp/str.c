@@ -1,54 +1,46 @@
 #include "str.h"
 
-struct str *str_new(const wchar_t *s) {
-    struct str *n = calloc(1, sizeof(struct str));
-    if (n == NULL) {
-        return NULL;
-    }
-
-    size_t length = wcslen(s);
-    n->length = length;
-    n->string = calloc(length + 1, sizeof(wchar_t));
-    wcscpy(n->string, s);
+str_t str_new(wchar_t *s) {
+    size_t new_length = wcslen(s) + 1;
+    str_t n = calloc(new_length, sizeof(wchar_t));
+    wcscpy(n, s);
     return n;
 }
 
-struct str *str_cat(struct str *s1, struct str *s2) {
-    size_t new_length = s1->length + s2->length + 1;
-    wchar_t *new_wstr = calloc(new_length, sizeof(wint_t));
-
-    wcscat(new_wstr, s1->string);
-    wcscat(new_wstr, s2->string);
-
-    struct str *n = str_new(new_wstr);
-    free(new_wstr);
-
+str_t str_cat(str_t str1, str_t str2) {
+    size_t new_length = wcslen(str1) + wcslen(str2) + 1;
+    str_t n = calloc(new_length, sizeof(wchar_t));
+    wcscat(n, str1);
+    wcscat(n, str2);
     return n;
 }
 
-size_t str_length(struct str *s) {
-    if (s != NULL) {
-        return s->length;
+bool str_eq(str_t str1, str_t str2) {
+    if (str1 != NULL && str2 != NULL) {
+        return wcscmp(str1, str2) == 0;
     }
-    return -1;
+    return false;
 }
 
-void str_print(struct str *s) {
+size_t str_length(str_t s) {
+    return wcslen(s);
+}
+
+void str_print(str_t s) {
     if (s != NULL) {
-        wprintf(L"%ls", s->string);
+        wprintf(L"%ls", s);
     }
 }
 
-void str_println(struct str *s) {
+void str_println(str_t s) {
     if (s != NULL) {
         str_print(s);
         wprintf(L"\n");
     }
 }
 
-void str_free(struct str *s) {
+void str_free(str_t s) {
     if (s != NULL) {
-        free(s->string);
         free(s);
     }
 }

@@ -9,10 +9,10 @@
  * i & 7  == i % 8
  */
 
-struct bitarray *ba_new(size_t s) {
+bitarray_t ba_new(size_t s) {
     size_t bytes = ceil(s / 8.0);
 
-    struct bitarray *n = calloc(1, sizeof(struct bitarray));
+    bitarray_t n = calloc(1, sizeof(struct bitarray_t));
     if (n == NULL) {
         return NULL;
     }
@@ -27,11 +27,11 @@ struct bitarray *ba_new(size_t s) {
     return n;
 }
 
-bool ba_get(struct bitarray *ba, size_t i) {
+bool ba_get(bitarray_t ba, size_t i) {
     return ba->array[i >> 3] & (1 << (i & 7));
 }
 
-void ba_set(struct bitarray *ba, size_t i, bool v) {
+void ba_set(bitarray_t ba, size_t i, bool v) {
     if (v) {
         ba->array[i >> 3] |= (1 << (i & 7));
     } else {
@@ -39,8 +39,8 @@ void ba_set(struct bitarray *ba, size_t i, bool v) {
     }
 }
 
-struct bitarray *ba_clone(struct bitarray *ba) {
-    struct bitarray *n = ba_new(ba->size);
+bitarray_t ba_copy(bitarray_t ba) {
+    bitarray_t n = ba_new(ba->size);
 
     if (n == NULL) {
         return NULL;
@@ -50,14 +50,14 @@ struct bitarray *ba_clone(struct bitarray *ba) {
     return n;
 }
 
-size_t ba_size(struct bitarray *ba) {
+size_t ba_size(bitarray_t ba) {
     if (ba != NULL) {
         return ba->size;
     }
     return 0;
 }
 
-void ba_free(struct bitarray *ba) {
+void ba_free(bitarray_t ba) {
     free(ba->array);
     free(ba);
 }

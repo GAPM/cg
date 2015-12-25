@@ -7,7 +7,7 @@
 
 int main() {
     init();
-    struct bitarray *ba = ba_new(MAXARRAY);
+    bitarray_t ba = ba_new(MAXARRAY);
 
     int i;
 

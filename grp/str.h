@@ -1,20 +1,18 @@
 #ifndef GRP_STR_H
 #define GRP_STR_H
 
-#include <stdio.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <wchar.h>
 
-struct str {
-    wchar_t *string;
-    size_t length;
-};
+typedef wchar_t *str_t;
 
-struct str *str_new(const wchar_t *);
-struct str *str_cat(struct str *, struct str *);
-size_t str_length(struct str *);
-void str_print(struct str *);
-void str_println(struct str *);
-void str_free(struct str *);
+str_t str_new(wchar_t *);
+str_t str_cat(str_t, str_t);
+bool str_eq(str_t, str_t);
+size_t str_length(str_t);
+void str_print(str_t);
+void str_println(str_t);
+void str_free(str_t);
 
 #endif // GRP_STR_H
