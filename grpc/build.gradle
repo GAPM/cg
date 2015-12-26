@@ -1,6 +1,5 @@
 apply plugin: 'antlr'
 apply plugin: 'application'
-apply plugin: 'idea'
 apply plugin: 'scala'
 
 repositories {

@@ -4,19 +4,30 @@ import grpc.lib.internal.GrpParser._
 import grpc.lib.symbol.{Location, Type}
 
 class StructureCheck extends CompilerPhase {
-  var insideLoop = false
-  var insideVoidFunction = false
-  var fname = ""
+  private var insideLoop = false
+  private var insideVoidFunction = false
+  private var fName = ""
 
-  def controlStmtError(location: Location, word: String) = {
+  /**
+    * Reports that `continue` or `break` were used outside a loop
+    *
+    * @param location The location of the error
+    * @param word `continue` or `break`
+    */
+  private def controlStmtError(location: Location, word: String) {
     addError(location, s"`$word` not inside a loop".toString)
   }
 
-  def nonEmptyReturnError(location: Location) = {
-    addError(location, s"non-empty return in void function `$fname`".toString)
+  /**
+    * Reports that a non-empty return is inside a `void` function
+    *
+    * @param location The location of the error
+    */
+  private def nonEmptyReturnError(location: Location) {
+    addError(location, s"non-empty return in void function `$fName`".toString)
   }
 
-  override def enterForc(ctx: ForcContext) = {
+  override def enterForc(ctx: ForcContext) {
     super.enterForc(ctx)
     insideLoop = true
   }
@@ -43,7 +54,6 @@ class StructureCheck extends CompilerPhase {
     }
   }
 
-
   override def enterBreak(ctx: BreakContext) = {
     super.enterBreak(ctx)
     if (!insideLoop) {
@@ -56,17 +66,17 @@ class StructureCheck extends CompilerPhase {
 
     if (getType(ctx.typ()) == Type.void) {
       insideVoidFunction = true
-      fname = ctx.Identifier().getText
+      fName = ctx.Identifier().getText
     } else {
       insideVoidFunction = false
-      fname = ""
+      fName = ""
     }
   }
 
   override def exitFdef(ctx: FdefContext) = {
     super.exitFdef(ctx)
     insideVoidFunction = false
-    fname = ""
+    fName = ""
   }
 
   override def enterReturn(ctx: ReturnContext) = {

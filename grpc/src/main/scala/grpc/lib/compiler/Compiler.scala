@@ -5,28 +5,27 @@ import java.io.{File, FileInputStream}
 import grpc.lib.exception.ParsingException
 import grpc.lib.internal.{GrpLexer, GrpParser}
 import grpc.lib.symbol.SymbolTable
-import org.antlr.v4.runtime.tree.{ParseTreeProperty, ParseTreeWalker}
+import org.antlr.v4.runtime.tree.{ParseTree, ParseTreeProperty, ParseTreeWalker}
 import org.antlr.v4.runtime.{ANTLRInputStream, CommonTokenStream}
 
 class Compiler(path: String) {
-  val file = new File(path)
-  val is = new FileInputStream(file)
-  val input = new ANTLRInputStream(is)
-  val lexer = new GrpLexer(input)
-  val tokens = new CommonTokenStream(lexer)
-  val parser = new GrpParser(tokens)
+  private val file = new File(path)
+  private val is = new FileInputStream(file)
+  private val input = new ANTLRInputStream(is)
+  private val lexer = new GrpLexer(input)
+  private val tokens = new CommonTokenStream(lexer)
+  private val parser = new GrpParser(tokens)
 
-  val tree = parser.init()
-  val symTab = new SymbolTable
-  val results = new ParseTreeProperty[UnitResult]
+  private val symTab = new SymbolTable
+  private val results = new ParseTreeProperty[UnitResult]
 
-  def checkParsing() = {
+  private def checkParsing() = {
     if (parser.getNumberOfSyntaxErrors > 0) {
       throw new ParsingException
     }
   }
 
-  private def executePhase(compilerPhase: Class[_]) = {
+  private def executePhase(tree: ParseTree, compilerPhase: Class[_]) {
     val walker = new ParseTreeWalker
     var listener = Option.empty[CompilerPhase]
 
@@ -53,9 +52,10 @@ class Compiler(path: String) {
   }
 
   def compile() = {
+    val tree = parser.init()
     checkParsing()
-    executePhase(classOf[StructureCheck])
-    executePhase(classOf[GlobalDeclarations])
-    executePhase(classOf[TypeCheck])
+    executePhase(tree, classOf[StructureCheck])
+    executePhase(tree, classOf[GlobalDeclarations])
+    executePhase(tree, classOf[TypeCheck])
   }
 }

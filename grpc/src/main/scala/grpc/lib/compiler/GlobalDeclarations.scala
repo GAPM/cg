@@ -6,7 +6,7 @@ import grpc.lib.symbol.{Function, Location, SymType, Variable}
 import scala.collection.mutable.ListBuffer
 
 class GlobalDeclarations extends CompilerPhase {
-  var insideSimpleStmt = false
+  private var insideSimpleStmt = false
 
   /**
     * Reports a global function or variable redeclaration

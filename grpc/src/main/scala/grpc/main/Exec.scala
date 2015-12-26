@@ -13,7 +13,7 @@ object Exec extends App {
 
     for (dir <- dirs) {
       val f = new File(dir, name)
-      if (f.exists() && !f.isDirectory && f.canExecute) {
+      if (f.exists && !f.isDirectory && f.canExecute) {
         return Some(f.getAbsolutePath)
       }
     }
@@ -27,15 +27,16 @@ object Exec extends App {
   val parser = new DefaultParser
   val cmd = parser.parse(options, args.asInstanceOf[Array[String]])
 
-  val exec = findExec("clang")
-
-  if (cmd.hasOption("c") || exec.isEmpty) {
-    println("WARNING: Will only generate code")
-  }
-
   if (cmd.getArgs.isEmpty) {
     println("ERROR: no input files")
     System.exit(1)
+  }
+
+  val clangExec = findExec("clang")
+  val optExec = findExec("opt")
+
+  if (clangExec.isEmpty) {
+    println("WARNING: clang exec not found. Will only generate code")
   }
 
   val fileName = cmd.getArgs()(0)
@@ -45,7 +46,7 @@ object Exec extends App {
     compiler = Some(new Compiler(fileName))
   } catch {
     case e: IOException =>
-      println(s"ERROR: can't open $fileName")
+      println(s"ERROR: can't open file `$fileName`")
       System.exit(1)
   }
 

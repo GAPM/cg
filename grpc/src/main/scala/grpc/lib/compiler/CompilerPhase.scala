@@ -13,9 +13,14 @@ class CompilerPhase extends GrpBaseListener {
   protected var results: ParseTreeProperty[UnitResult] = null
   private val errorList = ListBuffer.empty[String]
 
+  /**
+    * Calculates the OS architecture. This has to be redone.
+    *
+    * @return An integer representing the OS architecture
+    */
   def getMachineArch: Int = {
     val arch = System.getProperty("os.arch")
-    if (arch.endsWith("64")) 64 else 32
+    if (arch.contains("64")) 64 else 32
   }
 
   def getType(ctx: TypContext): Type.Value = {
@@ -30,6 +35,7 @@ class CompilerPhase extends GrpBaseListener {
       case GrpLexer.INT64 => Type.int64
       case GrpLexer.FLOAT => Type.float
       case GrpLexer.DOUBLE => Type.double
+      case GrpLexer.UINT => if (getMachineArch == 64) Type.uint64 else Type.uint32
       case GrpLexer.UINT8 => Type.uint8
       case GrpLexer.UINT16 => Type.uint16
       case GrpLexer.UINT32 => Type.uint32
@@ -42,20 +48,25 @@ class CompilerPhase extends GrpBaseListener {
     }
   }
 
-  def setSymbolTable(symbolTable: SymbolTable) = {
+  def setSymbolTable(symbolTable: SymbolTable) {
     this.symbolTable = symbolTable
   }
 
-  def setFileName(fileName: String) = {
+  def setFileName(fileName: String) {
     this.fileName = fileName
   }
 
-  def setResults(results: ParseTreeProperty[UnitResult]) = {
+  def setResults(results: ParseTreeProperty[UnitResult]) {
     this.results = results
   }
 
   def addError(location: Location, msg: String) {
     errorList += s"$fileName:$location: error: $msg".toString
+  }
+
+  def fatalError(location: Location, msg: String) {
+    println(s"$fileName:$location: error: $msg")
+    System.exit(-1)
   }
 
   def errorCount(): Int = errorList.size
