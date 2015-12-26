@@ -9,6 +9,7 @@ typedef wchar_t *str_t;
 
 str_t str_new(wchar_t *);
 str_t str_cat(str_t, str_t);
+int str_cmp(str_t, str_t);
 bool str_eq(str_t, str_t);
 size_t str_length(str_t);
 void str_print(str_t);

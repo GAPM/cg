@@ -9,6 +9,12 @@ add_executable(graph graph.c)
 add_executable(str str.c)
 add_executable(warshall warshall.c)
 
+set_property(TARGET bitarray PROPERTY C_STANDARD 11)
+set_property(TARGET bitmatrix PROPERTY C_STANDARD 11)
+set_property(TARGET graph PROPERTY C_STANDARD 11)
+set_property(TARGET str PROPERTY C_STANDARD 11)
+set_property(TARGET warshall PROPERTY C_STANDARD 11)
+
 target_link_libraries(bitarray grp)
 target_link_libraries(bitmatrix grp)
 target_link_libraries(graph grp)

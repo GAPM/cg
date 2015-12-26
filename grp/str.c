@@ -7,17 +7,21 @@ str_t str_new(wchar_t *s) {
     return n;
 }
 
-str_t str_cat(str_t str1, str_t str2) {
-    size_t new_length = wcslen(str1) + wcslen(str2) + 1;
+str_t str_cat(str_t s1, str_t s2) {
+    size_t new_length = wcslen(s1) + wcslen(s2) + 1;
     str_t n = calloc(new_length, sizeof(wchar_t));
-    wcscat(n, str1);
-    wcscat(n, str2);
+    wcscat(n, s1);
+    wcscat(n, s2);
     return n;
 }
 
-bool str_eq(str_t str1, str_t str2) {
-    if (str1 != NULL && str2 != NULL) {
-        return wcscmp(str1, str2) == 0;
+int str_cmp(str_t s1, str_t s2) {
+    return wcscoll(s1, s2);
+}
+
+bool str_eq(str_t s1, str_t s2) {
+    if (s1 != NULL && s2 != NULL) {
+        return wcscoll(s1, s2) == 0;
     }
     return false;
 }
