@@ -7,8 +7,8 @@
 int main(void) {
     init();
 
-    str_t s = str_new(L"Simón");
-    str_t o = str_new(L"Oroño");
+    str_t s = str_new(L"áéíóú");
+    str_t o = str_new(L"ãẽĩõũ");
     str_t w = str_new(L" ");
 
     assert(str_length(s) == 5);
@@ -20,7 +20,8 @@ int main(void) {
 
     assert(str_length(b) == 11);
 
-    str_println(b);
+    str_println(b); // Should appear
+    printf("aeiou aeiou\n"); // Should not appear
 
     str_free(s);
     str_free(o);
