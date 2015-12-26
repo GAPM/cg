@@ -13,10 +13,10 @@ int main(void) {
         label_new(2, str_new(L"3")),
         label_new(3, str_new(L"4")),
         label_new(4, str_new(L"5")),
-        (struct edge){0, 1, true},
-        (struct edge){2, 3, true},
-        (struct edge){4, 0, true},
-        (struct edge){0, 2, false});
+        edge_new(0, 1, true),
+        edge_new(2, 3, true),
+        edge_new(4, 0, true),
+        edge_new(0, 2, false));
 
     assert(gr_is_connected(gr, 0, 1) == true);
     assert(gr_is_connected(gr, 2, 3) == true);

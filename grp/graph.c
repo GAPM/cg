@@ -18,6 +18,18 @@ void label_free(label_t l) {
     free(l);
 }
 
+edge_t edge_new(size_t startID, size_t endID, bool v) {
+    edge_t n = calloc(1, sizeof(struct edge_t));
+
+    n->s = startID;
+    n->e = endID;
+    n->v = v;
+
+    return n;
+}
+
+void edge_free(edge_t e) { free(e); }
+
 graph_t gr_new(size_t num_nodes, size_t nlabels, size_t num_edges, ...) {
     int i;
 
@@ -49,10 +61,12 @@ graph_t gr_new(size_t num_nodes, size_t nlabels, size_t num_edges, ...) {
     }
 
     for (i = 0; i < num_edges; ++i) {
-        struct edge edg = va_arg(args, struct edge);
+        edge_t e = va_arg(args, edge_t);
 
-        bm_set(n->adj, edg.s, edg.e, edg.v);
-        bm_set(n->adj, edg.e, edg.s, edg.v);
+        bm_set(n->adj, e->s, e->e, e->v);
+        bm_set(n->adj, e->e, e->s, e->v);
+
+        edge_free(e);
     }
 
     va_end(args);
