@@ -7,9 +7,11 @@ BOOL : 'bool' ;
 BREAK : 'break' ;
 CHAR : 'char' ;
 COMMA : ',' ;
+COMMENT: '//' (.)*? '\r'? '\n' -> skip;
 CONTINUE : 'continue' ;
 DIV : '/' ;
 DOUBLE : 'double' ;
+ELIF : 'elif' ;
 ELSE : 'else' ;
 EQUAL : '=' ;
 EQUAL_EQUAL : '==' ;
@@ -27,10 +29,12 @@ LBRACE : '{' ;
 LE : '<=' ;
 LPAREN : '(' ;
 LT : '<' ;
+ML_COMMENT: '/*' (.)*? '*/' -> skip ;
 MOD : '%' ;
 MUL : '*' ;
 NOT_EQUAL : '!=' ;
 OR : '||' ;
+POW : '**' ;
 RBRACE : '}' ;
 RETURN : 'return' ;
 RPAREN : ')' ;
@@ -38,7 +42,6 @@ SEMI : ';' ;
 STEP : 'step' ;
 STRING : 'string' ;
 SUB : '-' ;
-POW : '**' ;
 TO : 'to' ;
 UINT : 'uint' ;
 UINT16 : 'uint16' ;
@@ -50,6 +53,8 @@ VOID : 'void' ;
 WHILE : 'while' ;
 WS: [ \t\r\n] -> skip;
 
+BoolLit: 'true' | 'false';
+
 fragment Letter: [a-zA-Z_];
 fragment DecimalDigit: [0-9];
 fragment OctalDigit: [0-7];
@@ -57,7 +62,6 @@ fragment HexDigit: [0-9a-fA-F];
 
 Identifier: Letter (Letter | DecimalDigit)*;
 
-BoolLit: 'true' | 'false';
 fragment DecimalLit: [0-9] DecimalDigit*;
 fragment OctalLit: '0' [oO] OctalDigit+;
 fragment HexLit: '0' [xX] HexDigit+;
@@ -127,7 +131,8 @@ fcall: Identifier '(' exprList ')';
 
 assign: expr '=' expr;
 
-ifc: 'if' '(' expr ')' '{' stmt* '}' elsec?;
+ifc: 'if' '(' expr ')' '{' stmt* '}' elifc* elsec?;
+elifc: 'elif' '(' expr ')' '{' stmt* '}';
 elsec: 'else' '{' stmt* '}';
 
 forc: 'for' assign 'to' expr ('step' expr)? '{' stmt* '}';

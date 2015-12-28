@@ -15,5 +15,5 @@ object Type extends Enumeration {
   val void = Value
   val string = Value
   val char = Value
-  val error = Value
+  val none = Value
 }

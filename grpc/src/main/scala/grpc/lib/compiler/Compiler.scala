@@ -2,7 +2,7 @@ package grpc.lib.compiler
 
 import java.io.{File, FileInputStream}
 
-import grpc.lib.exception.ParsingException
+import grpc.lib.exception.{ErrorsInCodeException, ParsingException}
 import grpc.lib.internal.{GrpLexer, GrpParser}
 import grpc.lib.symbol.SymbolTable
 import org.antlr.v4.runtime.tree.{ParseTree, ParseTreeProperty, ParseTreeWalker}
@@ -15,13 +15,20 @@ class Compiler(path: String) {
   private val lexer = new GrpLexer(input)
   private val tokens = new CommonTokenStream(lexer)
   private val parser = new GrpParser(tokens)
+  private var totalErrors = 0
 
   private val symTab = new SymbolTable
   private val results = new ParseTreeProperty[UnitResult]
 
-  private def checkParsing() = {
+  private def checkParsing() {
     if (parser.getNumberOfSyntaxErrors > 0) {
       throw new ParsingException
+    }
+  }
+
+  private def checkForErrors() {
+    if (totalErrors > 0) {
+      throw new ErrorsInCodeException(totalErrors)
     }
   }
 
@@ -45,17 +52,21 @@ class Compiler(path: String) {
         walker.walk(phase, tree)
 
         if (phase.errorCount() > 0) {
+          totalErrors += phase.errorCount()
           for (e <- phase.getErrorList) println(e)
         }
       case None =>
     }
   }
 
-  def compile() = {
+  def compile() {
     val tree = parser.init()
     checkParsing()
+
     executePhase(tree, classOf[StructureCheck])
     executePhase(tree, classOf[GlobalDeclarations])
     executePhase(tree, classOf[TypeCheck])
+
+    checkForErrors()
   }
 }

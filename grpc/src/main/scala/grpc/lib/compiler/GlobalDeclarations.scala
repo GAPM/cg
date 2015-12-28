@@ -17,7 +17,7 @@ class GlobalDeclarations extends CompilerPhase {
     * @param typ  Whether it is a function or a variable
     */
   def redeclarationError(last: Location, first: Location, name: String,
-                         typ: SymType.Value) = {
+                         typ: SymType.Value) {
     val t = typ match {
       case SymType.FUNC => "function with same signature"
       case _ => "global variable"
@@ -33,7 +33,7 @@ class GlobalDeclarations extends CompilerPhase {
     *
     * @param ctx The context of the statement
     */
-  override def enterSimpleStmt(ctx: SimpleStmtContext) = {
+  override def enterSimpleStmt(ctx: SimpleStmtContext) {
     super.enterSimpleStmt(ctx)
     insideSimpleStmt = true
   }
@@ -44,7 +44,7 @@ class GlobalDeclarations extends CompilerPhase {
     *
     * @param ctx The context of the statement
     */
-  override def exitSimpleStmt(ctx: SimpleStmtContext) = {
+  override def exitSimpleStmt(ctx: SimpleStmtContext) {
     super.exitSimpleStmt(ctx)
     insideSimpleStmt = false
   }
@@ -54,18 +54,18 @@ class GlobalDeclarations extends CompilerPhase {
     *
     * @param ctx The context of the function definition
     */
-  override def exitFdef(ctx: FdefContext) = {
+  override def exitFdef(ctx: FdefContext) {
     super.exitFdef(ctx)
 
     val name = ctx.Identifier().getText
-    val returnType = getType(ctx.typ())
+    val returnType = tokIdxToDataType(ctx.typ())
     val location = new Location(ctx.Identifier())
     val args = ListBuffer.empty[Variable]
 
     val ar = ctx.argList().arg()
     for (i <- 0 until ar.size()) {
       val argName = ar.get(i).Identifier().getText
-      val argTyp = getType(ar.get(i).typ())
+      val argTyp = tokIdxToDataType(ar.get(i).typ())
       val argLoc = new Location(ar.get(i).Identifier())
       val v = new Variable(argName, argTyp, name, argLoc)
       args += v
@@ -75,7 +75,8 @@ class GlobalDeclarations extends CompilerPhase {
 
     val qry = symbolTable.getSymbol(name, SymType.FUNC)
     qry match {
-      case Some(f) => redeclarationError(location, f.getLocation, name, SymType.FUNC)
+      case Some(f) =>
+        redeclarationError(location, f.getLocation, name, SymType.FUNC)
       case _ => symbolTable.addSymbol(function)
     }
   }
@@ -85,19 +86,20 @@ class GlobalDeclarations extends CompilerPhase {
     *
     * @param ctx The context of the variable declaration
     */
-  override def exitVdec(ctx: VdecContext) = {
+  override def exitVdec(ctx: VdecContext) {
     super.exitVdec(ctx)
 
     if (!insideSimpleStmt) {
       val name = ctx.Identifier().getText
-      val typ = getType(ctx.typ())
+      val typ = tokIdxToDataType(ctx.typ())
       val location = new Location(ctx.Identifier())
 
       val variable = new Variable(name, typ, "global", location)
 
       val qry = symbolTable.getSymbol(name, "global", SymType.VAR)
       qry match {
-        case Some(v) => redeclarationError(location, v.getLocation, name, SymType.VAR)
+        case Some(v) =>
+          redeclarationError(location, v.getLocation, name, SymType.VAR)
         case _ => symbolTable.addSymbol(variable)
       }
     }
