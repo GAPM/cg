@@ -1,11 +1,13 @@
-package grpc.lib.compiler
+package grpc
+package lib
+package compiler
 
 import java.io.{File, FileInputStream, InputStreamReader}
 import java.nio.charset.Charset
 
+import grpc.lib.compiler.internal.{GrpLexer, GrpParser}
 import grpc.lib.compiler.phase.{Globals, Phase, Structure, Types}
 import grpc.lib.exception.{ErrorsInCodeException, ParsingException}
-import grpc.lib.internal.{GrpLexer, GrpParser}
 import grpc.lib.symbol.SymbolTable
 import org.antlr.v4.runtime.tree.{ParseTree, ParseTreeProperty, ParseTreeWalker}
 import org.antlr.v4.runtime.{ANTLRInputStream, CommonTokenStream}
@@ -35,30 +37,18 @@ class Compiler(path: String) {
     }
   }
 
-  private def executePhase(tree: ParseTree, compilerPhase: Class[_]) {
+  private def executePhase(tree: ParseTree, phase: Phase) {
     val walker = new ParseTreeWalker
-    var listener = Option.empty[Phase]
 
-    try {
-      listener = Some(compilerPhase.newInstance().asInstanceOf[Phase])
-    } catch {
-      case _: ReflectiveOperationException | _: ClassCastException =>
-        println("ERROR: (Internal) Ill formed phase class")
-    }
+    phase.setSymbolTable(symTab)
+    phase.setResults(results)
+    phase.setFileName(file.getName)
 
-    listener match {
-      case Some(phase) =>
-        phase.setSymbolTable(symTab)
-        phase.setResults(results)
-        phase.setFileName(file.getName)
+    walker.walk(phase, tree)
 
-        walker.walk(phase, tree)
-
-        if (phase.errorCount() > 0) {
-          totalErrors += phase.errorCount()
-          for (e <- phase.getErrorList) println(e)
-        }
-      case None =>
+    if (phase.errorCount() > 0) {
+      totalErrors += phase.errorCount()
+      phase.getErrorList.foreach(println)
     }
   }
 
@@ -66,9 +56,9 @@ class Compiler(path: String) {
     val tree = parser.init()
     checkParsing()
 
-    executePhase(tree, classOf[Structure])
-    executePhase(tree, classOf[Globals])
-    executePhase(tree, classOf[Types])
+    executePhase(tree, new Structure)
+    executePhase(tree, new Globals)
+    executePhase(tree, new Types)
 
     checkForErrors()
   }

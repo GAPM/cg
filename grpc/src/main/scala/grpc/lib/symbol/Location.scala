@@ -1,4 +1,6 @@
-package grpc.lib.symbol
+package grpc
+package lib
+package symbol
 
 import org.antlr.v4.runtime.Token
 import org.antlr.v4.runtime.tree.TerminalNode

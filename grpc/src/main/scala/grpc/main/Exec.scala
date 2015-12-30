@@ -1,26 +1,13 @@
-package grpc.main
+package grpc
+package main
 
-import java.io.{File, IOException}
+import java.io.IOException
 
 import grpc.lib.compiler.Compiler
 import grpc.lib.exception.CompilerException
 import org.apache.commons.cli.{DefaultParser, Options}
 
 object Exec extends App {
-  def findExec(name: String): Option[String] = {
-    val path = System.getenv("PATH")
-    val dirs = path.split(File.pathSeparator)
-
-    for (dir <- dirs) {
-      val f = new File(dir, name)
-      if (f.exists && !f.isDirectory && f.canExecute) {
-        return Some(f.getAbsolutePath)
-      }
-    }
-
-    None
-  }
-
   val options = new Options
   options.addOption("c", false, "Just generate code")
 
@@ -30,13 +17,6 @@ object Exec extends App {
   if (cmd.getArgs.isEmpty) {
     println("ERROR: no input files")
     System.exit(1)
-  }
-
-  val clangExec = findExec("clang")
-  val optExec = findExec("opt")
-
-  if (clangExec.isEmpty) {
-    println("WARNING: clang exec not found. Will only generate code")
   }
 
   val fileName = cmd.getArgs()(0)
@@ -55,9 +35,10 @@ object Exec extends App {
       try {
         c.compile()
       } catch {
-        case e: CompilerException =>
-          println(e.getMessage)
+        case e: CompilerException => println(e.getMessage)
       }
     case None =>
+      println("ERROR: Compiler could not be instantiated")
+      System.exit(1)
   }
 }

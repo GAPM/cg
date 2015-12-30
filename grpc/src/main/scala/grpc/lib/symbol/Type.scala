@@ -1,4 +1,6 @@
-package grpc.lib.symbol
+package grpc
+package lib
+package symbol
 
 object Type extends Enumeration {
   val int8 = Value

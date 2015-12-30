@@ -1,8 +1,10 @@
-package grpc.lib.compiler.phase
+package grpc
+package lib
+package compiler
+package phase
 
-import grpc.lib.compiler.UnitResult
+import grpc.lib.compiler.internal.GrpBaseListener
 import grpc.lib.exception.FatalCompilationErrorException
-import grpc.lib.internal.GrpBaseListener
 import grpc.lib.symbol.{Location, SymbolTable}
 import org.antlr.v4.runtime.tree.ParseTreeProperty
 

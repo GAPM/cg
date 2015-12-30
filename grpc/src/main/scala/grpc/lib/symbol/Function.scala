@@ -1,4 +1,6 @@
-package grpc.lib.symbol
+package grpc
+package lib
+package symbol
 
 import scala.collection.mutable.ListBuffer
 

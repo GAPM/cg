@@ -16,5 +16,5 @@ dependencies {
 }
 
 generateGrammarSource {
-    arguments += ["-package", "grpc.lib.internal"]
+    arguments += ["-package", "grpc.lib.compiler.internal"]
 }

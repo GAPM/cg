@@ -1,7 +1,9 @@
-package grpc.lib.compiler.phase
+package grpc
+package lib
+package compiler
+package phase
 
-import grpc.lib.compiler._
-import grpc.lib.internal.GrpParser._
+import grpc.lib.compiler.internal.GrpParser._
 import grpc.lib.symbol.{Location, Type}
 import org.antlr.v4.runtime.ParserRuleContext
 
@@ -218,12 +220,14 @@ class Structure extends Phase {
       allElifReturns &&= thisElifReturns
     }
 
-    breakable {
-      for (i <- 0 until ctx.elsec().stmt().size()) {
-        val s = ctx.elsec().stmt(i)
-        if (getReturns(s)) {
-          elseReturns = true
-          break
+    if (ctx.elsec() != null) {
+      breakable {
+        for (i <- 0 until ctx.elsec().stmt().size()) {
+          val s = ctx.elsec().stmt(i)
+          if (getReturns(s)) {
+            elseReturns = true
+            break
+          }
         }
       }
     }

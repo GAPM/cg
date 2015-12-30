@@ -1,7 +1,8 @@
-package grpc.lib
+package grpc
+package lib
 
-import grpc.lib.internal.GrpLexer
-import grpc.lib.internal.GrpParser.TypContext
+import grpc.lib.compiler.internal.GrpLexer
+import grpc.lib.compiler.internal.GrpParser.TypContext
 import grpc.lib.symbol.Type
 import org.antlr.v4.runtime.tree.TerminalNode
 

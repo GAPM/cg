@@ -1,4 +1,6 @@
-package grpc.lib.compiler
+package grpc
+package lib
+package compiler
 
 import grpc.lib.symbol.Type
 

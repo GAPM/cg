@@ -1,7 +1,9 @@
-package grpc.lib.compiler.phase
+package grpc
+package lib
+package compiler
+package phase
 
-import grpc.lib.compiler._
-import grpc.lib.internal.GrpParser.{FdefContext, SimpleStmtContext, VarNameContext, VdecContext}
+import grpc.lib.compiler.internal.GrpParser.{FdefContext, SimpleStmtContext, VarNameContext, VdecContext}
 import grpc.lib.symbol.{Location, SymType, Type, Variable}
 import org.antlr.v4.runtime.ParserRuleContext
 

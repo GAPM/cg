@@ -1,7 +1,10 @@
-package grpc.lib.compiler.phase
+package grpc
+package lib
+package compiler
+package phase
 
 import grpc.lib.compiler._
-import grpc.lib.internal.GrpParser.{FdefContext, SimpleStmtContext, VdecContext}
+import grpc.lib.compiler.internal.GrpParser.{FdefContext, SimpleStmtContext, VdecContext}
 import grpc.lib.symbol.{Function, Location, SymType, Variable}
 
 import scala.collection.mutable.ListBuffer

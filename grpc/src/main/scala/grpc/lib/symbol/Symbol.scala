@@ -1,4 +1,6 @@
-package grpc.lib.symbol
+package grpc
+package lib
+package symbol
 
 /**
   * Symbol class from which all other symbols in the symbol table inherit
