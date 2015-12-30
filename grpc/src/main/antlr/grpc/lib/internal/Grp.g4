@@ -7,7 +7,6 @@ BOOL : 'bool' ;
 BREAK : 'break' ;
 CHAR : 'char' ;
 COMMA : ',' ;
-COMMENT: '//' (.)*? '\r'? '\n' -> skip;
 CONTINUE : 'continue' ;
 DIV : '/' ;
 DOUBLE : 'double' ;
@@ -93,8 +92,6 @@ typ: 'int'
    | 'string'
    | 'void'
    | 'bool'
-   | 'string'
-   | 'char'
    ;
 
 arg: typ Identifier;

@@ -1,7 +1,9 @@
 package grpc.lib.compiler
 
-import java.io.{File, FileInputStream}
+import java.io.{File, FileInputStream, InputStreamReader}
+import java.nio.charset.Charset
 
+import grpc.lib.compiler.phase.{Globals, Phase, Structure, Types}
 import grpc.lib.exception.{ErrorsInCodeException, ParsingException}
 import grpc.lib.internal.{GrpLexer, GrpParser}
 import grpc.lib.symbol.SymbolTable
@@ -11,7 +13,8 @@ import org.antlr.v4.runtime.{ANTLRInputStream, CommonTokenStream}
 class Compiler(path: String) {
   private val file = new File(path)
   private val is = new FileInputStream(file)
-  private val input = new ANTLRInputStream(is)
+  private val reader = new InputStreamReader(is, Charset.defaultCharset())
+  private val input = new ANTLRInputStream(reader)
   private val lexer = new GrpLexer(input)
   private val tokens = new CommonTokenStream(lexer)
   private val parser = new GrpParser(tokens)
@@ -34,10 +37,10 @@ class Compiler(path: String) {
 
   private def executePhase(tree: ParseTree, compilerPhase: Class[_]) {
     val walker = new ParseTreeWalker
-    var listener = Option.empty[CompilerPhase]
+    var listener = Option.empty[Phase]
 
     try {
-      listener = Some(compilerPhase.newInstance().asInstanceOf[CompilerPhase])
+      listener = Some(compilerPhase.newInstance().asInstanceOf[Phase])
     } catch {
       case _: ReflectiveOperationException | _: ClassCastException =>
         println("ERROR: (Internal) Ill formed phase class")
@@ -63,9 +66,9 @@ class Compiler(path: String) {
     val tree = parser.init()
     checkParsing()
 
-    executePhase(tree, classOf[StructureCheck])
-    executePhase(tree, classOf[GlobalDeclarations])
-    executePhase(tree, classOf[TypeCheck])
+    executePhase(tree, classOf[Structure])
+    executePhase(tree, classOf[Globals])
+    executePhase(tree, classOf[Types])
 
     checkForErrors()
   }

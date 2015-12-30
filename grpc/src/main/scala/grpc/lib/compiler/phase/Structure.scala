@@ -1,5 +1,6 @@
-package grpc.lib.compiler
+package grpc.lib.compiler.phase
 
+import grpc.lib.compiler._
 import grpc.lib.internal.GrpParser._
 import grpc.lib.symbol.{Location, Type}
 import org.antlr.v4.runtime.ParserRuleContext
@@ -7,18 +8,18 @@ import org.antlr.v4.runtime.ParserRuleContext
 import scala.util.control.Breaks._
 
 /**
-  * Compilation phase that checks that all non-void functions return a value,
-  * that void functions have only empty returns and that control statements such
-  * as `continue` and `break` are used only inside loops.
+  * `Structure` is the compilation phase that checks that all non-void functions
+  * return a value, that void functions have only empty returns and that control
+  * statements such as `continue` and `break` are used only inside loops.
   */
-class StructureCheck extends CompilerPhase {
+class Structure extends Phase {
   private var insideLoop = false
   private var insideFunction = false
   private var currentFunctionType = Type.none
   private var fName = ""
 
   /**
-    * Modifies the `returns`value of a `UnitResult` associated with a parse tree
+    * Modifies the `returns` value of a `UnitResult` associated with a parse tree
     *
     * @param ctx The context of the parse tree
     * @param v returns or not
@@ -37,7 +38,7 @@ class StructureCheck extends CompilerPhase {
   /**
     * Retrieves whether a parse tree contains or is a return
     * @param ctx the context of the parse tree
-    * @return `true` if it contains or is a return, `false` otherwise
+    * @return `true` if it contains or it is a return, `false` otherwise
     */
   def getReturns(ctx: ParserRuleContext): Boolean = {
     val r = results.get(ctx)

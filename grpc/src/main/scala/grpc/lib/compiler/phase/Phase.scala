@@ -1,5 +1,6 @@
-package grpc.lib.compiler
+package grpc.lib.compiler.phase
 
+import grpc.lib.compiler.UnitResult
 import grpc.lib.exception.FatalCompilationErrorException
 import grpc.lib.internal.GrpBaseListener
 import grpc.lib.symbol.{Location, SymbolTable}
@@ -7,7 +8,7 @@ import org.antlr.v4.runtime.tree.ParseTreeProperty
 
 import scala.collection.mutable.ListBuffer
 
-class CompilerPhase extends GrpBaseListener {
+class Phase extends GrpBaseListener {
   protected var symbolTable: SymbolTable = null
   protected var fileName: String = null
   protected var results: ParseTreeProperty[UnitResult] = null

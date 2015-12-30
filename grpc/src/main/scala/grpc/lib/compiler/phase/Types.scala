@@ -1,24 +1,25 @@
-package grpc.lib.compiler
+package grpc.lib.compiler.phase
 
+import grpc.lib.compiler._
 import grpc.lib.internal.GrpParser.{FdefContext, SimpleStmtContext, VarNameContext, VdecContext}
 import grpc.lib.symbol.{Location, SymType, Type, Variable}
 import org.antlr.v4.runtime.ParserRuleContext
 
 /**
-  * TypeCheck is the compiler phase where all type errors are found. Type errors
+  * `Types` is the compiler phase where all type errors are found. Type errors
   * are a special type of error, because they are fatal. Compilation terminates
   * after at least one type error.
   */
-class TypeCheck extends CompilerPhase {
+class Types extends Phase {
   private var insideSimpleStmt = false
   private var scope = "global"
 
   /**
     * Sets the type of a (sub)parse tree, if the parse tree does not have an
-    * entry in the result map, it gets created
+    * entry in the result map, it's created
     *
-    * @param ctx the parse tree
-    * @param typ the context of the type to be assigned
+    * @param ctx The parse tree
+    * @param typ The context of the type to be assigned
     */
   def setType(ctx: ParserRuleContext, typ: Type.Value) {
     var r = results.get(ctx)

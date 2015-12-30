@@ -1,11 +1,16 @@
-package grpc.lib.compiler
+package grpc.lib.compiler.phase
 
+import grpc.lib.compiler._
 import grpc.lib.internal.GrpParser.{FdefContext, SimpleStmtContext, VdecContext}
 import grpc.lib.symbol.{Function, Location, SymType, Variable}
 
 import scala.collection.mutable.ListBuffer
 
-class GlobalDeclarations extends CompilerPhase {
+/**
+  * `Globals` is the compiler phase where all global symbols (functions and
+  * global variables) are stored in the symbol table.
+  */
+class Globals extends Phase {
   private var insideSimpleStmt = false
 
   /**
