@@ -1,10 +1,10 @@
 #include "bitmatrix.h"
 
-#define MAX 100
+#define MAX 1000
 
 int main(void) {
-    bitmatrix_t bm = bm_new(MAX, MAX);
-    bitmatrix_t result = bm_new(MAX, MAX);
+    bitmatrix bm = bm_new(MAX, MAX);
+    bitmatrix result = bm_new(MAX, MAX);
 
     size_t i, j, k;
 

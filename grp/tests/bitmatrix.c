@@ -7,7 +7,7 @@
 
 int main() {
     init();
-    bitmatrix_t bm = bm_new(MAXMATRIX, MAXMATRIX);
+    bitmatrix bm = bm_new(MAXMATRIX, MAXMATRIX);
 
     size_t i;
     size_t j;

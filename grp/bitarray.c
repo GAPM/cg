@@ -9,10 +9,10 @@
  * i & 7  == i % 8
  */
 
-bitarray_t ba_new(size_t s) {
+bitarray ba_new(size_t s) {
     size_t bytes = ceil(s / 8.0);
 
-    bitarray_t n = calloc(1, sizeof(struct bitarray_t));
+    bitarray n = calloc(1, sizeof(struct bitarray));
     if (n == NULL) {
         return NULL;
     }
@@ -27,11 +27,11 @@ bitarray_t ba_new(size_t s) {
     return n;
 }
 
-bool ba_get(bitarray_t ba, size_t i) {
+bool ba_get(bitarray ba, size_t i) {
     return ba->array[i >> 3] & (1 << (i & 7));
 }
 
-void ba_set(bitarray_t ba, size_t i, bool v) {
+void ba_set(bitarray ba, size_t i, bool v) {
     if (v) {
         ba->array[i >> 3] |= (1 << (i & 7));
     } else {
@@ -39,8 +39,8 @@ void ba_set(bitarray_t ba, size_t i, bool v) {
     }
 }
 
-bitarray_t ba_copy(bitarray_t ba) {
-    bitarray_t n = ba_new(ba->size);
+bitarray ba_copy(bitarray ba) {
+    bitarray n = ba_new(ba->size);
 
     if (n == NULL) {
         return NULL;
@@ -50,14 +50,14 @@ bitarray_t ba_copy(bitarray_t ba) {
     return n;
 }
 
-size_t ba_size(bitarray_t ba) {
+size_t ba_size(bitarray ba) {
     if (ba != NULL) {
         return ba->size;
     }
     return 0;
 }
 
-void ba_free(bitarray_t ba) {
+void ba_free(bitarray ba) {
     free(ba->array);
     free(ba);
 }

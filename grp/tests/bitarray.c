@@ -7,7 +7,7 @@
 
 int main() {
     init();
-    bitarray_t ba = ba_new(MAXARRAY);
+    bitarray ba = ba_new(MAXARRAY);
 
     int i;
 
