@@ -9,10 +9,12 @@ import grpc.lib.compiler.internal.{GrpLexer, GrpParser}
 import grpc.lib.compiler.phase.{Globals, Phase, Structure, Types}
 import grpc.lib.exception.{ErrorsInCodeException, ParsingException}
 import grpc.lib.symbol.SymbolTable
+import grpc.lib.util.Logger
+import grpc.lib.util.Logger.LogLevel
 import org.antlr.v4.runtime.tree.{ParseTree, ParseTreeProperty, ParseTreeWalker}
 import org.antlr.v4.runtime.{ANTLRInputStream, CommonTokenStream}
 
-class Compiler(path: String) {
+class Compiler(path: String, debug: Boolean) {
   private val file = new File(path)
   private val is = new FileInputStream(file)
   private val reader = new InputStreamReader(is, Charset.defaultCharset())
@@ -24,6 +26,10 @@ class Compiler(path: String) {
 
   private val symTab = new SymbolTable
   private val results = new ParseTreeProperty[UnitResult]
+
+  if (debug) {
+    Logger.setMaxLevel(LogLevel.DEBUG)
+  }
 
   private def checkParsing() {
     if (parser.getNumberOfSyntaxErrors > 0) {
@@ -44,12 +50,17 @@ class Compiler(path: String) {
     phase.setResults(results)
     phase.setFileName(file.getName)
 
+    val start = System.currentTimeMillis()
     walker.walk(phase, tree)
+    val end = System.currentTimeMillis()
 
     if (phase.errorCount() > 0) {
       totalErrors += phase.errorCount()
-      phase.getErrorList.foreach(println)
+      phase.getErrorList foreach { e => Logger.log(e, LogLevel.ERROR) }
     }
+
+    Logger.log(s"Phase ${phase.getClass.getName}: " +
+      s"${end - start} millis".toString, LogLevel.DEBUG)
   }
 
   def compile() {

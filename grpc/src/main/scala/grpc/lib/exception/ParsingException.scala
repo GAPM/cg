@@ -3,4 +3,4 @@ package lib
 package exception
 
 class ParsingException
-  extends CompilerException("There were errors during parsing")
+  extends CompilerException("there were errors during parsing")
