@@ -33,7 +33,6 @@ MOD : '%' ;
 MUL : '*' ;
 NOT_EQUAL : '!=' ;
 OR : '||' ;
-POW : '**' ;
 RBRACE : '}' ;
 RETURN : 'return' ;
 RPAREN : ')' ;
@@ -65,6 +64,7 @@ fragment DecimalLit: [0-9] DecimalDigit*;
 fragment OctalLit: '0' [oO] OctalDigit+;
 fragment HexLit: '0' [xX] HexDigit+;
 IntLit: DecimalLit | OctalLit | HexLit;
+UIntLit: DecimalLit 'u';
 
 fragment Decimals: DecimalDigit DecimalDigit*;
 fragment Exponent: [eE] [+-]? Decimals;
@@ -94,11 +94,12 @@ typ: 'int'
    | 'bool'
    ;
 
-arg: typ Identifier;
+arg: Identifier typ;
 argList: (arg (',' arg)*)?;
 
 atom: IntLit            #Integer
-    | FloatLit          #FloatingPoint
+    | UIntLit           #UInteger
+    | FloatLit          #Float
     | BoolLit           #Boolean
     | CharLit           #Character
     | StringLit         #StringAtom
@@ -107,16 +108,15 @@ atom: IntLit            #Integer
     | typ '(' expr ')'  #Cast
     ;
 
-expr: atom                               #Atomic
-    | <assoc=right>op=('-'|'+'|'!') expr #Unary
-    | '(' expr ')'                       #Assoc
-    | <assoc=right> expr '**' expr       #Pow
-    | expr op=('*'|'/'|'%') expr         #MulDivMod
-    | expr op=('+'|'-') expr             #AddSub
-    | expr op=('>'|'<'|'>='|'<=') expr   #Comparison
-    | expr op=('=='|'!=') expr           #Equality
-    | expr '&&' expr                     #LogicAnd
-    | expr '||' expr                     #LogicOr
+expr: atom                                #Atomic
+    | <assoc=right> op=('-'|'+'|'!') expr #Unary
+    | '(' expr ')'                        #Assoc
+    | expr op=('*'|'/'|'%') expr          #MulDivMod
+    | expr op=('+'|'-') expr              #AddSub
+    | expr op=('>'|'<'|'>='|'<=') expr    #Comparison
+    | expr op=('=='|'!=') expr            #Equality
+    | expr '&&' expr                      #LogicAnd
+    | expr '||' expr                      #LogicOr
     ;
 exprList: (expr (',' expr)*)?;
 
