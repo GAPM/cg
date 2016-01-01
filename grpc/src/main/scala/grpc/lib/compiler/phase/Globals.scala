@@ -5,6 +5,7 @@ package phase
 
 import grpc.lib.compiler._
 import grpc.lib.compiler.internal.GrpParser.{FdefContext, SimpleStmtContext, VdecContext}
+import grpc.lib.symbol.SymType.SymType
 import grpc.lib.symbol.{Function, Location, SymType, Variable}
 
 import scala.collection.mutable.ListBuffer
@@ -25,7 +26,7 @@ class Globals extends Phase {
     * @param typ  Whether it is a function or a variable
     */
   def redeclarationError(last: Location, first: Location, name: String,
-                         typ: SymType.Value) {
+                         typ: SymType) {
     val t = typ match {
       case SymType.FUNC => "function with same signature"
       case _ => "global variable"
@@ -85,7 +86,7 @@ class Globals extends Phase {
     qry match {
       case Some(f) =>
         redeclarationError(location, f.getLocation, name, SymType.FUNC)
-      case _ => symbolTable.addSymbol(function)
+      case None => symbolTable.addSymbol(function)
     }
   }
 
@@ -108,7 +109,7 @@ class Globals extends Phase {
       qry match {
         case Some(v) =>
           redeclarationError(location, v.getLocation, name, SymType.VAR)
-        case _ => symbolTable.addSymbol(variable)
+        case None => symbolTable.addSymbol(variable)
       }
     }
   }

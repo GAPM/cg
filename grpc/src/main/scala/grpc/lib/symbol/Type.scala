@@ -3,6 +3,7 @@ package lib
 package symbol
 
 object Type extends Enumeration {
+  type Type = Value
   val int8 = Value
   val int16 = Value
   val int32 = Value
@@ -18,4 +19,5 @@ object Type extends Enumeration {
   val string = Value
   val char = Value
   val none = Value
+  val error = Value
 }

@@ -2,6 +2,8 @@ package grpc
 package lib
 package symbol
 
+import grpc.lib.symbol.SymType.SymType
+
 /**
   * Symbol class from which all other symbols in the symbol table inherit
   */
@@ -13,5 +15,5 @@ abstract class Symbol(private val name: String, private val scope: String,
 
   def getLocation = location
 
-  def getSymType: SymType.Value
+  def getSymType: SymType
 }

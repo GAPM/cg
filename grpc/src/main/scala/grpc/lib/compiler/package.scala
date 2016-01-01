@@ -4,6 +4,7 @@ package lib
 import grpc.lib.compiler.internal.GrpLexer
 import grpc.lib.compiler.internal.GrpParser.TypContext
 import grpc.lib.symbol.Type
+import grpc.lib.symbol.Type.Type
 import org.antlr.v4.runtime.tree.TerminalNode
 
 package object compiler {
@@ -24,7 +25,7 @@ package object compiler {
     * @param ctx The type context
     * @return A value of the `Type` enumeration corresponding to the context
     */
-  def tokIdxToDataType(ctx: TypContext): Type.Value = {
+  def tokIdxToDataType(ctx: TypContext): Type = {
     val tn = ctx.getChild(0).asInstanceOf[TerminalNode]
     val t = tn.getSymbol.getType
 
@@ -47,5 +48,10 @@ package object compiler {
       case GrpLexer.CHAR => Type.char
       case _ => Type.none
     }
+  }
+
+  def isNumeric(typ: Type): Boolean = typ match {
+    case Type.bool | Type.char | Type.string => false
+    case _ => true
   }
 }

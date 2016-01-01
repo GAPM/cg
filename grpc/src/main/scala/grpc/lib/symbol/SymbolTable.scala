@@ -2,6 +2,8 @@ package grpc
 package lib
 package symbol
 
+import grpc.lib.symbol.SymType.SymType
+
 import scala.collection.mutable.ListBuffer
 
 class SymbolTable {
@@ -15,7 +17,7 @@ class SymbolTable {
     * @param typ  the type to be matched
     * @return a symbol with matching name, scope and type if its found
     */
-  def getSymbol(name: String, scope: String, typ: SymType.Value): Option[Symbol] = {
+  def getSymbol(name: String, scope: String, typ: SymType): Option[Symbol] = {
     symTab.find(p =>
       p.getName == name &&
         (p.getScope == scope || scope == "") &&
@@ -30,7 +32,7 @@ class SymbolTable {
     * @param typ  the type to be matched
     * @return a symbol with matching name, scope and type if its found
     */
-  def getSymbol(name: String, typ: SymType.Value): Option[Symbol] =
+  def getSymbol(name: String, typ: SymType): Option[Symbol] =
     getSymbol(name, "", typ)
 
   def addSymbol(s: Symbol) = symTab += s
