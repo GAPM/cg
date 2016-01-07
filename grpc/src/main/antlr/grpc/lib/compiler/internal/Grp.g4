@@ -68,10 +68,11 @@ UIntLit: DecimalLit 'u';
 
 fragment Decimals: DecimalDigit DecimalDigit*;
 fragment Exponent: [eE] [+-]? Decimals;
-FloatLit: Decimals '.' Decimals Exponent?
+DoubleLit: Decimals '.' Decimals Exponent?
                  | Decimals Exponent
                  | '.' Decimals Exponent?
                  ;
+FloatLit: DoubleLit 'f';
 
 CharLit: '\'' . '\'';
 StringLit: '"' (.)*? '"';
@@ -100,6 +101,7 @@ argList: (arg (',' arg)*)?;
 atom: IntLit            #Integer
     | UIntLit           #UInteger
     | FloatLit          #Float
+    | DoubleLit         #Double
     | BoolLit           #Boolean
     | CharLit           #Character
     | StringLit         #StringAtom

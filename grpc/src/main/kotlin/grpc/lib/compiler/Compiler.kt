@@ -1,0 +1,83 @@
+package grpc.lib.compiler
+
+import grpc.lib.compiler.internal.GrpLexer
+import grpc.lib.compiler.internal.GrpParser
+import grpc.lib.compiler.phase.*
+import grpc.lib.exception.ErrorsInCodeException
+import grpc.lib.exception.ParsingException
+import grpc.lib.symbol.SymbolTable
+import grpc.lib.util.LogLevel
+import grpc.lib.util.Logger
+import org.antlr.v4.runtime.ANTLRInputStream
+import org.antlr.v4.runtime.CommonTokenStream
+import org.antlr.v4.runtime.tree.ParseTree
+import org.antlr.v4.runtime.tree.ParseTreeProperty
+import org.antlr.v4.runtime.tree.ParseTreeWalker
+import java.io.File
+import java.io.FileInputStream
+import java.io.InputStreamReader
+import java.nio.charset.Charset
+import kotlin.system.measureTimeMillis
+
+class Compiler(path: String, debug: Boolean) {
+    private val file = File(path)
+    private val fis = FileInputStream(file)
+    private val reader = InputStreamReader(fis, Charset.defaultCharset())
+    private val input = ANTLRInputStream(reader)
+    private val lexer = GrpLexer(input)
+    private val tokens = CommonTokenStream(lexer)
+    private val parser = GrpParser(tokens)
+    private var totalErrors = 0
+
+    private val symbolTable = SymbolTable()
+    private val results = ParseTreeProperty<UnitResult>()
+
+    init {
+        if (debug) {
+            Logger.setMaxLevel(LogLevel.DEBUG)
+        }
+    }
+
+    private fun checkParsing() {
+        if (parser.numberOfSyntaxErrors > 0) {
+            throw ParsingException()
+        }
+    }
+
+    private fun checkForErrors() {
+        if (totalErrors > 0) {
+            throw ErrorsInCodeException(totalErrors)
+        }
+    }
+
+    private fun executePhase(tree: ParseTree, phase: Phase) {
+        val walker = ParseTreeWalker()
+
+        with(phase) {
+            symTab = symbolTable
+            fileName = file.name
+            results = this@Compiler.results
+        }
+
+        val ms = measureTimeMillis { walker.walk(phase, tree) }
+
+        if (phase.errorList.size > 0) {
+            totalErrors += phase.errorList.size
+            phase.errorList.map { Logger.log(it, LogLevel.ERROR) }
+        }
+
+        Logger.log("Phase ${phase.javaClass.name}: $ms millis", LogLevel.DEBUG)
+
+        checkForErrors()
+    }
+
+    fun compile() {
+        val tree = parser.init()
+
+        checkParsing()
+
+        executePhase(tree, Structure())
+        executePhase(tree, Globals())
+        executePhase(tree, Types())
+    }
+}

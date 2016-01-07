@@ -1,18 +1,28 @@
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.0.0-beta-4584'
+  }
+}
+
 apply plugin: 'antlr'
 apply plugin: 'application'
-apply plugin: 'scala'
+apply plugin: 'kotlin'
 
 repositories {
     mavenCentral()
 }
 
-mainClassName = "grpc.main.Exec"
+mainClassName = "grpc.main.ExecKt"
+
+compileKotlin.dependsOn generateGrammarSource
 
 dependencies {
     antlr 'org.antlr:antlr4:4.5.1-1'
     compile 'commons-cli:commons-cli:1.3.1'
-    compile 'org.scala-lang:scala-library:2.12.0-M3'
-    testCompile 'junit:junit:4.12'
+    compile 'org.jetbrains.kotlin:kotlin-stdlib:1.0.0-beta-4584'
 }
 
 generateGrammarSource {
