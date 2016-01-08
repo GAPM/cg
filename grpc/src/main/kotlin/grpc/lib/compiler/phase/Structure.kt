@@ -22,56 +22,52 @@ class Structure : Phase() {
      *
      */
     private fun setReturns(ctx: ParserRuleContext, v: Boolean) {
-        var r = results!!.get(ctx)
-
-        if (r == null) {
-            r = UnitResult()
-        }
-
+        var r = results?.get(ctx) ?: UnitResult()
         r.returns = v
-        results!!.put(ctx, r)
+        results?.put(ctx, r)
     }
 
     /**
      *
      */
-    private fun getReturns(ctx: ParserRuleContext): Boolean {
-        val r = results!!.get(ctx)
-        return r?.returns ?: false
-    }
+    private fun getReturns(ctx: ParserRuleContext): Boolean =
+            results?.get(ctx)?.returns ?: false
 
     /**
-     * Reports that `continue` or `break` were used outside a loop
+     * Reports that `continue` or `break` were used outside a loop.
      *
      * @param location The location of the error
      * @param word `continue` or `break`
      */
-    private fun controlStmtError(location: Location, word: String) {
-        addError(location, "`$word` not inside a loop")
-    }
+    private fun controlStmtError(location: Location, word: String) =
+            addError(location, "`$word` not inside a loop")
 
     /**
-     * Reports that a non-empty return is inside a `void` function
+     * Reports that a non-empty return is inside a `void` function.
      *
      * @param location The location of the error
      */
-    private fun nonEmptyReturnError(location: Location) {
-        addError(location, "non-empty return in void function `$fName`")
-    }
+    private fun nonEmptyReturnError(location: Location) =
+            addError(location, "non-empty return in void function `$fName`")
 
     /**
-     * Reports that a non-void function doesn't guarantee a return
+     * Reports that a empty return is inside a non-void function.
+     *
+     * @param location The location of the error
+     */
+    private fun emptyReturnError(location: Location) =
+            addError(location, "empty return in non-void function `$fName`")
+
+    /**
+     * Reports that a non-void function doesn't guarantee a return.
      *
      * @param location The location of the function
      */
-    private fun notAllPathsReturnError(location: Location) {
-        addError(location, "in function $fName: not all paths have a return")
-    }
+    private fun notAllPathsReturnError(location: Location) =
+            addError(location, "in function $fName: not all paths have a return")
 
     /**
-     * Marks that the phase entered inside a loop (`for`)
-     *
-     * @param ctx The context of the `for` loop
+     * Marks that the phase entered inside a loop (`for`).
      */
     override fun enterForc(ctx: ForcContext) {
         super.enterForc(ctx)
@@ -79,9 +75,7 @@ class Structure : Phase() {
     }
 
     /**
-     * Marks that the phase entered inside a loop (`while`)
-     *
-     * @param ctx The context of the `while` loop
+     * Marks that the phase entered inside a loop (`while`).
      */
     override fun enterWhilec(ctx: WhilecContext) {
         super.enterWhilec(ctx)
@@ -89,9 +83,7 @@ class Structure : Phase() {
     }
 
     /**
-     * Marks that the phase leaved a loop (`for`)
-     *
-     * @param ctx The context of the `for` loop
+     * Marks that the phase leaved a loop (`for`).
      */
     override fun exitForc(ctx: ForcContext) {
         super.exitForc(ctx)
@@ -99,9 +91,7 @@ class Structure : Phase() {
     }
 
     /**
-     * Marks that the phase leaved a loop (`while`)
-     *
-     * @param ctx The context of the `while` loop
+     * Marks that the phase leaved a loop (`while`).
      */
     override fun exitWhilec(ctx: WhilecContext) {
         super.exitWhilec(ctx)
@@ -110,9 +100,7 @@ class Structure : Phase() {
 
     /**
      * Checks whenever the phase enters a `continue` statement that it is inside
-     * a loop
-     *
-     * @param ctx The `continue` statement context
+     * a loop.
      */
     override fun enterContinue(ctx: ContinueContext) {
         super.enterContinue(ctx)
@@ -123,9 +111,7 @@ class Structure : Phase() {
 
     /**
      * Checks whenever the phase enters a `break` statement that it is inside
-     * a loop
-     *
-     * @param ctx The `break` statement context
+     * a loop.
      */
     override fun enterBreak(ctx: BreakContext) {
         super.enterBreak(ctx)
@@ -136,9 +122,7 @@ class Structure : Phase() {
 
     /**
      * Marks that the phase entered a function definition, saving its name and
-     * return type
-     *
-     * @param ctx The context of the function definition
+     * return type.
      */
     override fun enterFdef(ctx: FdefContext) {
         super.enterFdef(ctx)
@@ -151,9 +135,7 @@ class Structure : Phase() {
     /**
      * Marks that the phase leaved a function definition, checking that all paths
      * returns a value (unless its type is `void`) and removing current name and
-     * return type
-     *
-     * @param ctx The context of the function definition
+     * return type.
      */
     override fun exitFdef(ctx: FdefContext) {
         super.exitFdef(ctx)
@@ -174,10 +156,8 @@ class Structure : Phase() {
     }
 
     /**
-     * Checks whenever the phase leaves an if statement, if all branches have a
+     * Checks whenever the phase leaves an if statement that all branches have a
      * return statement.
-     *
-     * @param ctx The context of the if statement
      */
     override fun exitIfc(ctx: IfcContext) {
         super.exitIfc(ctx)
@@ -210,7 +190,7 @@ class Structure : Phase() {
             allElifReturns = allElifReturns && thisElifReturns
         }
 
-        if (ctx.elsec() != null) {
+        ctx.elsec()?.let {
             val elseStmts = ctx.elsec().stmt()
             for (s in elseStmts) {
                 if (getReturns(s)) {
@@ -225,81 +205,81 @@ class Structure : Phase() {
 
     /**
      * Marks that a return statement is indeed a return statement (used to check
-     * that all paths in a function have a return) and checks if a void function
-     * has empty returns.
-     *
-     * @param ctx The context of the return statement
+     * that all paths in a function have a return) and reports if a void
+     * function has non-empty return or a non-void function has empty return.
      */
     override fun enterReturn(ctx: ReturnContext) {
         super.enterReturn(ctx)
         setReturns(ctx, true)
+        val location = Location(ctx.start)
 
-        if (currentFunctionType == Type.void && ctx.expr() != null) {
-            nonEmptyReturnError(Location(ctx.start))
+        if (currentFunctionType == Type.void) {
+            if (ctx.expr() != null) {
+                nonEmptyReturnError(location)
+            }
+        } else {
+            if (ctx.expr() == null) {
+                emptyReturnError(location)
+            }
         }
     }
 
     /**
-     * Sets the result of a simple statement to the same result of its used child
-     *
-     * @param ctx The context of the simple statement
+     * Sets the result of a simple statement to the same result of its used
+     * child.
      */
     override fun exitSimpleStmt(ctx: SimpleStmtContext) {
         super.exitSimpleStmt(ctx)
 
-        if (ctx.vdec() != null) {
-            results?.put(ctx, results?.get(ctx.vdec()))
+        ctx.vdec()?.let {
+            results?.put(ctx, results?.get(it))
         }
 
-        if (ctx.assign() != null) {
-            results?.put(ctx, results?.get(ctx.assign()))
+        ctx.assign()?.let {
+            results?.put(ctx, results?.get(it))
         }
 
-        if (ctx.controlStmt() != null) {
-            results?.put(ctx, results?.get(ctx.controlStmt()))
+        ctx.controlStmt()?.let {
+            results?.put(ctx, results?.get(it))
         }
 
-        if (ctx.expr() != null) {
-            results?.put(ctx, results?.get(ctx.expr()))
+        ctx.expr()?.let {
+            results?.put(ctx, results?.get(it))
         }
     }
 
     /**
      * Sets the result of a compound statement to the same result of its used
-     * child
-     *
-     * @param ctx The context of the compound statement
+     * child.
      */
     override fun exitCompoundStmt(ctx: CompoundStmtContext) {
         super.exitCompoundStmt(ctx)
 
-        if (ctx.ifc() != null) {
-            results?.put(ctx, results?.get(ctx.ifc()))
+        ctx.ifc()?.let {
+            results?.put(ctx, results?.get(it))
         }
 
-        if (ctx.forc() != null) {
-            results?.put(ctx, results?.get(ctx.forc()))
+        ctx.forc()?.let {
+            results?.put(ctx, results?.get(it))
         }
 
-        if (ctx.whilec() != null) {
-            results?.put(ctx, results?.get(ctx.whilec()))
+        ctx.whilec()?.let {
+            results?.put(ctx, results?.get(it))
         }
     }
 
     /**
-     * Sets the result of a statement to the same result of its used child
-     *
-     * @param ctx The context of the statement
+     * Sets the result of a statement to the same result of its used child.
      */
     override fun exitStmt(ctx: StmtContext) {
         super.exitStmt(ctx)
 
-        if (ctx.simpleStmt() != null) {
-            results?.put(ctx, results?.get(ctx.simpleStmt()))
+        ctx.simpleStmt()?.let {
+            results?.put(ctx, results?.get(it))
         }
 
-        if (ctx.compoundStmt() != null) {
-            results?.put(ctx, results?.get(ctx.compoundStmt()))
+        ctx.compoundStmt()?.let {
+            results?.put(ctx, results?.get(it))
         }
     }
 }

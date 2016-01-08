@@ -23,11 +23,6 @@ object CastTable {
             Type.string to listOf()
     )
 
-    fun check(type1: Type, type2: Type): Boolean {
-        if (tab.containsKey(type1)) {
-            return tab[type1]!!.contains(type2)
-        } else {
-            return false
-        }
-    }
+    fun check(type1: Type, type2: Type): Boolean =
+            tab[type1]?.contains(type2) ?: false
 }

@@ -31,5 +31,10 @@ class SymbolTable {
         return getSymbol(name, "", symType)
     }
 
+    /**
+     * Inserts a symbol into the symbol table
+     *
+     * @param s The symbol to be added
+     */
     fun addSymbol(s: Symbol) = symTab.add(s)
 }

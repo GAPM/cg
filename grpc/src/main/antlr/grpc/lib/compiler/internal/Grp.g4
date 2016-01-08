@@ -28,7 +28,7 @@ LBRACE : '{' ;
 LE : '<=' ;
 LPAREN : '(' ;
 LT : '<' ;
-ML_COMMENT: '/*' (.)*? '*/' -> skip ;
+ML_COMMENT : '/*' (.)*? '*/' -> skip ;
 MOD : '%' ;
 MUL : '*' ;
 NOT_EQUAL : '!=' ;
@@ -37,10 +37,8 @@ RBRACE : '}' ;
 RETURN : 'return' ;
 RPAREN : ')' ;
 SEMI : ';' ;
-STEP : 'step' ;
 STRING : 'string' ;
 SUB : '-' ;
-TO : 'to' ;
 UINT : 'uint' ;
 UINT16 : 'uint16' ;
 UINT32 : 'uint32' ;
@@ -72,7 +70,7 @@ DoubleLit: Decimals '.' Decimals Exponent?
                  | Decimals Exponent
                  | '.' Decimals Exponent?
                  ;
-FloatLit: DoubleLit 'f';
+FloatLit: (DoubleLit | DecimalLit) 'f';
 
 CharLit: '\'' . '\'';
 StringLit: '"' (.)*? '"';
@@ -134,7 +132,7 @@ ifc: 'if' '(' expr ')' '{' stmt* '}' elifc* elsec?;
 elifc: 'elif' '(' expr ')' '{' stmt* '}';
 elsec: 'else' '{' stmt* '}';
 
-forc: 'for' assign 'to' expr ('step' expr)? '{' stmt* '}';
+forc: 'for' '(' start=assign? ';' cond=expr? ';' mod=assign? ')' '{' stmt* '}';
 whilec: 'while' '(' expr ')' '{' stmt* '}';
 
 controlStmt: 'return' expr? #Return

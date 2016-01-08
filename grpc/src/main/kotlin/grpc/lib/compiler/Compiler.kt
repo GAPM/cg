@@ -2,7 +2,10 @@ package grpc.lib.compiler
 
 import grpc.lib.compiler.internal.GrpLexer
 import grpc.lib.compiler.internal.GrpParser
-import grpc.lib.compiler.phase.*
+import grpc.lib.compiler.phase.Globals
+import grpc.lib.compiler.phase.Phase
+import grpc.lib.compiler.phase.Structure
+import grpc.lib.compiler.phase.Types
 import grpc.lib.exception.ErrorsInCodeException
 import grpc.lib.exception.ParsingException
 import grpc.lib.symbol.SymbolTable
@@ -38,18 +41,27 @@ class Compiler(path: String, debug: Boolean) {
         }
     }
 
+    /**
+     * Throws a [ParsingException] if the parser found syntax errors.
+     */
     private fun checkParsing() {
         if (parser.numberOfSyntaxErrors > 0) {
             throw ParsingException()
         }
     }
 
+    /**
+     * Throws an [ErrorsInCodeException] if the total errors is higher than 0.
+     */
     private fun checkForErrors() {
         if (totalErrors > 0) {
             throw ErrorsInCodeException(totalErrors)
         }
     }
 
+    /**
+     * Executes a compilation phase.
+     */
     private fun executePhase(tree: ParseTree, phase: Phase) {
         val walker = ParseTreeWalker()
 
@@ -63,7 +75,7 @@ class Compiler(path: String, debug: Boolean) {
 
         if (phase.errorList.size > 0) {
             totalErrors += phase.errorList.size
-            phase.errorList.map { Logger.log(it, LogLevel.ERROR) }
+            phase.errorList.forEach { Logger.log(it, LogLevel.ERROR) }
         }
 
         Logger.log("Phase ${phase.javaClass.name}: $ms millis", LogLevel.DEBUG)

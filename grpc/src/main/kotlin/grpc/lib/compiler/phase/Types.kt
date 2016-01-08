@@ -19,15 +19,8 @@ class Types : Phase() {
      * @param ctx The parse tree
      * @return The type of the parse tree, `Type.none` if it does not exists
      */
-    fun getType(ctx: ParserRuleContext): Type {
-        val r = results?.get(ctx)
-
-        if (r != null) {
-            return r.type
-        }
-
-        return Type.none
-    }
+    fun getType(ctx: ParserRuleContext): Type =
+            results?.get(ctx)?.type ?: Type.none
 
     /**
      * Sets the type of a (sub)parse tree, if the parse tree does not have an
@@ -37,30 +30,16 @@ class Types : Phase() {
      * @param type The context of the type to be assigned
      */
     fun setType(ctx: ParserRuleContext, type: Type) {
-        var r = results?.get(ctx)
-
-        if (r == null) {
-            r = UnitResult()
-        }
-
+        var r = results?.get(ctx) ?: UnitResult()
         r.type = type
         results?.put(ctx, r)
     }
 
-    fun getAssignable(ctx: ParserRuleContext): Boolean {
-        results?.get(ctx)?.let {
-            return it.assignable
-        }
-        return false
-    }
+    fun getAssignable(ctx: ParserRuleContext): Boolean =
+            results?.get(ctx)?.assignable ?: false
 
     fun setAssignable(ctx: ParserRuleContext, v: Boolean) {
-        var r = results?.get(ctx)
-
-        if (r == null) {
-            r = UnitResult()
-        }
-
+        var r = results?.get(ctx) ?: UnitResult()
         r.assignable = v
         results?.put(ctx, r)
     }
@@ -97,9 +76,8 @@ class Types : Phase() {
      * @param op The operator
      * @param typ The type
      */
-    fun unaryOpError(location: Location, op: String, typ: Type) {
-        addError(location, "invalid operation: $op $typ")
-    }
+    fun unaryOpError(location: Location, op: String, typ: Type) =
+            addError(location, "invalid operation: $op $typ")
 
     /**
      * Reports a type mismatch error while using an binary operator
@@ -109,9 +87,8 @@ class Types : Phase() {
      * @param typ1 The type of the left operand
      * @param typ2 The type of the right operand
      */
-    fun binaryOpError(location: Location, op: String, typ1: Type, typ2: Type) {
-        addError(location, "invalid operation: $typ1 $op $typ2")
-    }
+    fun binaryOpError(location: Location, op: String, typ1: Type, typ2: Type) =
+            addError(location, "invalid operation: $typ1 $op $typ2")
 
     /**
      * Reports a type mismatch in a function call regarding one of the parameters
@@ -152,9 +129,8 @@ class Types : Phase() {
      * @param location The location of the error
      * @param exp The non-assignable expression
      */
-    fun nonAssignableError(location: Location, exp: String) {
-        addError(location, "can not assign to $exp")
-    }
+    fun nonAssignableError(location: Location, exp: String) =
+            addError(location, "can not assign to $exp")
 
     /**
      * Reports a type mismatch in an assignment.
@@ -166,8 +142,8 @@ class Types : Phase() {
      */
     fun assignmentError(location: Location, exp: String, type1: Type,
                         type2: Type) {
-        addError(location,
-                "can not use $exp (type $type2) as type $type1 in assignment")
+        val m = "can not use $exp (type $type2) as type $type1 in assignment"
+        addError(location, m)
     }
 
     /**

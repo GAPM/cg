@@ -24,7 +24,7 @@ fun main(args: Array<String>) {
 
         if (cmd.hasOption("h")) {
             val hf = HelpFormatter()
-            hf.printHelp("grpc [options] files", options)
+            hf.printHelp("grpc [options] file", options)
             System.exit(0)
         }
 

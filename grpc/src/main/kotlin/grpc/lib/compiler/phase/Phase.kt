@@ -13,7 +13,6 @@ open class Phase : GrpBaseListener() {
     var results: ParseTreeProperty<UnitResult>? = null
     val errorList = ArrayList<String>()
 
-    fun addError(location: Location, msg: String) {
-        errorList.add("$fileName:$location: $msg")
-    }
+    fun addError(location: Location, msg: String) =
+            errorList.add("$fileName:$location: $msg")
 }

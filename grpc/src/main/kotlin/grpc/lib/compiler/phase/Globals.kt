@@ -1,13 +1,13 @@
 package grpc.lib.compiler.phase
 
 import grpc.lib.compiler.internal.GrpParser
-import grpc.lib.compiler.internal.GrpParser.*
+import grpc.lib.compiler.internal.GrpParser.SimpleStmtContext
+import grpc.lib.compiler.internal.GrpParser.VdecContext
 import grpc.lib.compiler.tokIdxToType
 import grpc.lib.symbol.Function
 import grpc.lib.symbol.Location
 import grpc.lib.symbol.SymType
 import grpc.lib.symbol.Variable
-import org.antlr.v4.runtime.ParserRuleContext
 import java.util.*
 
 /**

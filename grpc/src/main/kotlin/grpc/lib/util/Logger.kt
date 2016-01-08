@@ -10,8 +10,8 @@ object Logger {
     fun log(msg: String?, level: LogLevel) {
         if (level <= _maxLevel) {
             when (level) {
-                LogLevel.ERROR -> System.err.println(msg)
-                else -> println(msg)
+                LogLevel.ERROR -> System.err.println("$level: $msg")
+                else -> println("$level: $msg")
             }
         }
     }
