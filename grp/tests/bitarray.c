@@ -1,7 +1,7 @@
 #include <assert.h>
 
+#include "base.h"
 #include "bitarray.h"
-#include "grp.h"
 
 #define MAXARRAY 10000
 

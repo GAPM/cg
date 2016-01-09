@@ -1,7 +1,7 @@
 #include <assert.h>
 #include <wchar.h>
 
-#include "grp.h"
+#include "base.h"
 #include "str.h"
 
 int main(void) {
@@ -24,7 +24,8 @@ int main(void) {
 
     assert(str_length(b) == 11);
 
-    str_println(b); // Should appear
+    // When running the test outside `make test` or `ctest`
+    str_println(b);          // Should appear
     printf("aeiou aeiou\n"); // Should not appear
 
     str_free(x);

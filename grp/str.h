@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <wchar.h>
 
+#include "base.h"
+
 typedef wchar_t *str;
 
 str str_new(wchar_t *);

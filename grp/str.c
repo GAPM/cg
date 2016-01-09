@@ -38,8 +38,10 @@ void str_print(str s) {
 
 void str_println(str s) {
     if (s != NULL) {
+        str nl = newline();
         str_print(s);
-        wprintf(L"\n");
+        wprintf(nl);
+        str_free(nl);
     }
 }
 

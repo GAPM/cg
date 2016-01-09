@@ -1,8 +1,8 @@
 #include <assert.h>
 #include <stdio.h>
 
+#include "base.h"
 #include "graph.h"
-#include "grp.h"
 
 int main(void) {
     init();

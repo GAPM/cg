@@ -1,7 +1,7 @@
 #include <assert.h>
 
+#include "base.h"
 #include "bitmatrix.h"
-#include "grp.h"
 
 #define MAXMATRIX 100
 
