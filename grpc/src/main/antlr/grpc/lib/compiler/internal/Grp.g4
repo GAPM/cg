@@ -126,7 +126,7 @@ fdef: typ Identifier '(' argList ')' '{' stmt* '}';
 
 fcall: Identifier '(' exprList ')';
 
-assign: expr '=' expr;
+assign: expr op=('='|'+='|'*='|'/='|'%='|'&&='|'||=') expr;
 
 ifc: 'if' '(' expr ')' '{' stmt* '}' elifc* elsec?;
 elifc: 'elif' '(' expr ')' '{' stmt* '}';

@@ -22,7 +22,7 @@ import java.io.InputStreamReader
 import java.nio.charset.Charset
 import kotlin.system.measureTimeMillis
 
-class Compiler(path: String, debug: Boolean) {
+class Compiler(path: String) {
     private val file = File(path)
     private val fis = FileInputStream(file)
     private val reader = InputStreamReader(fis, Charset.defaultCharset())
@@ -34,12 +34,6 @@ class Compiler(path: String, debug: Boolean) {
 
     private val symbolTable = SymbolTable()
     private val results = ParseTreeProperty<UnitResult>()
-
-    init {
-        if (debug) {
-            Logger.setMaxLevel(LogLevel.DEBUG)
-        }
-    }
 
     /**
      * Throws a [ParsingException] if the parser found syntax errors.
@@ -83,6 +77,9 @@ class Compiler(path: String, debug: Boolean) {
         checkForErrors()
     }
 
+    /**
+     * Compiles a file.
+     */
     fun compile() {
         val tree = parser.init()
 

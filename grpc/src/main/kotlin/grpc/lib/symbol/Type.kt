@@ -15,6 +15,5 @@ enum class Type {
     void,
     string,
     char,
-    none,
     error
 }

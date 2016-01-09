@@ -17,10 +17,10 @@ class Types : Phase() {
      * Retrieves the type of a (sub)parse tree
      *
      * @param ctx The parse tree
-     * @return The type of the parse tree, `Type.none` if it does not exists
+     * @return The type of the parse tree, `Type.error` if it does not exists
      */
     fun getType(ctx: ParserRuleContext): Type =
-            results?.get(ctx)?.type ?: Type.none
+            results?.get(ctx)?.type ?: Type.error
 
     /**
      * Sets the type of a (sub)parse tree, if the parse tree does not have an
@@ -35,9 +35,22 @@ class Types : Phase() {
         results?.put(ctx, r)
     }
 
+    /**
+     * Returns whether a (sub)parse tree correspond to an assignable expression.
+     *
+     * @param ctx The parse tree
+     */
     fun getAssignable(ctx: ParserRuleContext): Boolean =
             results?.get(ctx)?.assignable ?: false
 
+    /**
+     * Sets whether a (sub) parse tree correspond to an assignable expression.
+     * If the parse tree  does not have an entry in the result map, it's
+     * created.
+     *
+     * @param ctx The parse tree
+     * @param v `true` if it's assignable, `false` otherwise
+     */
     fun setAssignable(ctx: ParserRuleContext, v: Boolean) {
         var r = results?.get(ctx) ?: UnitResult()
         r.assignable = v
@@ -145,6 +158,16 @@ class Types : Phase() {
         val m = "can not use $exp (type $type2) as type $type1 in assignment"
         addError(location, m)
     }
+
+    /**
+     * Reports that a condition is not of type bool.
+     *
+     * @param location The location of the error
+     * @param exp The expression with a wrong type
+     * @param type The type of the expression
+     */
+    fun conditionError(location: Location, exp: String, type: Type) =
+            addError(location, "can not use $exp (type $type) as type bool in condition")
 
     /**
      * Updates the scope whenever the phase enters a function definition.
@@ -573,6 +596,63 @@ class Types : Phase() {
                     assignmentError(location, exp2.text, type1, type2)
                 }
             }
+        }
+    }
+
+    /**
+     * Checks that conditions used in if and elif are of the type bool.
+     */
+    override fun exitIfc(ctx: IfcContext) {
+        super.exitIfc(ctx)
+
+        val ifCond = ctx.expr().text
+        val ifCondType = getType(ctx.expr())
+        val ifCondLoc = Location(ctx.expr().start)
+
+        if (ifCondType != Type.error && ifCondType != Type.bool) {
+            conditionError(ifCondLoc, ifCond, ifCondType)
+        }
+
+        for (s in ctx.elifc()) {
+            val cond = s.expr().text
+            val type = getType(s.expr())
+            val loc = Location(s.expr().start)
+
+            if (type != Type.error && type != Type.bool) {
+                conditionError(loc, cond, type)
+            }
+        }
+    }
+
+    /**
+     * Checks that a for condition is of the type bool.
+     */
+    override fun exitForc(ctx: ForcContext) {
+        super.exitForc(ctx)
+
+        if (ctx.cond != null) {
+            val type = getType(ctx.cond)
+            val location = Location(ctx.cond.start)
+            val exp = ctx.cond.text
+
+            if (type != Type.error && type != Type.bool) {
+                conditionError(location, exp, type)
+            }
+        }
+    }
+
+    /**
+     * Checks that a while condition is of the type bool.
+     */
+    override fun exitWhilec(ctx: WhilecContext) {
+        super.exitWhilec(ctx)
+
+        val type = getType(ctx.expr())
+        val exp = ctx.expr().text
+        val location = Location(ctx.expr().start)
+
+        if (type != Type.error && type != Type.bool) {
+            conditionError(location, exp, type)
         }
     }
 }

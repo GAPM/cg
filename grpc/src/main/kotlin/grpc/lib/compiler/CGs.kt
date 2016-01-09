@@ -31,7 +31,7 @@ fun tokIdxToType(ctx: TypContext?): Type {
         GrpLexer.VOID -> Type.void
         GrpLexer.STRING -> Type.string
         GrpLexer.CHAR -> Type.char
-        else -> Type.none
+        else -> Type.error
     }
 }
 

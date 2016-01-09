@@ -15,7 +15,7 @@ import org.antlr.v4.runtime.ParserRuleContext
 class Structure : Phase() {
     private var insideLoop = false
     private var insideFunction = false
-    private var currentFunctionType = Type.none
+    private var currentFunctionType = Type.error
     private var fName = ""
 
     /**
@@ -151,7 +151,7 @@ class Structure : Phase() {
         }
 
         insideFunction = false
-        currentFunctionType = Type.none
+        currentFunctionType = Type.error
         fName = ""
     }
 
@@ -191,8 +191,7 @@ class Structure : Phase() {
         }
 
         ctx.elsec()?.let {
-            val elseStmts = ctx.elsec().stmt()
-            for (s in elseStmts) {
+            for (s in it.stmt()) {
                 if (getReturns(s)) {
                     elseReturns = true
                     break

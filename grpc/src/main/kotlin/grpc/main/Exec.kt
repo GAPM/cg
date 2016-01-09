@@ -33,10 +33,14 @@ fun main(args: Array<String>) {
             System.exit(1)
         }
 
+        if (cmd.hasOption("d")) {
+            Logger.setMaxLevel(LogLevel.DEBUG)
+        }
+
         val fileName = cmd.args[0]
 
         try {
-            val compiler = Compiler(fileName, cmd.hasOption("d"))
+            val compiler = Compiler(fileName)
 
             try {
                 compiler.compile()
