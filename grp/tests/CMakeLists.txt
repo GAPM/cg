@@ -24,7 +24,7 @@ target_link_libraries(file grp)
 target_link_libraries(graph grp)
 target_link_libraries(str grp)
 
-add_test(grp grp)
+add_test(base base)
 add_test(bitarray bitarray)
 add_test(bitmatrix bitmatrix)
 add_test(file file)
