@@ -22,36 +22,20 @@ file f_open(str name, str mode) {
         return NULL;
     }
 
-    char *c_name = calloc(str_length(name), sizeof(wchar_t));
-    if (c_name == NULL) {
-        free(n);
-        return NULL;
-    }
-
-    char *c_mode = calloc(str_length(mode), sizeof(wchar_t));
-    if (c_mode == NULL) {
-        free(n);
-        free(c_name);
-        return NULL;
-    }
-
-    wcstombs(c_name, name, str_length(name) * sizeof(wchar_t));
-    wcstombs(c_mode, mode, str_length(mode) * sizeof(wchar_t));
-
-    n->f = fopen(c_name, c_mode);
-    n->name = str_new(name);
-    n->c_name = c_name;
-
+    n->f = fopen(name, mode);
     if (n->f == NULL) {
         free(n);
-        free(c_name);
-        free(c_mode);
         return NULL;
     }
 
-    fwide(n->f, 1);
+    n->name = str_new(name);
+    if (n->name == NULL) {
+        fclose(n->f);
+        free(n);
+        return NULL;
+    }
 
-    free(c_mode);
+    fwide(n->f, -1);
 
     return n;
 }
@@ -61,6 +45,14 @@ bool f_is_open(file f) {
         return ftell(f->f) >= 0;
     }
     return false;
+}
+
+void f_write(file f, str s) {
+    if (f != NULL && s != NULL) {
+        if (f_is_open(f)) {
+            fprintf(f->f, "%s", s);
+        }
+    }
 }
 
 void f_close(file f) {
@@ -77,11 +69,9 @@ void f_free(file f) {
 }
 
 void f_remove(str f) {
-    char *c = calloc(str_length(f), sizeof(wchar_t));
-    if (c == NULL) {
+    if (f == NULL) {
         return;
     }
 
-    wcstombs(c, f, str_length(f) * sizeof(wchar_t));
-    remove(c);
+    remove(f);
 }

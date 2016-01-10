@@ -23,12 +23,14 @@
 
 #include "str.h"
 
-// Routine that must be executed at the beginning of every Grp program.
-//
-// It does:
-//     - Initialize the localle to the system's localle.
-//     - Sets the orientation of the default streams to wide.
+/*
+ * Routine that must be executed at the beginning of every Grp program.
+ *
+ * It does:
+ *     - Initialize the localle to the system's localle.
+ *     - Sets the orientation of the default streams to wide.
+ */
 void init(void);
-wchar_t *newline();
+char *newline();
 
 #endif // GRP_GRP_H

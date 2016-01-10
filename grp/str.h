@@ -19,13 +19,13 @@
 
 #include <stdbool.h>
 #include <stdlib.h>
-#include <wchar.h>
+#include <string.h>
 
 #include "base.h"
 
-typedef wchar_t *str;
+typedef char *str;
 
-str str_new(wchar_t *);
+str str_new(char *);
 str str_cat(str, str);
 int str_cmp(str, str);
 bool str_eq(str, str);

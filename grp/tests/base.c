@@ -24,10 +24,8 @@ int main() {
     str nl = newline();
 
 #ifdef _WIN32
-    assert(str_eq(nl, L"\r\n"));
+    assert(str_eq(nl, "\r\n"));
 #elif __unix__
-    assert(str_eq(nl, L"\n"));
+    assert(str_eq(nl, "\n"));
 #endif
-
-    str_free(nl);
 }

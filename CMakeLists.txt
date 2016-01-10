@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(grapher)
+project(grp)
 
 set(CMAKE_INSTALL_PREFIX dist)
 

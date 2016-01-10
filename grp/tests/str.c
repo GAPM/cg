@@ -23,9 +23,9 @@
 int main(void) {
     init();
 
-    str x = str_new(L"áéíóú");
-    str y = str_new(L"ãẽĩõũ");
-    str w = str_new(L" ");
+    str x = str_new("áéíóú");
+    str y = str_new("ãẽĩõũ");
+    str w = str_new(" ");
 
     assert(str_length(x) == 5);
     assert(str_length(y) == 5);
@@ -41,8 +41,7 @@ int main(void) {
     assert(str_length(b) == 11);
 
     // When running the test outside `make test` or `ctest`
-    str_println(b);          // Should appear
-    printf("aeiou aeiou\n"); // Should not appear
+    str_println(b); // Should appear
 
     str_free(x);
     str_free(y);

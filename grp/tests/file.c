@@ -22,10 +22,20 @@
 int main() {
     init();
 
-    file fw = f_open(L"test.txt", L"w");
+    file fw = f_open("test.txt", "w");
 
     assert(f_is_open(fw));
 
+    f_write(fw, "ãẽĩõũ");
+    f_write(fw, "Dude");
+
     f_close(fw);
     f_free(fw);
+
+    file fr = f_open("test.txt", "r");
+
+    f_close(fr);
+    f_free(fr);
+
+    f_remove("test.txt");
 }

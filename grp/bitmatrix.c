@@ -43,7 +43,7 @@ void bm_set(bitmatrix bm, size_t r, size_t c, bool v) {
 
 bitmatrix bm_copy(bitmatrix bm) {
     bitmatrix n = calloc(1, sizeof(struct bitmatrix));
-    if (bm == NULL) {
+    if (n == NULL) {
         return NULL;
     }
 
