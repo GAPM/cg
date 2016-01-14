@@ -93,12 +93,12 @@ class Globals : Phase() {
 
         val function = Function(name, type, location, args)
 
-        val qry = symTab!!.getSymbol(name, SymType.FUNC)
+        val qry = symTab.getSymbol(name, SymType.FUNC)
         when (qry) {
             null -> {
-                symTab!!.addSymbol(function)
+                symTab.addSymbol(function)
                 for (v in args) {
-                    symTab!!.addSymbol(v)
+                    symTab.addSymbol(v)
                 }
             }
             else -> {
@@ -120,9 +120,9 @@ class Globals : Phase() {
 
             val variable = Variable(name, type, "global", location)
 
-            val qry = symTab!!.getSymbol(name, "global", SymType.VAR)
+            val qry = symTab.getSymbol(name, "global", SymType.VAR)
             when (qry) {
-                null -> symTab!!.addSymbol(variable)
+                null -> symTab.addSymbol(variable)
                 else ->
                     redeclarationError(location, qry.location, name, SymType.VAR)
             }

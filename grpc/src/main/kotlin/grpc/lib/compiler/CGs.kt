@@ -55,3 +55,11 @@ fun isNumeric(type: Type): Boolean = when (type) {
     Type.char, Type.string, Type.void, Type.bool -> false
     else -> true
 }
+
+fun removeDoubleQuotes(str: String): String {
+    return try {
+        str.substring(1, str.length - 1)
+    } catch (e: IndexOutOfBoundsException) {
+        ""
+    }
+}

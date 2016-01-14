@@ -22,4 +22,5 @@ class UnitResult {
     public var type: Type = Type.error
     public var returns: Boolean = false
     public var assignable: Boolean = false
+    public var scope: String = ""
 }

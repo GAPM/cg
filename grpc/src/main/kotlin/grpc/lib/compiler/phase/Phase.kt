@@ -21,12 +21,15 @@ import grpc.lib.compiler.internal.GrpBaseListener
 import grpc.lib.symbol.Location
 import grpc.lib.symbol.SymbolTable
 import org.antlr.v4.runtime.tree.ParseTreeProperty
+import java.nio.file.Path
 import java.util.*
+import kotlin.properties.Delegates
 
 open class Phase : GrpBaseListener() {
-    var symTab: SymbolTable? = null
-    var fileName: String? = null
-    var results: ParseTreeProperty<UnitResult>? = null
+    var symTab: SymbolTable by Delegates.notNull()
+    var fileName: String by Delegates.notNull()
+    var results: ParseTreeProperty<UnitResult> by Delegates.notNull()
+    var paths: Array<Path> by Delegates.notNull()
     val errorList = ArrayList<String>()
 
     fun addError(location: Location, msg: String) =

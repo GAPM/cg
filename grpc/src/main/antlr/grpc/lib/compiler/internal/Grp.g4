@@ -167,8 +167,10 @@ simpleStmt: vdec
           | expr
           ;
 
+importStmt: 'import' StringLit ';';
+
 stmt: simpleStmt ';'
     | compoundStmt
     ;
 
-init: (fdef | vdec ';')*;
+init: (importStmt)* (fdef | vdec ';')*;

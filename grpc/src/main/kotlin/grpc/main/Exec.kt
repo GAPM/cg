@@ -53,20 +53,18 @@ fun main(args: Array<String>) {
             Logger.setMaxLevel(LogLevel.DEBUG)
         }
 
-        val fileName = cmd.args[0]
-
         try {
-            val compiler = Compiler(fileName)
+            val compiler = Compiler(cmd.args)
 
             try {
                 compiler.compile()
             } catch(e: CompilerException) {
-                Logger.log(e.message, LogLevel.ERROR)
+                Logger.error(e.message)
             }
-        } catch(_: IOException) {
-            Logger.log("unable to open file $fileName", LogLevel.ERROR)
+        } catch(e: IOException) {
+            Logger.error(e.message)
         }
     } catch (e: UnrecognizedOptionException) {
-        Logger.log("unrecognized option ${e.option}", LogLevel.ERROR)
+        Logger.error("unrecognized option ${e.option}")
     }
 }

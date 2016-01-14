@@ -31,4 +31,7 @@ object Logger {
             }
         }
     }
+
+    fun debug(msg: String?) = log(msg, LogLevel.DEBUG)
+    fun error(msg: String?) = log(msg, LogLevel.ERROR)
 }

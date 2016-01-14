@@ -38,16 +38,16 @@ class Structure : Phase() {
      *
      */
     private fun setReturns(ctx: ParserRuleContext, v: Boolean) {
-        var r = results?.get(ctx) ?: UnitResult()
+        var r = results.get(ctx) ?: UnitResult()
         r.returns = v
-        results?.put(ctx, r)
+        results.put(ctx, r)
     }
 
     /**
      *
      */
     private fun getReturns(ctx: ParserRuleContext): Boolean =
-            results?.get(ctx)?.returns ?: false
+            results.get(ctx)?.returns ?: false
 
     /**
      * Reports that `continue` or `break` were used outside a loop.
@@ -247,19 +247,19 @@ class Structure : Phase() {
         super.exitSimpleStmt(ctx)
 
         ctx.vdec()?.let {
-            results?.put(ctx, results?.get(it))
+            results.put(ctx, results.get(it))
         }
 
         ctx.assign()?.let {
-            results?.put(ctx, results?.get(it))
+            results.put(ctx, results.get(it))
         }
 
         ctx.controlStmt()?.let {
-            results?.put(ctx, results?.get(it))
+            results.put(ctx, results.get(it))
         }
 
         ctx.expr()?.let {
-            results?.put(ctx, results?.get(it))
+            results.put(ctx, results.get(it))
         }
     }
 
@@ -271,15 +271,15 @@ class Structure : Phase() {
         super.exitCompoundStmt(ctx)
 
         ctx.ifc()?.let {
-            results?.put(ctx, results?.get(it))
+            results.put(ctx, results.get(it))
         }
 
         ctx.forc()?.let {
-            results?.put(ctx, results?.get(it))
+            results.put(ctx, results.get(it))
         }
 
         ctx.whilec()?.let {
-            results?.put(ctx, results?.get(it))
+            results.put(ctx, results.get(it))
         }
     }
 
@@ -290,11 +290,11 @@ class Structure : Phase() {
         super.exitStmt(ctx)
 
         ctx.simpleStmt()?.let {
-            results?.put(ctx, results?.get(it))
+            results.put(ctx, results.get(it))
         }
 
         ctx.compoundStmt()?.let {
-            results?.put(ctx, results?.get(it))
+            results.put(ctx, results.get(it))
         }
     }
 }

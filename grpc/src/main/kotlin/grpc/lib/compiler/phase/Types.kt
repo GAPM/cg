@@ -36,7 +36,7 @@ class Types : Phase() {
      * @return The type of the parse tree, `Type.error` if it does not exists
      */
     fun getType(ctx: ParserRuleContext): Type =
-            results?.get(ctx)?.type ?: Type.error
+            results.get(ctx)?.type ?: Type.error
 
     /**
      * Sets the type of a (sub)parse tree, if the parse tree does not have an
@@ -46,9 +46,9 @@ class Types : Phase() {
      * @param type The context of the type to be assigned
      */
     fun setType(ctx: ParserRuleContext, type: Type) {
-        var r = results?.get(ctx) ?: UnitResult()
+        var r = results.get(ctx) ?: UnitResult()
         r.type = type
-        results?.put(ctx, r)
+        results.put(ctx, r)
     }
 
     /**
@@ -57,7 +57,7 @@ class Types : Phase() {
      * @param ctx The parse tree
      */
     fun getAssignable(ctx: ParserRuleContext): Boolean =
-            results?.get(ctx)?.assignable ?: false
+            results.get(ctx)?.assignable ?: false
 
     /**
      * Sets whether a (sub) parse tree correspond to an assignable expression.
@@ -68,9 +68,9 @@ class Types : Phase() {
      * @param v `true` if it's assignable, `false` otherwise
      */
     fun setAssignable(ctx: ParserRuleContext, v: Boolean) {
-        var r = results?.get(ctx) ?: UnitResult()
+        var r = results.get(ctx) ?: UnitResult()
         r.assignable = v
-        results?.put(ctx, r)
+        results.put(ctx, r)
     }
 
     /**
@@ -232,10 +232,10 @@ class Types : Phase() {
             val location = Location(ctx.Identifier())
 
             val variable = Variable(name, type, scope, location)
-            val qry = symTab!!.getSymbol(name, scope, SymType.VAR)
+            val qry = symTab.getSymbol(name, scope, SymType.VAR)
 
             when (qry) {
-                null -> symTab!!.addSymbol(variable)
+                null -> symTab.addSymbol(variable)
                 else ->
                     redeclarationError(location, variable.location, name)
             }
@@ -251,7 +251,7 @@ class Types : Phase() {
         val name = ctx.Identifier().text
         val location = Location(ctx.Identifier())
 
-        val qry = symTab!!.getSymbol(name, scope, SymType.VAR)
+        val qry = symTab.getSymbol(name, scope, SymType.VAR)
         when (qry) {
             null -> {
                 notFoundError(location, name, SymType.VAR)
@@ -348,7 +348,7 @@ class Types : Phase() {
         val location = Location(ctx.Identifier())
         var error = false
 
-        val qry = symTab!!.getSymbol(name, SymType.FUNC)
+        val qry = symTab.getSymbol(name, SymType.FUNC)
         when (qry) {
             null -> {
                 notFoundError(location, name, SymType.FUNC)
@@ -409,7 +409,7 @@ class Types : Phase() {
      */
     override fun exitAtomic(ctx: AtomicContext) {
         super.exitAtomic(ctx)
-        results?.put(ctx, results?.get(ctx.atom()))
+        results.put(ctx, results.get(ctx.atom()))
     }
 
     /**
@@ -452,7 +452,7 @@ class Types : Phase() {
      */
     override fun exitAssoc(ctx: AssocContext) {
         super.exitAssoc(ctx)
-        results?.put(ctx, results?.get(ctx.expr()))
+        results.put(ctx, results.get(ctx.expr()))
     }
 
     /**
