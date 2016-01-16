@@ -16,18 +16,28 @@
 
 package grpc.lib.compiler
 
+import grpc.lib.compiler.internal.GrpErrorListener
 import grpc.lib.compiler.internal.GrpLexer
+import grpc.lib.compiler.internal.GrpParser
 import grpc.lib.compiler.internal.GrpParser.TypContext
 import grpc.lib.symbol.Type
 import org.antlr.v4.runtime.tree.TerminalNode
+
+private var id = 0
+
+fun GrpParser.withFileName(fileName: String): GrpParser {
+    this.removeErrorListeners()
+    this.addErrorListener(GrpErrorListener(fileName))
+    return this
+}
 
 fun getJVMArch(): Int {
     val arch = System.getProperty("os.arch")
     return if (arch.contains("64")) 64 else 32
 }
 
-fun tokIdxToType(ctx: TypContext?): Type {
-    val tn = ctx?.getChild(0) as TerminalNode
+fun tokIdxToType(ctx: TypContext): Type {
+    val tn = ctx.getChild(0) as TerminalNode
     val t = tn.symbol.type
 
     return when (t) {
@@ -63,3 +73,5 @@ fun removeDoubleQuotes(str: String): String {
         ""
     }
 }
+
+fun nextId(): Int = id++

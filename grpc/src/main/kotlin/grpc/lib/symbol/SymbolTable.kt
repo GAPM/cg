@@ -31,7 +31,7 @@ class SymbolTable {
      */
     fun getSymbol(name: String, scope: String, symType: SymType): Symbol? =
             symTab.filter { it.name == name }
-                    .filter { it.scope == scope || scope == "" }
+                    .filter { scope.startsWith(it.scope) || scope == "" }
                     .filter { it.symType == symType }
                     .firstOrNull()
 

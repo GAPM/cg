@@ -16,18 +16,26 @@
 
 package grpc.lib.compiler.phase
 
-import grpc.lib.compiler.UnitResult
-import grpc.lib.compiler.getJVMArch
+import grpc.lib.compiler.*
 import grpc.lib.compiler.internal.GrpParser.*
-import grpc.lib.compiler.isNumeric
-import grpc.lib.compiler.tokIdxToType
 import grpc.lib.symbol.*
 import grpc.lib.symbol.Function
 import org.antlr.v4.runtime.ParserRuleContext
+import java.util.*
 
 class Types : Phase() {
     private var insideSimpleStmt = false
-    private var scope = "global"
+    private val scope = Stack<String>()
+
+    private fun Stack<String>.scopeStr(): String {
+        var r = "${this@Types.fileName}.global"
+
+        for (s in this) {
+            r += ".$s"
+        }
+
+        return r
+    }
 
     /**
      * Retrieves the type of a (sub)parse tree
@@ -95,7 +103,7 @@ class Types : Phase() {
      */
     fun notFoundError(location: Location, name: String, typ: SymType) {
         val t = if (typ == SymType.FUNC) "function" else "variable"
-        addError(location, "$t $name not found")
+        addError(location, "$t $name not found in current scope")
     }
 
     /**
@@ -106,7 +114,7 @@ class Types : Phase() {
      * @param typ The type
      */
     fun unaryOpError(location: Location, op: String, typ: Type) =
-            addError(location, "invalid operation: $op $typ")
+            addError(location, "invalid unary operation: $op $typ")
 
     /**
      * Reports a type mismatch error while using an binary operator
@@ -117,20 +125,21 @@ class Types : Phase() {
      * @param typ2 The type of the right operand
      */
     fun binaryOpError(location: Location, op: String, typ1: Type, typ2: Type) =
-            addError(location, "invalid operation: $typ1 $op $typ2")
+            addError(location, "invalid binary operation: $typ1 $op $typ2")
 
     /**
-     * Reports a type mismatch in a function call regarding one of the parameters
+     * Reports a type mismatch in a function call regarding one of the
+     * parameters
      *
      * @param location The location of the function call
      * @param expr The text of the expression with mismatched type
-     * @param exprType The type of the expression
-     * @param argType The type expected by te argument
+     * @param etype The type of the expression
+     * @param atype The type expected by te argument
      * @param fName The function name
      */
-    fun argumentError(location: Location, expr: String, exprType: Type,
-                      argType: Type, fName: String) {
-        val msg = "can not use $expr (type $exprType) as type $argType in argument to $fName"
+    fun argumentError(location: Location, expr: String, etype: Type,
+                      atype: Type, fName: String) {
+        val msg = "can not use $expr (type $etype) as type $atype in argument to $fName"
         addError(location, msg)
     }
 
@@ -190,7 +199,8 @@ class Types : Phase() {
      */
     override fun enterFdef(ctx: FdefContext) {
         super.enterFdef(ctx)
-        scope = ctx.Identifier().text
+        val name = ctx.Identifier().text
+        scope.push(name)
     }
 
     /**
@@ -199,7 +209,7 @@ class Types : Phase() {
      */
     override fun exitFdef(ctx: FdefContext) {
         super.exitFdef(ctx)
-        scope = "global"
+        scope.pop()
     }
 
     /**
@@ -230,6 +240,7 @@ class Types : Phase() {
             val name = ctx.Identifier().text
             val type = tokIdxToType(ctx.typ())
             val location = Location(ctx.Identifier())
+            val scope = scope.scopeStr()
 
             val variable = Variable(name, type, scope, location)
             val qry = symTab.getSymbol(name, scope, SymType.VAR)
@@ -250,6 +261,7 @@ class Types : Phase() {
 
         val name = ctx.Identifier().text
         val location = Location(ctx.Identifier())
+        val scope = scope.scopeStr()
 
         val qry = symTab.getSymbol(name, scope, SymType.VAR)
         when (qry) {
@@ -616,10 +628,22 @@ class Types : Phase() {
     }
 
     /**
+     * Pushes into scope an if block.
+     */
+    override fun enterIfc(ctx: IfcContext) {
+        super.enterIfc(ctx)
+        scope.push("if${nextId()}")
+    }
+
+    /**
      * Checks that conditions used in if and elif are of the type bool.
      */
     override fun exitIfc(ctx: IfcContext) {
         super.exitIfc(ctx)
+
+        if (scope.lastElement().startsWith("if")) {
+            scope.pop()
+        }
 
         val ifCond = ctx.expr().text
         val ifCondType = getType(ctx.expr())
@@ -641,10 +665,62 @@ class Types : Phase() {
     }
 
     /**
-     * Checks that a for condition is of the type bool.
+     * Pops an if block from scope if any and pushes into scope an elif block.
+     */
+    override fun enterElifc(ctx: ElifcContext) {
+        super.enterElifc(ctx)
+
+        if (scope.lastElement().startsWith("if")) {
+            scope.pop()
+        }
+
+        scope.push("elif${nextId()}")
+    }
+
+    /**
+     * Pops an elif block out of scope.
+     */
+    override fun exitElifc(ctx: ElifcContext) {
+        super.exitElifc(ctx)
+        scope.pop()
+    }
+
+    /**
+     * Pops an if block from scope if any and pushes into scope an else block.
+     */
+    override fun enterElsec(ctx: ElsecContext) {
+        super.enterElsec(ctx)
+
+        if (scope.lastElement().startsWith("if")) {
+            scope.pop()
+        }
+
+        scope.push("else${nextId()}")
+    }
+
+    /**
+     * Pops an else block out of scope.
+     */
+    override fun exitElsec(ctx: ElsecContext) {
+        super.exitElsec(ctx)
+        scope.pop()
+    }
+
+    /**
+     * Pushes into scope a for loop block.
+     */
+    override fun enterForc(ctx: ForcContext) {
+        super.enterForc(ctx)
+        scope.push("for${nextId()}")
+    }
+
+    /**
+     * Checks that a for condition is of the type bool and pops the for block
+     * out of scope.
      */
     override fun exitForc(ctx: ForcContext) {
         super.exitForc(ctx)
+        scope.pop()
 
         if (ctx.cond != null) {
             val type = getType(ctx.cond)
@@ -658,10 +734,20 @@ class Types : Phase() {
     }
 
     /**
-     * Checks that a while condition is of the type bool.
+     * Pushes into scope a while loop block.
+     */
+    override fun enterWhilec(ctx: WhilecContext) {
+        super.enterWhilec(ctx)
+        scope.push("while${nextId()}")
+    }
+
+    /**
+     * Checks that a while condition is of the type bool and pops the while
+     * block out of scope.
      */
     override fun exitWhilec(ctx: WhilecContext) {
         super.exitWhilec(ctx)
+        scope.pop()
 
         val type = getType(ctx.expr())
         val exp = ctx.expr().text
