@@ -19,6 +19,7 @@ package grpc.lib.compiler
 import grpc.lib.compiler.internal.GrpLexer
 import grpc.lib.compiler.internal.GrpParser
 import grpc.lib.compiler.phase.*
+import grpc.lib.exception.ParsingException
 import grpc.lib.symbol.SymbolTable
 import grpc.lib.util.Logger
 import org.antlr.v4.runtime.ANTLRInputStream
@@ -36,49 +37,48 @@ import kotlin.system.measureTimeMillis
 class CompilationUnit(fileName: String, private val symTab: SymbolTable,
                       private val results: ParseTreeProperty<UnitResult>,
                       private val paths: Array<Path>) {
+
     private val file = File(fileName)
     private val fis = FileInputStream(file)
     private val reader = InputStreamReader(fis, Charset.defaultCharset())
     private val input = ANTLRInputStream(reader)
     private val lexer = GrpLexer(input)
     private val tokens = CommonTokenStream(lexer)
-    private val parser = GrpParser(tokens)
+    private val parser = GrpParser(tokens).withFileName(file.name)
     private val tree = parser.init()
 
-    fun getNumberOfSyntaxErrors(): Int = parser.numberOfSyntaxErrors
+    private var totalErrors = 0
 
-    fun <T : Phase> executePhase(phaseClass: KClass<T>): Int {
+    fun getNumberOfSyntaxErrors(): Int = parser.numberOfSyntaxErrors
+    fun getNumberOfErrors(): Int = totalErrors
+
+    fun <T : Phase> executePhase(phaseClass: KClass<T>) {
         val walker = ParseTreeWalker()
         val phase = phaseClass.java.newInstance()
 
-        with (phase) {
-            this.fileName = file.name
-            this.symTab = this@CompilationUnit.symTab
-            this.results = this@CompilationUnit.results
-            this.paths = this@CompilationUnit.paths
+        phase.let {
+            it.fileName = file.name
+            it.symTab = symTab
+            it.results = results
+            it.paths = paths
         }
 
         val ms = measureTimeMillis { walker.walk(phase, tree) }
 
         phase.errorList.forEach { Logger.error(it) }
+        totalErrors += phase.errorList.size
 
         Logger.debug("${file.name} [${phase.javaClass.name}]: $ms ms")
-
-        return phase.errorList.size
     }
 
-    fun compileMyself(): Int {
+    fun compileMyself() {
         if (parser.numberOfSyntaxErrors > 0) {
-            return 1
+            throw ParsingException()
         }
 
-        var errors = 0
-
-        errors += executePhase(Imports::class)
-        errors += executePhase(Globals::class)
-        errors += executePhase(Structure::class)
-        errors += executePhase(Types::class)
-
-        return errors
+        executePhase(Imports::class)
+        executePhase(Globals::class)
+        executePhase(Structure::class)
+        executePhase(Types::class)
     }
 }

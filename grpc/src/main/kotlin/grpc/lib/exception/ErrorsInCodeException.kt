@@ -16,5 +16,5 @@
 
 package grpc.lib.exception
 
-class ErrorsInCodeException(c: Int) :
-        CompilerException("$c error(s) found in code. Won't continue")
+class ErrorsInCodeException :
+        CompilerException("Error(s) found in code. Won't continue")

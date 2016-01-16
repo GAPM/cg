@@ -27,7 +27,6 @@ import kotlin.reflect.KClass
 class Compiler(files: Array<String>) {
     private val paths = files.map { Paths.get(it) }.toTypedArray()
     private var totalErrors = 0
-
     private val symbolTable = SymbolTable()
     private val results = ParseTreeProperty<UnitResult>()
 
@@ -50,14 +49,16 @@ class Compiler(files: Array<String>) {
      */
     private fun checkForErrors() {
         if (totalErrors > 0) {
-            throw ErrorsInCodeException(totalErrors)
+            throw ErrorsInCodeException()
         }
     }
 
     fun <T : Phase> executePhaseForAll(phaseClass: KClass<T>) {
         compUnits.map {
-            totalErrors += it.executePhase(phaseClass)
+            it.executePhase(phaseClass)
         }
+
+        totalErrors += compUnits.map { it.getNumberOfErrors() }.sum()
 
         checkForErrors()
     }

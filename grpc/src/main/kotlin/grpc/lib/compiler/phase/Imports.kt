@@ -55,7 +55,8 @@ class Imports : Phase() {
 
             if (duplicate == null) {
                 val unit = createCompilationUnit(fileName)
-                val errors = unit.compileMyself()
+                unit.compileMyself()
+                val errors = unit.getNumberOfErrors()
 
                 if (errors > 0) {
                     importCompilationError(location, fileName)
