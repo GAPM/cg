@@ -23,7 +23,7 @@ object Logger {
         _maxLevel = level
     }
 
-    fun log(msg: String?, level: LogLevel) {
+    private fun log(msg: String?, level: LogLevel) {
         if (level <= _maxLevel) {
             when (level) {
                 LogLevel.ERROR -> System.err.println("$level: $msg")

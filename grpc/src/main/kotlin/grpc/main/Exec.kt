@@ -45,7 +45,7 @@ fun main(args: Array<String>) {
         }
 
         if (cmd.args.isEmpty()) {
-            Logger.log("no input files", LogLevel.ERROR)
+            Logger.error("no input files")
             System.exit(1)
         }
 

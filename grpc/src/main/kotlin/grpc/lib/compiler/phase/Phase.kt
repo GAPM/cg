@@ -34,4 +34,14 @@ open class Phase : GrpBaseListener() {
 
     fun addError(location: Location, msg: String) =
             errorList.add("$fileName:$location: $msg")
+
+    fun Stack<String>.scopeStr(): String {
+        var r = "$fileName.global"
+
+        for (s in this) {
+            r += ".$s"
+        }
+
+        return r
+    }
 }

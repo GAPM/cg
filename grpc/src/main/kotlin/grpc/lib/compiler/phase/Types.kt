@@ -27,16 +27,6 @@ class Types : Phase() {
     private var insideSimpleStmt = false
     private val scope = Stack<String>()
 
-    private fun Stack<String>.scopeStr(): String {
-        var r = "${this@Types.fileName}.global"
-
-        for (s in this) {
-            r += ".$s"
-        }
-
-        return r
-    }
-
     /**
      * Retrieves the type of a (sub)parse tree
      *
