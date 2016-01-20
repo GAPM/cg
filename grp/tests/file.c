@@ -27,12 +27,23 @@ int main() {
     assert(f_is_open(fw));
 
     f_write(fw, "ãẽĩõũ");
+    f_write(fw, newline());
     f_write(fw, "Dude");
+    f_write(fw, newline());
 
     f_close(fw);
     f_free(fw);
 
     file fr = f_open("test.txt", "r");
+
+    str x = f_readline(fr);
+    str y = f_readline(fr);
+
+    str_println(x);
+    str_println(y);
+
+    str_free(x);
+    str_free(y);
 
     f_close(fr);
     f_free(fr);

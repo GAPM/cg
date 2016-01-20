@@ -30,6 +30,7 @@ struct file {
 file f_open(str, str);
 bool f_is_open(file);
 void f_write(file, str);
+str f_readline(file);
 void f_close(file);
 void f_free(file);
 void f_remove(str);

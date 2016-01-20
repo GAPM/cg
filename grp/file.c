@@ -55,6 +55,41 @@ void f_write(file f, str s) {
     }
 }
 
+str f_readline(file f) {
+    if (f != NULL) {
+        char ch = fgetc(f->f);
+        size_t max = sizeof(int);
+        size_t count = 1;
+        char *buffer = calloc(max, sizeof(char));
+
+        if (buffer == NULL) {
+            return str_new("");
+        }
+
+        while (ch != EOF && ch != '\n') {
+            if (count == max) {
+                max *= 2;
+                buffer = realloc(buffer, max);
+                memset(buffer + count, 0, max - count);
+
+                if (buffer == NULL) {
+                    return NULL;
+                }
+            }
+
+            buffer[count] = ch;
+            count++;
+            ch = fgetc(f->f);
+        }
+
+        str s = str_new(buffer);
+        free(buffer);
+        return s;
+    }
+
+    return str_new("");
+}
+
 void f_close(file f) {
     if (f != NULL) {
         fclose(f->f);
