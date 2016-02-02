@@ -17,15 +17,16 @@
 #include <assert.h>
 
 #include "base.h"
+#include <string.h>
 
 int main() {
-    init();
+    GRP_init();
 
-    str nl = newline();
+    char *nl = GRP_newline();
 
 #ifdef _WIN32
-    assert(str_eq(nl, "\r\n"));
+    assert(strcmp(nl, "\r\n") == 0);
 #elif __unix__
-    assert(str_eq(nl, "\n"));
+    assert(strcmp(nl, "\n") == 0);
 #endif
 }

@@ -29,10 +29,10 @@ struct bitmatrix {
     bitarray matrix;
 };
 
-bitmatrix bm_new(size_t, size_t);
-bool bm_get(bitmatrix, size_t, size_t);
-void bm_set(bitmatrix, size_t, size_t, bool v);
-bitmatrix bm_copy(bitmatrix);
-void bm_free(bitmatrix);
+bitmatrix GRP_bm_new(size_t, size_t);
+bool GRP_bm_get(bitmatrix, size_t, size_t);
+void GRP_bm_set(bitmatrix, size_t, size_t, bool v);
+bitmatrix GRP_bm_copy(bitmatrix);
+void GRP_bm_free(bitmatrix);
 
 #endif // GRP_BITMATRIX_H

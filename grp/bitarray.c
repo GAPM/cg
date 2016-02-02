@@ -25,8 +25,11 @@
  * i & 7  == i % 8
  */
 
-bitarray ba_new(size_t s) {
-    size_t bytes = ceil(s / 8.0);
+static const size_t INT_BITS = sizeof(int) * CHAR_BIT;
+static const size_t MODULE_MASK = INT_BITS - 1;
+
+bitarray GRP_ba_new(size_t s) {
+    size_t real_size = ceil(s / ((double)INT_BITS));
 
     bitarray n = calloc(1, sizeof(struct bitarray));
     if (n == NULL) {
@@ -34,7 +37,7 @@ bitarray ba_new(size_t s) {
     }
 
     n->size = s;
-    n->array = calloc(bytes, 1);
+    n->array = calloc(real_size, sizeof(int));
     if (n->array == NULL) {
         free(n);
         return NULL;
@@ -43,37 +46,37 @@ bitarray ba_new(size_t s) {
     return n;
 }
 
-bool ba_get(bitarray ba, size_t i) {
-    return ba->array[i >> 3] & (1 << (i & 7));
+bool GRP_ba_get(bitarray ba, size_t i) {
+    return ba->array[i / INT_BITS] & (1 << (i & MODULE_MASK));
 }
 
-void ba_set(bitarray ba, size_t i, bool v) {
+void GRP_ba_set(bitarray ba, size_t i, bool v) {
     if (v) {
-        ba->array[i >> 3] |= (1 << (i & 7));
+        ba->array[i / INT_BITS] |= (1 << (i & MODULE_MASK));
     } else {
-        ba->array[i >> 3] &= ~(1 << (i & 7));
+        ba->array[i / INT_BITS] &= ~(1 << (i & MODULE_MASK));
     }
 }
 
-bitarray ba_copy(bitarray ba) {
-    bitarray n = ba_new(ba->size);
+bitarray GRP_ba_copy(bitarray ba) {
+    bitarray n = GRP_ba_new(ba->size);
 
     if (n == NULL) {
         return NULL;
     }
 
-    memcpy(n->array, ba->array, ceil(ba->size / 8.0));
+    memcpy(n->array, ba->array, ceil(ba->size / INT_BITS));
     return n;
 }
 
-size_t ba_size(bitarray ba) {
+size_t GRP_ba_size(bitarray ba) {
     if (ba != NULL) {
         return ba->size;
     }
     return 0;
 }
 
-void ba_free(bitarray ba) {
+void GRP_ba_free(bitarray ba) {
     free(ba->array);
     free(ba);
 }

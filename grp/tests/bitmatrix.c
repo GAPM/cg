@@ -19,19 +19,19 @@
 #include "base.h"
 #include "bitmatrix.h"
 
-#define MAXMATRIX 100
+#define MAXMATRIX 10000
 
 int main() {
-    init();
-    bitmatrix bm = bm_new(MAXMATRIX, MAXMATRIX);
+    GRP_init();
+    bitmatrix bm = GRP_bm_new(MAXMATRIX, MAXMATRIX);
 
-    size_t i;
-    size_t j;
+    volatile size_t i;
+    volatile size_t j;
 
     for (i = 0; i < MAXMATRIX; ++i) {
         for (j = 0; j < MAXMATRIX; ++j) {
             if (i == j) {
-                bm_set(bm, i, j, true);
+                GRP_bm_set(bm, i, j, true);
             }
         }
     }
@@ -39,12 +39,12 @@ int main() {
     for (i = 0; i < MAXMATRIX; ++i) {
         for (j = 0; j < MAXMATRIX; ++j) {
             if (i == j) {
-                assert(bm_get(bm, i, j));
+                assert(GRP_bm_get(bm, i, j));
             } else {
-                assert(!bm_get(bm, i, j));
+                assert(!GRP_bm_get(bm, i, j));
             }
         }
     }
 
-    bm_free(bm);
+    GRP_bm_free(bm);
 }

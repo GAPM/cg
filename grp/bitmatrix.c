@@ -16,7 +16,7 @@
 
 #include "bitmatrix.h"
 
-bitmatrix bm_new(size_t r, size_t c) {
+bitmatrix GRP_bm_new(size_t r, size_t c) {
     bitmatrix bm = calloc(1, sizeof(struct bitmatrix));
     if (bm == NULL) {
         return NULL;
@@ -24,7 +24,7 @@ bitmatrix bm_new(size_t r, size_t c) {
 
     bm->rows = r;
     bm->columns = c;
-    bm->matrix = ba_new(r * c);
+    bm->matrix = GRP_ba_new(r * c);
     if (bm->matrix == NULL) {
         free(bm);
         return NULL;
@@ -33,15 +33,15 @@ bitmatrix bm_new(size_t r, size_t c) {
     return bm;
 }
 
-bool bm_get(bitmatrix bm, size_t r, size_t c) {
-    return ba_get(bm->matrix, r * bm->rows + c);
+bool GRP_bm_get(bitmatrix bm, size_t r, size_t c) {
+    return GRP_ba_get(bm->matrix, r * bm->rows + c);
 }
 
-void bm_set(bitmatrix bm, size_t r, size_t c, bool v) {
-    ba_set(bm->matrix, r * bm->rows + c, v);
+void GRP_bm_set(bitmatrix bm, size_t r, size_t c, bool v) {
+    GRP_ba_set(bm->matrix, r * bm->rows + c, v);
 }
 
-bitmatrix bm_copy(bitmatrix bm) {
+bitmatrix GRP_bm_copy(bitmatrix bm) {
     bitmatrix n = calloc(1, sizeof(struct bitmatrix));
     if (n == NULL) {
         return NULL;
@@ -49,7 +49,7 @@ bitmatrix bm_copy(bitmatrix bm) {
 
     n->rows = bm->rows;
     n->columns = bm->columns;
-    n->matrix = ba_copy(bm->matrix);
+    n->matrix = GRP_ba_copy(bm->matrix);
     if (n->matrix == NULL) {
         free(n);
         return NULL;
@@ -58,7 +58,7 @@ bitmatrix bm_copy(bitmatrix bm) {
     return n;
 }
 
-void bm_free(bitmatrix bm) {
-    ba_free(bm->matrix);
+void GRP_bm_free(bitmatrix bm) {
+    GRP_ba_free(bm->matrix);
     free(bm);
 }

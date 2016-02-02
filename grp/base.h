@@ -21,8 +21,6 @@
 #include <stdio.h>
 #include <wchar.h>
 
-#include "str.h"
-
 /*
  * Routine that must be executed at the beginning of every Grp program.
  *
@@ -30,7 +28,7 @@
  *     - Initialize the localle to the system's localle.
  *     - Sets the orientation of the default streams to wide.
  */
-void init(void);
-char *newline();
+void GRP_init(void);
+char *GRP_newline();
 
 #endif // GRP_GRP_H

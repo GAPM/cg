@@ -19,27 +19,27 @@
 #include "base.h"
 #include "bitarray.h"
 
-#define MAXARRAY 10000
+#define MAXARRAY 100000000
 
 int main() {
-    init();
-    bitarray ba = ba_new(MAXARRAY);
+    GRP_init();
+    bitarray ba = GRP_ba_new(MAXARRAY);
 
-    int i;
+    volatile size_t i;
 
     for (i = 0; i < MAXARRAY; ++i) {
         if (i % 2 == 0) {
-            ba_set(ba, i, true);
+            GRP_ba_set(ba, i, true);
         }
     }
 
     for (i = 0; i < MAXARRAY; ++i) {
         if (i % 2 == 0) {
-            assert(ba_get(ba, i));
+            assert(GRP_ba_get(ba, i));
         } else {
-            assert(!ba_get(ba, i));
+            assert(!GRP_ba_get(ba, i));
         }
     }
 
-    ba_free(ba);
+    GRP_ba_free(ba);
 }
