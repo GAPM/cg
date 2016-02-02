@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2016 Simón Oroño
  *
@@ -36,6 +37,7 @@ EQUAL_EQUAL : '==' ;
 EXTERN : 'extern' ;
 FLOAT : 'float' ;
 FOR : 'for' ;
+FUN : 'fun' ;
 GE : '>=' ;
 GT : '>' ;
 IF : 'if' ;
@@ -145,12 +147,12 @@ expr: atom                                #Atomic
 exprList: (expr (',' expr)*)?;
 
 extVdec: 'extern' 'var' Identifier type;
-extFdef: 'extern' Identifier '(' argList ')' type;
+extFdef: 'extern' 'fun' Identifier '(' argList ')' type;
 extern: (extVdec | extFdef) ';';
 
 vdec: 'var' Identifier type ('=' expr)?;
 
-fdef: Identifier '(' argList ')' type '{' stmt* '}';
+fdef: 'fun' Identifier '(' argList ')' type '{' stmt* '}';
 
 fcall: Identifier '(' exprList ')';
 

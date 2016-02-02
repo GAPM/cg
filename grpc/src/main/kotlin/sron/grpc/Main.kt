@@ -33,14 +33,14 @@ fun main(args: Array<String>) {
     options.addOption("h", "help", false, "Show this help")
     options.addOption("o", "output", true, "The compiler output")
 
-    val parser = DefaultParser()
+    val cmdParser = DefaultParser()
 
     try {
-        val cmd = parser.parse(options, args)
+        val cmd = cmdParser.parse(options, args)
 
         if (cmd.hasOption("h")) {
             val hf = HelpFormatter()
-            hf.printHelp("sorono [options] file", options)
+            hf.printHelp("grpc [options] file", options)
             System.exit(0)
         }
 
