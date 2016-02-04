@@ -21,28 +21,26 @@ import sron.grpc.compiler.Annotation
 import sron.grpc.compiler.internal.GrpBaseListener
 import sron.grpc.symbol.Location
 import sron.grpc.symbol.SymbolTable
+import java.io.File
 import java.nio.file.Path
 import java.util.*
 import kotlin.properties.Delegates
 
 open class Phase : GrpBaseListener() {
+    var file: File by Delegates.notNull()
     var symTab: SymbolTable by Delegates.notNull()
-    var fileName: String by Delegates.notNull()
     var results: ParseTreeProperty<Annotation> by Delegates.notNull()
     var paths: Array<Path> by Delegates.notNull()
     val errorList = ArrayList<String>()
     protected val scope = Stack<String>()
 
-    fun addError(location: Location, msg: String) =
-            errorList.add("$fileName:$location: $msg")
-
-    fun Stack<String>.str(): String {
-        var r = "$fileName.global"
-
-        for (s in this) {
-            r += ".$s"
-        }
-
-        return r
+    fun init() {
+        scope.push(file.name)
     }
+
+    fun addError(location: Location, msg: String) {
+        errorList.add("${file.name}:$location: $msg")
+    }
+
+    fun scopeUID() = scope.reduce { a, b -> "$a.$b" }
 }

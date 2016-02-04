@@ -229,7 +229,7 @@ class Types : Phase() {
             val name = ctx.Identifier().text
             val type = ctx.type().toGrpType()
             val location = Location(ctx.Identifier())
-            val scope = scope.str()
+            val scope = scopeUID()
 
             val variable = Variable(name, type, scope, location, false)
             val qry = symTab.getSymbol(name, scope, SymType.VAR)
@@ -250,7 +250,7 @@ class Types : Phase() {
 
         val name = ctx.Identifier().text
         val location = Location(ctx.Identifier())
-        val scope = scope.str()
+        val scope = scopeUID()
 
         val qry = symTab.getSymbol(name, scope, SymType.VAR)
         when (qry) {

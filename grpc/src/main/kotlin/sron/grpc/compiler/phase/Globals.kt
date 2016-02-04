@@ -88,7 +88,7 @@ class Globals : Phase() {
         val ar = ctx.argList().arg()
 
         scope.push(name)
-        val scopeStr = scope.str()
+        val scopeStr = scopeUID()
         scope.pop()
 
         val args = Array(ar.size) {
@@ -104,7 +104,7 @@ class Globals : Phase() {
             Variable(argName, argType, scopeStr, argLoc, false)
         }
 
-        val function = Function(name, scope.str(), type, location, false, *args)
+        val function = Function(name, scopeUID(), type, location, false, *args)
 
         val qry = symTab.getSymbol(name, SymType.FUNC)
         when (qry) {
@@ -135,9 +135,9 @@ class Globals : Phase() {
                 voidVarError(location, name, "variable")
             }
 
-            val variable = Variable(name, type, scope.str(), location, false)
+            val variable = Variable(name, type, scopeUID(), location, false)
 
-            val qry = symTab.getSymbol(name, scope.str(), SymType.VAR)
+            val qry = symTab.getSymbol(name, scopeUID(), SymType.VAR)
             when (qry) {
                 null -> symTab.addSymbol(variable)
                 else ->
@@ -159,7 +159,7 @@ class Globals : Phase() {
         val ar = ctx.argList().arg()
 
         scope.push(name)
-        val scopeStr = scope.str()
+        val scopeStr = scopeUID()
         scope.pop()
 
         val args = Array(ar.size) {
@@ -175,7 +175,7 @@ class Globals : Phase() {
             Variable(argName, argType, scopeStr, argLoc, false)
         }
 
-        val function = Function(name, scope.str(), type, location, true, *args)
+        val function = Function(name, scopeUID(), type, location, true, *args)
 
         val qry = symTab.getSymbol(name, SymType.FUNC)
         when (qry) {
@@ -199,9 +199,9 @@ class Globals : Phase() {
             voidVarError(location, name, "variable")
         }
 
-        val variable = Variable(name, type, scope.str(), location, true)
+        val variable = Variable(name, type, scopeUID(), location, true)
 
-        val qry = symTab.getSymbol(name, scope.str(), SymType.VAR)
+        val qry = symTab.getSymbol(name, scopeUID(), SymType.VAR)
         when (qry) {
             null -> symTab.addSymbol(variable)
             else ->

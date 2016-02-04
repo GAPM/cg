@@ -27,35 +27,37 @@ class Imports : Phase() {
     /**
      * Reports an import error caused by a file that could not be openned.
      */
-    private fun importError(location: Location, fileName: String) =
-            addError(location, "can not import file `$fileName`")
+    private fun importError(location: Location, fileName: String) {
+        addError(location, "can not import file `$fileName`")
+    }
 
     /**
      * Reports that an imported file had compilation errors on it.
      */
-    private fun importCompilationError(location: Location, fileName: String) =
-            addError(location, "errors in imported file `$fileName`")
+    private fun importCompilationError(location: Location, fileName: String) {
+        addError(location, "errors in imported file `$fileName`")
+    }
 
     /**
      * Creates a compilation unit from a file name.
      */
-    private fun createCompilationUnit(fileName: String): Unit =
-            Unit(fileName, paths)
+    private fun createCompilationUnit(fileName: String) = Unit(fileName, paths)
 
     override fun exitImportStmt(ctx: ImportStmtContext) {
         super.exitImportStmt(ctx)
 
+        val dir = file.parent
         val fileName = ctx.StringLit().text.removeQuotes()
-        val file = File(fileName)
+        val importedFile = File(dir, fileName)
         val location = Location(ctx.start)
 
-        if (file.exists() && !file.isDirectory) {
-            val path = file.toPath()
+        if (importedFile.exists() && !importedFile.isDirectory) {
+            val path = importedFile.toPath()
             val duplicate = paths.find { Files.isSameFile(path, it) }
 
             if (duplicate == null) {
-                val unit = createCompilationUnit(fileName)
-                unit.compileMyself()
+                val unit = createCompilationUnit(importedFile.absolutePath)
+                unit.compileAsImport()
                 val errors = unit.totalErrors
 
                 if (errors > 0) {

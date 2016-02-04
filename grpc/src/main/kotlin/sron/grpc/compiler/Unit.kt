@@ -57,10 +57,11 @@ class Unit(fileName: String, private val paths: Array<Path>) {
         val phase = phaseClass.java.newInstance()
 
         phase.let {
-            it.fileName = file.name
+            it.file = file
             it.symTab = symTab
             it.results = results
             it.paths = paths
+            it.init()
         }
 
         val ms = measureTimeMillis { walker.walk(phase, tree) }
@@ -71,7 +72,7 @@ class Unit(fileName: String, private val paths: Array<Path>) {
         Logger.debug("${file.name} [${phase.javaClass.name}]: $ms ms")
     }
 
-    fun compileMyself() {
+    fun compileAsImport() {
         if (parser.numberOfSyntaxErrors > 0) {
             throw ParsingException()
         }
