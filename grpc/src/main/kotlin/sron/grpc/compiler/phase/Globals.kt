@@ -82,7 +82,7 @@ class Globals : Phase() {
         super.exitFdef(ctx)
 
         val name = ctx.Identifier().text
-        val type = ctx.type().toGrpType()
+        val type = ctx.type()?.toGrpType() ?: Type.void
         val location = Location(ctx.Identifier())
 
         val ar = ctx.argList().arg()
@@ -153,7 +153,7 @@ class Globals : Phase() {
         super.exitExtFdef(ctx)
 
         val name = ctx.Identifier().text
-        val type = ctx.type().toGrpType()
+        val type = ctx.type()?.toGrpType() ?: Type.void
         val location = Location(ctx.Identifier())
 
         val ar = ctx.argList().arg()

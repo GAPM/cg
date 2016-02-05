@@ -46,8 +46,9 @@ class Structure : Phase() {
     /**
      *
      */
-    private fun getReturns(ctx: ParserRuleContext): Boolean =
-            results.get(ctx)?.returns ?: false
+    private fun getReturns(ctx: ParserRuleContext): Boolean {
+        return results.get(ctx)?.returns ?: false
+    }
 
     /**
      * Reports that `continue` or `break` were used outside a loop.
@@ -55,32 +56,36 @@ class Structure : Phase() {
      * @param location The location of the error
      * @param word `continue` or `break`
      */
-    private fun controlStmtError(location: Location, word: String) =
-            addError(location, "`$word` not inside a loop")
+    private fun controlStmtError(location: Location, word: String) {
+        addError(location, "`$word` not inside a loop")
+    }
 
     /**
      * Reports that a non-empty return is inside a `void` function.
      *
      * @param location The location of the error
      */
-    private fun nonEmptyReturnError(location: Location) =
-            addError(location, "non-empty return in void function `$fName`")
+    private fun nonEmptyReturnError(location: Location) {
+        addError(location, "non-empty return in void function `$fName`")
+    }
 
     /**
      * Reports that a empty return is inside a non-void function.
      *
      * @param location The location of the error
      */
-    private fun emptyReturnError(location: Location) =
-            addError(location, "empty return in non-void function `$fName`")
+    private fun emptyReturnError(location: Location) {
+        addError(location, "empty return in non-void function `$fName`")
+    }
 
     /**
      * Reports that a non-void function doesn't guarantee a return.
      *
      * @param location The location of the function
      */
-    private fun notAllPathsReturnError(location: Location) =
-            addError(location, "in function $fName: not all paths have a return")
+    private fun notAllPathsReturnError(location: Location) {
+        addError(location, "in function $fName: not all paths have a return")
+    }
 
     /**
      * Marks that the phase entered inside a loop (`for`).
@@ -144,7 +149,7 @@ class Structure : Phase() {
         super.enterFdef(ctx)
 
         insideFunction = true
-        currentFunctionType = ctx.type().toGrpType()
+        currentFunctionType = ctx.type()?.toGrpType() ?: Type.void
         fName = ctx.Identifier().text
     }
 
@@ -156,9 +161,10 @@ class Structure : Phase() {
     override fun exitFdef(ctx: FdefContext) {
         super.exitFdef(ctx)
 
-        for (s in ctx.stmt()) {
-            if (getReturns(s)) {
+        for (stmt in ctx.stmt()) {
+            if (getReturns(stmt)) {
                 setReturns(ctx, true)
+                break
             }
         }
 

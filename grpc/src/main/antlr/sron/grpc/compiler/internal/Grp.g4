@@ -25,6 +25,7 @@ BANG : '!' ;
 BOOL : 'bool' ;
 BREAK : 'break' ;
 CHAR : 'char' ;
+COLON : ':' ;
 COMMA : ',' ;
 CONTINUE : 'continue' ;
 DIV : '/' ;
@@ -119,7 +120,7 @@ type: 'int'
     | 'bool'
     ;
 
-arg: Identifier type;
+arg: Identifier ':' type;
 argList: (arg (',' arg)*)?;
 
 atom: IntLit            #Integer
@@ -146,13 +147,13 @@ expr: atom                                #Atomic
     ;
 exprList: (expr (',' expr)*)?;
 
-extVdec: 'extern' 'var' Identifier type;
-extFdef: 'extern' 'fun' Identifier '(' argList ')' type;
+extVdec: 'extern' 'var' Identifier ':' type;
+extFdef: 'extern' 'fun' Identifier '(' argList ')' (':' type)?;
 extern: (extVdec | extFdef) ';';
 
-vdec: 'var' Identifier type ('=' expr)?;
+vdec: 'var' Identifier ':' type ('=' expr)?;
 
-fdef: 'fun' Identifier '(' argList ')' type '{' stmt* '}';
+fdef: 'fun' Identifier '(' argList ')' (':' type)? '{' stmt* '}';
 
 fcall: Identifier '(' exprList ')';
 
