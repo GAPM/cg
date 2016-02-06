@@ -48,7 +48,7 @@ class Compiler(files: Array<String>) {
     }
 
     fun <T : Phase> executePhaseForAll(phaseClass: KClass<T>) {
-        units.map { it.executePhase(phaseClass) }
+        units.forEach { it.executePhase(phaseClass) }
         totalErrors += units.sumBy { it.totalErrors }
         checkForErrors()
     }

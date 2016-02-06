@@ -17,9 +17,11 @@
 package sron.grpc.compiler.phase
 
 import org.antlr.v4.runtime.ParserRuleContext
-import sron.grpc.compiler.*
 import sron.grpc.compiler.Annotation
+import sron.grpc.compiler.JVMArch
 import sron.grpc.compiler.internal.GrpParser.*
+import sron.grpc.compiler.nextId
+import sron.grpc.compiler.toGrpType
 import sron.grpc.symbol.*
 import sron.grpc.symbol.Function
 
@@ -32,8 +34,7 @@ class Types : Phase() {
      * @param ctx The parse tree
      * @return The type of the parse tree, `Type.error` if it does not exists
      */
-    fun getType(ctx: ParserRuleContext): Type =
-            results.get(ctx)?.type ?: Type.error
+    fun getType(ctx: ParserRuleContext) = results.get(ctx)?.type ?: Type.error
 
     /**
      * Sets the type of a (sub)parse tree, if the parse tree does not have an
@@ -53,8 +54,7 @@ class Types : Phase() {
      *
      * @param ctx The parse tree
      */
-    fun getAssignable(ctx: ParserRuleContext): Boolean =
-            results.get(ctx)?.assignable ?: false
+    fun getAssignable(ctx: ParserRuleContext) = results.get(ctx)?.assignable ?: false
 
     /**
      * Sets whether a (sub) parse tree correspond to an assignable expression.
@@ -102,8 +102,9 @@ class Types : Phase() {
      * @param op The operator
      * @param typ The type
      */
-    fun unaryOpError(location: Location, op: String, typ: Type) =
-            addError(location, "invalid unary operation: $op $typ")
+    fun unaryOpError(location: Location, op: String, typ: Type) {
+        addError(location, "invalid unary operation: $op $typ")
+    }
 
     /**
      * Reports a type mismatch error while using an binary operator
@@ -113,8 +114,9 @@ class Types : Phase() {
      * @param typ1 The type of the left operand
      * @param typ2 The type of the right operand
      */
-    fun binaryOpError(location: Location, op: String, typ1: Type, typ2: Type) =
-            addError(location, "invalid binary operation: $typ1 $op $typ2")
+    fun binaryOpError(location: Location, op: String, typ1: Type, typ2: Type) {
+        addError(location, "invalid binary operation: $typ1 $op $typ2")
+    }
 
     /**
      * Reports a type mismatch in a function call regarding one of the
@@ -156,8 +158,9 @@ class Types : Phase() {
      * @param location The location of the error
      * @param exp The non-assignable expression
      */
-    fun nonAssignableError(location: Location, exp: String) =
-            addError(location, "can not assign to $exp")
+    fun nonAssignableError(location: Location, exp: String) {
+        addError(location, "can not assign to $exp")
+    }
 
     /**
      * Reports a type mismatch in an assignment.
@@ -180,8 +183,9 @@ class Types : Phase() {
      * @param exp The expression with a wrong type
      * @param type The type of the expression
      */
-    fun conditionError(location: Location, exp: String, type: Type) =
-            addError(location, "can not use $exp (type $type) as type bool in condition")
+    fun conditionError(location: Location, exp: String, type: Type) {
+        addError(location, "can not use $exp (type $type) as type bool in condition")
+    }
 
     /**
      * Updates the scope whenever the phase enters a function definition.
@@ -426,24 +430,16 @@ class Types : Phase() {
         val location = Location(ctx.op)
 
         if (type != Type.error) {
-            when (op) {
-                "+", "-" -> {
-                    if (!type.isNumericType()) {
-                        unaryOpError(location, op, type)
-                        setType(ctx, Type.error)
-                    } else {
-                        setType(ctx, type)
-                    }
-                }
-                "!" -> {
-                    if (type != Type.bool) {
-                        unaryOpError(location, op, type)
-                        setType(ctx, Type.error)
-                    } else {
-                        setType(ctx, Type.bool)
-                    }
-                }
+            val operationResult = OpTable.checkUnary(op, type)
+
+            if (operationResult == Type.error) {
+                unaryOpError(location, op, type)
+                setType(ctx, Type.error)
+            } else {
+                setType(ctx, operationResult)
             }
+        } else {
+            setType(ctx, Type.error)
         }
     }
 
@@ -468,11 +464,13 @@ class Types : Phase() {
         val location = Location(ctx.start)
 
         if (type1 != Type.error && type2 != Type.error) {
-            if (type1 != type2) {
+            val operationResult = OpTable.checkBinary(op, type1, type2)
+
+            if (operationResult == Type.error) {
                 binaryOpError(location, op, type1, type2)
                 setType(ctx, Type.error)
             } else {
-                setType(ctx, type1)
+                setType(ctx, operationResult)
             }
         } else {
             setType(ctx, Type.error)
@@ -491,11 +489,13 @@ class Types : Phase() {
         val location = Location(ctx.start)
 
         if (type1 != Type.error && type2 != Type.error) {
-            if (type1 != type2) {
+            val operationResult = OpTable.checkBinary(op, type1, type2)
+
+            if (operationResult == Type.error) {
                 binaryOpError(location, op, type1, type2)
                 setType(ctx, Type.error)
             } else {
-                setType(ctx, type1)
+                setType(ctx, operationResult)
             }
         } else {
             setType(ctx, Type.error)
@@ -514,11 +514,13 @@ class Types : Phase() {
         val location = Location(ctx.start)
 
         if (type1 != Type.error && type2 != Type.error) {
-            if (type1 != type2) {
+            val operationResult = OpTable.checkBinary(op, type1, type2)
+
+            if (operationResult == Type.error) {
                 binaryOpError(location, op, type1, type2)
                 setType(ctx, Type.error)
             } else {
-                setType(ctx, Type.bool)
+                setType(ctx, operationResult)
             }
         } else {
             setType(ctx, Type.error)
@@ -537,11 +539,13 @@ class Types : Phase() {
         val location = Location(ctx.start)
 
         if (type1 != Type.error && type2 != Type.error) {
-            if (type1 != type2 || type1 == Type.void || type2 == Type.void) {
+            val operationResult = OpTable.checkBinary(op, type1, type2)
+
+            if (operationResult == Type.error) {
                 binaryOpError(location, op, type1, type2)
                 setType(ctx, Type.error)
             } else {
-                setType(ctx, Type.bool)
+                setType(ctx, operationResult)
             }
         } else {
             setType(ctx, Type.error)
@@ -559,11 +563,13 @@ class Types : Phase() {
         val location = Location(ctx.start)
 
         if (type1 != Type.error && type2 != Type.error) {
-            if (type1 != Type.bool || type2 != Type.bool) {
+            val operationResult = OpTable.checkBinary("&&", type1, type2)
+
+            if (operationResult == Type.error) {
                 binaryOpError(location, "&&", type1, type2)
                 setType(ctx, Type.error)
             } else {
-                setType(ctx, Type.bool)
+                setType(ctx, operationResult)
             }
         } else {
             setType(ctx, Type.error)
@@ -581,11 +587,13 @@ class Types : Phase() {
         val location = Location(ctx.start)
 
         if (type1 != Type.error && type2 != Type.error) {
-            if (type1 != Type.bool || type2 != Type.bool) {
-                binaryOpError(location, "&&", type1, type2)
+            val operationResult = OpTable.checkBinary("||", type1, type2)
+
+            if (operationResult == Type.error) {
+                binaryOpError(location, "||", type1, type2)
                 setType(ctx, Type.error)
             } else {
-                setType(ctx, Type.bool)
+                setType(ctx, operationResult)
             }
         } else {
             setType(ctx, Type.error)
