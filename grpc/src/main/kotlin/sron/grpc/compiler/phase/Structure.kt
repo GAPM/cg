@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Simón Oroño
+ * Copyright 2016 Simón Oroño & La Universidad del Zulias
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,16 +38,16 @@ class Structure : Phase() {
      *
      */
     private fun setReturns(ctx: ParserRuleContext, v: Boolean) {
-        var r = results.get(ctx) ?: Annotation()
+        var r = annotations.get(ctx) ?: Annotation()
         r.returns = v
-        results.put(ctx, r)
+        annotations.put(ctx, r)
     }
 
     /**
      *
      */
     private fun getReturns(ctx: ParserRuleContext): Boolean {
-        return results.get(ctx)?.returns ?: false
+        return annotations.get(ctx)?.returns ?: false
     }
 
     /**
@@ -253,19 +253,19 @@ class Structure : Phase() {
         super.exitSimpleStmt(ctx)
 
         ctx.vdec()?.let {
-            results.put(ctx, results.get(it))
+            annotations.put(ctx, annotations.get(it))
         }
 
         ctx.assign()?.let {
-            results.put(ctx, results.get(it))
+            annotations.put(ctx, annotations.get(it))
         }
 
         ctx.controlStmt()?.let {
-            results.put(ctx, results.get(it))
+            annotations.put(ctx, annotations.get(it))
         }
 
         ctx.expr()?.let {
-            results.put(ctx, results.get(it))
+            annotations.put(ctx, annotations.get(it))
         }
     }
 
@@ -277,15 +277,15 @@ class Structure : Phase() {
         super.exitCompoundStmt(ctx)
 
         ctx.ifc()?.let {
-            results.put(ctx, results.get(it))
+            annotations.put(ctx, annotations.get(it))
         }
 
         ctx.forc()?.let {
-            results.put(ctx, results.get(it))
+            annotations.put(ctx, annotations.get(it))
         }
 
         ctx.whilec()?.let {
-            results.put(ctx, results.get(it))
+            annotations.put(ctx, annotations.get(it))
         }
     }
 
@@ -296,11 +296,11 @@ class Structure : Phase() {
         super.exitStmt(ctx)
 
         ctx.simpleStmt()?.let {
-            results.put(ctx, results.get(it))
+            annotations.put(ctx, annotations.get(it))
         }
 
         ctx.compoundStmt()?.let {
-            results.put(ctx, results.get(it))
+            annotations.put(ctx, annotations.get(it))
         }
     }
 }

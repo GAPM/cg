@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Simón Oroño
+ * Copyright 2016 Simón Oroño & La Universidad del Zulia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -101,10 +101,10 @@ class Globals : Phase() {
                 voidVarError(argLoc, argName, "argument")
             }
 
-            Variable(argName, argType, scopeStr, argLoc, false)
+            Variable(argName, argType, scopeStr, argLoc)
         }
 
-        val function = Function(name, scopeUID(), type, location, false, *args)
+        val function = Function(name, scopeUID(), type, location, *args)
 
         val qry = symTab.getSymbol(name, SymType.FUNC)
         when (qry) {
@@ -135,7 +135,7 @@ class Globals : Phase() {
                 voidVarError(location, name, "variable")
             }
 
-            val variable = Variable(name, type, scopeUID(), location, false)
+            val variable = Variable(name, type, scopeUID(), location)
 
             val qry = symTab.getSymbol(name, scopeUID(), SymType.VAR)
             when (qry) {
@@ -143,69 +143,6 @@ class Globals : Phase() {
                 else ->
                     redeclarationError(location, qry.location, name, SymType.VAR)
             }
-        }
-    }
-
-    /**
-     * Inserts an external function and its arguments into the symbol table.
-     */
-    override fun exitExtFdef(ctx: ExtFdefContext) {
-        super.exitExtFdef(ctx)
-
-        val name = ctx.Identifier().text
-        val type = ctx.type()?.toGrpType() ?: Type.void
-        val location = Location(ctx.Identifier())
-
-        val ar = ctx.argList().arg()
-
-        scope.push(name)
-        val scopeStr = scopeUID()
-        scope.pop()
-
-        val args = Array(ar.size) {
-            val a = ar[it]
-            val argName = a.Identifier().text
-            val argType = a.type().toGrpType()
-            val argLoc = Location(a.Identifier())
-
-            if (argType == Type.void) {
-                voidVarError(argLoc, argName, "argument")
-            }
-
-            Variable(argName, argType, scopeStr, argLoc, false)
-        }
-
-        val function = Function(name, scopeUID(), type, location, true, *args)
-
-        val qry = symTab.getSymbol(name, SymType.FUNC)
-        when (qry) {
-            null -> symTab.addSymbol(function)
-            else ->
-                redeclarationError(location, qry.location, name, SymType.FUNC)
-        }
-    }
-
-    /**
-     * Inserts an external variable into the symbol table.
-     */
-    override fun exitExtVdec(ctx: ExtVdecContext) {
-        super.exitExtVdec(ctx)
-
-        val name = ctx.Identifier().text
-        val type = ctx.type().toGrpType()
-        val location = Location(ctx.Identifier())
-
-        if (type == Type.void) {
-            voidVarError(location, name, "variable")
-        }
-
-        val variable = Variable(name, type, scopeUID(), location, true)
-
-        val qry = symTab.getSymbol(name, scopeUID(), SymType.VAR)
-        when (qry) {
-            null -> symTab.addSymbol(variable)
-            else ->
-                redeclarationError(location, qry.location, name, SymType.VAR)
         }
     }
 }

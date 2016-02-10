@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Simón Oroño
+ * Copyright 2016 Simón Oroño & La Universidad del Zulia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@ package sron.grpc.compiler
 import sron.grpc.symbol.Type
 
 class Annotation {
-    public var type: Type = Type.error
-    public var returns: Boolean = false
-    public var assignable: Boolean = false
-    public var name: String = ""
+    var type: Type = Type.error
+    var returns: Boolean = false
+    var assignable: Boolean = false
+    var name: String = ""
 }

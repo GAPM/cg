@@ -1,6 +1,5 @@
-
 /*
- * Copyright 2016 Simón Oroño
+ * Copyright 2016 Simón Oroño & La Universidad del Zulia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -147,10 +146,6 @@ expr: atom                                #Atomic
     ;
 exprList: (expr (',' expr)*)?;
 
-extVdec: 'extern' 'var' Identifier ':' type;
-extFdef: 'extern' 'fun' Identifier '(' argList ')' (':' type)?;
-extern: (extVdec | extFdef) ';';
-
 vdec: 'var' Identifier ':' type ('=' expr)?;
 
 fdef: 'fun' Identifier '(' argList ')' (':' type)? '{' stmt* '}';
@@ -182,10 +177,8 @@ simpleStmt: vdec
           | expr
           ;
 
-importStmt: 'import' StringLit ';';
-
 stmt: simpleStmt ';'
     | compoundStmt
     ;
 
-init: (importStmt)* (extern)* (fdef | vdec ';')*;
+init: (fdef | vdec ';')*;

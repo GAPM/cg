@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Simón Oroño
+ * Copyright 2016 Simón Oroño & La Universidad del Zulia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,15 +22,12 @@ import sron.grpc.compiler.internal.GrpBaseListener
 import sron.grpc.symbol.Location
 import sron.grpc.symbol.SymbolTable
 import java.io.File
-import java.nio.file.Path
 import java.util.*
-import kotlin.properties.Delegates
 
 open class Phase : GrpBaseListener() {
-    var file: File by Delegates.notNull()
-    var symTab: SymbolTable by Delegates.notNull()
-    var results: ParseTreeProperty<Annotation> by Delegates.notNull()
-    var paths: Array<Path> by Delegates.notNull()
+    lateinit var file: File
+    lateinit var symTab: SymbolTable
+    lateinit var annotations: ParseTreeProperty<Annotation>
     val errorList = ArrayList<String>()
     protected val scope = Stack<String>()
 

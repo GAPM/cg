@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Simón Oroño
+ * Copyright 2016 Simón Oroño & La Universidad del Zulia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ fun main(args: Array<String>) {
         }
 
         try {
-            val compiler = Compiler(cmd.args)
+            val compiler = Compiler(cmd.args[0])
 
             try {
                 compiler.compile()

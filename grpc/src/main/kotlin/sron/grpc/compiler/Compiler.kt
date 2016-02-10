@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Simón Oroño
+ * Copyright 2016 Simón Oroño & La Universidad del Zulia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +16,48 @@
 
 package sron.grpc.compiler
 
+import org.antlr.v4.runtime.ANTLRInputStream
+import org.antlr.v4.runtime.CommonTokenStream
+import org.antlr.v4.runtime.tree.ParseTree
+import org.antlr.v4.runtime.tree.ParseTreeProperty
+import org.antlr.v4.runtime.tree.ParseTreeWalker
+import sron.grpc.compiler.internal.GrpLexer
+import sron.grpc.compiler.internal.GrpParser
 import sron.grpc.compiler.phase.*
 import sron.grpc.exception.ErrorsInCodeException
 import sron.grpc.exception.ParsingException
-import java.nio.file.Paths
+import sron.grpc.symbol.SymbolTable
+import sron.grpc.util.Logger
+import java.io.File
 import kotlin.reflect.KClass
+import kotlin.system.measureTimeMillis
 
-class Compiler(files: Array<String>) {
-    private val paths = files.map { Paths.get(it) }.toTypedArray()
+class Compiler(fileName: String) {
+    private val file = File(fileName)
+    lateinit private var tree: ParseTree
+
+    private val symTab = SymbolTable()
+    private val annotations = ParseTreeProperty<Annotation>()
+
+    private var syntaxErrors = 0
     private var totalErrors = 0
 
-    private val units = files.map { Unit(it, paths) }
+    init {
+        file.inputStream().use {
+            val input = ANTLRInputStream(it)
+            val lexer = GrpLexer(input)
+            val tokens = CommonTokenStream(lexer)
+            val parser = GrpParser(tokens).withFileName(file.name)
+            tree = parser.init()
+            syntaxErrors = parser.numberOfSyntaxErrors
+        }
+    }
 
     /**
      * Throws a [ParsingException] if the parser found syntax errors.
      */
     private fun checkParsing() {
-        val count = units.sumBy { it.getNumberOfSyntaxErrors() }
-        if (count > 0) {
+        if (syntaxErrors > 0) {
             throw ParsingException()
         }
     }
@@ -47,10 +71,20 @@ class Compiler(files: Array<String>) {
         }
     }
 
-    fun <T : Phase> executePhaseForAll(phaseClass: KClass<T>) {
-        units.forEach { it.executePhase(phaseClass) }
-        totalErrors += units.sumBy { it.totalErrors }
-        checkForErrors()
+    private fun <T : Phase> executePhase(phaseClass: KClass<T>) {
+        val phase = phaseClass.java.newInstance()
+        val walker = ParseTreeWalker()
+
+        with(phase) {
+            file = this@Compiler.file
+            symTab = this@Compiler.symTab
+            annotations = this@Compiler.annotations
+            init()
+        }
+
+        val ms = measureTimeMillis { walker.walk(phase, tree) }
+
+        Logger.debug("${file.name} [${phaseClass.simpleName}]: $ms ms")
     }
 
     /**
@@ -59,10 +93,12 @@ class Compiler(files: Array<String>) {
     fun compile() {
         checkParsing()
 
-        executePhaseForAll(Imports::class)
-        executePhaseForAll(Globals::class)
-        executePhaseForAll(Structure::class)
-        executePhaseForAll(Types::class)
-        executePhaseForAll(Generation::class)
+        executePhase(Globals::class)
+        executePhase(Structure::class)
+        executePhase(Types::class)
+
+        checkForErrors()
+
+        executePhase(Generation::class)
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Simón Oroño
+ * Copyright 2016 Simón Oroño & La Universidad del Zulia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ class Types : Phase() {
      * @param ctx The parse tree
      * @return The type of the parse tree, `Type.error` if it does not exists
      */
-    fun getType(ctx: ParserRuleContext) = results.get(ctx)?.type ?: Type.error
+    fun getType(ctx: ParserRuleContext) = annotations.get(ctx)?.type ?: Type.error
 
     /**
      * Sets the type of a (sub)parse tree, if the parse tree does not have an
@@ -44,9 +44,9 @@ class Types : Phase() {
      * @param type The context of the type to be assigned
      */
     fun setType(ctx: ParserRuleContext, type: Type) {
-        var r = results.get(ctx) ?: Annotation()
+        var r = annotations.get(ctx) ?: Annotation()
         r.type = type
-        results.put(ctx, r)
+        annotations.put(ctx, r)
     }
 
     /**
@@ -54,7 +54,7 @@ class Types : Phase() {
      *
      * @param ctx The parse tree
      */
-    fun getAssignable(ctx: ParserRuleContext) = results.get(ctx)?.assignable ?: false
+    fun getAssignable(ctx: ParserRuleContext) = annotations.get(ctx)?.assignable ?: false
 
     /**
      * Sets whether a (sub) parse tree correspond to an assignable expression.
@@ -65,9 +65,9 @@ class Types : Phase() {
      * @param v `true` if it's assignable, `false` otherwise
      */
     fun setAssignable(ctx: ParserRuleContext, v: Boolean) {
-        var r = results.get(ctx) ?: Annotation()
+        var r = annotations.get(ctx) ?: Annotation()
         r.assignable = v
-        results.put(ctx, r)
+        annotations.put(ctx, r)
     }
 
     /**
@@ -235,7 +235,7 @@ class Types : Phase() {
             val location = Location(ctx.Identifier())
             val scope = scopeUID()
 
-            val variable = Variable(name, type, scope, location, false)
+            val variable = Variable(name, type, scope, location)
             val qry = symTab.getSymbol(name, scope, SymType.VAR)
 
             when (qry) {
@@ -414,7 +414,7 @@ class Types : Phase() {
      */
     override fun exitAtomic(ctx: AtomicContext) {
         super.exitAtomic(ctx)
-        results.put(ctx, results.get(ctx.atom()))
+        annotations.put(ctx, annotations.get(ctx.atom()))
     }
 
     /**
@@ -449,7 +449,7 @@ class Types : Phase() {
      */
     override fun exitAssoc(ctx: AssocContext) {
         super.exitAssoc(ctx)
-        results.put(ctx, results.get(ctx.expr()))
+        annotations.put(ctx, annotations.get(ctx.expr()))
     }
 
     /**
