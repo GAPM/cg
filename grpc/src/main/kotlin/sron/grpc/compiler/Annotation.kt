@@ -16,7 +16,7 @@
 
 package sron.grpc.compiler
 
-import sron.grpc.symbol.Type
+import sron.grpc.type.Type
 
 class Annotation {
     var type: Type = Type.error

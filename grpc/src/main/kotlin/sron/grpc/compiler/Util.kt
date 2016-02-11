@@ -21,7 +21,7 @@ import sron.grpc.compiler.internal.GrpErrorListener
 import sron.grpc.compiler.internal.GrpLexer
 import sron.grpc.compiler.internal.GrpParser
 import sron.grpc.compiler.internal.GrpParser.TypeContext
-import sron.grpc.symbol.Type
+import sron.grpc.type.Type
 
 private var id = 0
 

@@ -22,8 +22,13 @@ import sron.grpc.compiler.JVMArch
 import sron.grpc.compiler.internal.GrpParser.*
 import sron.grpc.compiler.nextId
 import sron.grpc.compiler.toGrpType
-import sron.grpc.symbol.*
 import sron.grpc.symbol.Function
+import sron.grpc.symbol.Location
+import sron.grpc.symbol.SymType
+import sron.grpc.symbol.Variable
+import sron.grpc.type.CastTable
+import sron.grpc.type.OpTable
+import sron.grpc.type.Type
 
 class Types : Phase() {
     private var insideSimpleStmt = false

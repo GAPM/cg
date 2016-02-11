@@ -18,8 +18,11 @@ package sron.grpc.compiler.phase
 
 import sron.grpc.compiler.internal.GrpParser.*
 import sron.grpc.compiler.toGrpType
-import sron.grpc.symbol.*
 import sron.grpc.symbol.Function
+import sron.grpc.symbol.Location
+import sron.grpc.symbol.SymType
+import sron.grpc.symbol.Variable
+import sron.grpc.type.Type
 
 /**
  * [Globals] is the compiler phase where all global symbols (functions and

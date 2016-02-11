@@ -21,7 +21,7 @@ import sron.grpc.compiler.Annotation
 import sron.grpc.compiler.internal.GrpParser.*
 import sron.grpc.compiler.toGrpType
 import sron.grpc.symbol.Location
-import sron.grpc.symbol.Type
+import sron.grpc.type.Type
 
 /**
  * [Structure] is the compilation phase that checks that all non-void functions

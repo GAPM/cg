@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sron.grpc.symbol
+package sron.grpc.type
 
 object OpTable {
     val arithmetic = listOf("+", "-", "*", "/", "%")
