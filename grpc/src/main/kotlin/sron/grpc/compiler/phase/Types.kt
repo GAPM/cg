@@ -245,8 +245,7 @@ class Types : Phase() {
 
             when (qry) {
                 null -> symTab.addSymbol(variable)
-                else ->
-                    redeclarationError(location, variable.location, name)
+                else -> redeclarationError(location, variable.location, name)
             }
         }
     }
@@ -315,10 +314,7 @@ class Types : Phase() {
      */
     override fun exitDouble(ctx: DoubleContext) {
         super.exitDouble(ctx)
-        when (JVMArch()) {
-            64 -> setType(ctx, Type.double)
-            32 -> setType(ctx, Type.float)
-        }
+        setType(ctx, Type.double)
     }
 
     /**
@@ -377,17 +373,17 @@ class Types : Phase() {
                     setType(ctx, Type.error)
                 } else {
                     for (i in args.indices) {
-                        val typ1 = args[i].type
-                        val typ2 = getType(exprs[i])
+                        val typeArg = args[i].type
+                        val typeExpr = getType(exprs[i])
                         val exp = exprs[i].text
 
-                        if (typ1 == Type.error || typ2 == Type.error) {
+                        if (typeArg == Type.error || typeExpr == Type.error) {
                             setType(ctx, Type.error)
                             return
                         }
 
-                        if (typ1 != typ2) {
-                            argumentError(location, exp, typ2, typ1, name)
+                        if (typeArg != typeExpr) {
+                            argumentError(location, exp, typeExpr, typeArg, name)
                             error = true
                         }
                     }

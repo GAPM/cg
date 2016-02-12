@@ -64,7 +64,7 @@ class Globals : Phase() {
      * Marks whenever the phase enters in a simple statement. Variables being
      * declared inside a simple statement are not global.
      */
-    override fun enterSimpleStmt(ctx: SimpleStmtContext?) {
+    override fun enterSimpleStmt(ctx: SimpleStmtContext) {
         super.enterSimpleStmt(ctx)
         insideSimpleStmt = true
     }
@@ -73,7 +73,7 @@ class Globals : Phase() {
      * Marks whenever the phase leaves a simple statement. Variables being
      * declared inside a simple statement are not global.
      */
-    override fun exitSimpleStmt(ctx: SimpleStmtContext?) {
+    override fun exitSimpleStmt(ctx: SimpleStmtContext) {
         super.exitSimpleStmt(ctx)
         insideSimpleStmt = false
     }

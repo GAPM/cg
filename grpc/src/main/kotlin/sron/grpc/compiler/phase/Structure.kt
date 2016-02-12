@@ -154,8 +154,8 @@ class Structure : Phase() {
     }
 
     /**
-     * Marks that the phase leaved a function definition, checking that all paths
-     * returns a value (unless its type is `void`) and removing current name and
+     * Marks that the phase left a function definition, checking that all paths
+     * returns a value (unless its type is `void`) and remove current name and
      * return type.
      */
     override fun exitFdef(ctx: FdefContext) {
