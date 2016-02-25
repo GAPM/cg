@@ -29,7 +29,6 @@ import sron.grpc.exception.ParsingException
 import sron.grpc.symbol.SymbolTable
 import sron.grpc.util.Logger
 import java.io.File
-import kotlin.reflect.KClass
 import kotlin.system.measureTimeMillis
 
 class Compiler(fileName: String) {
@@ -71,8 +70,8 @@ class Compiler(fileName: String) {
         }
     }
 
-    private fun <T : Phase> executePhase(phaseClass: KClass<T>) {
-        val phase = phaseClass.java.newInstance()
+    private fun <T : Phase> executePhase(constructor: () -> T) {
+        val phase = constructor()
         val walker = ParseTreeWalker()
 
         with(phase) {
@@ -87,7 +86,7 @@ class Compiler(fileName: String) {
         totalErrors += phase.errorList.size
         phase.errorList.forEach { Logger.error(it) }
 
-        Logger.debug("${file.name} [${phaseClass.simpleName}]: $ms ms")
+        Logger.debug("${file.name} [${phase.javaClass.simpleName}]: $ms ms")
     }
 
     /**
@@ -96,12 +95,12 @@ class Compiler(fileName: String) {
     fun compile() {
         checkParsing()
 
-        executePhase(Globals::class)
-        executePhase(Structure::class)
-        executePhase(Types::class)
+        executePhase(::Globals)
+        executePhase(::Structure)
+        executePhase(::Types)
 
         checkForErrors()
 
-        executePhase(Generation::class)
+        executePhase(::Generation)
     }
 }

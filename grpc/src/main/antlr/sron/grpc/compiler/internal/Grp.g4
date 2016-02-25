@@ -34,14 +34,12 @@ ELIF : 'elif' ;
 ELSE : 'else' ;
 EQUAL : '=' ;
 EQUAL_EQUAL : '==' ;
-EXTERN : 'extern' ;
 FLOAT : 'float' ;
 FOR : 'for' ;
 FUN : 'fun' ;
 GE : '>=' ;
 GT : '>' ;
 IF : 'if' ;
-IMPORT : 'import' ;
 INT : 'int' ;
 INT16 : 'int16' ;
 INT32 : 'int32' ;
@@ -131,7 +129,7 @@ atom: IntLit            #Integer
     | StringLit         #StringAtom
     | Identifier        #VarName
     | fcall             #FunctionCall
-    | type '(' expr ')'  #Cast
+    | type '(' expr ')' #Cast
     ;
 
 expr: atom                                #Atomic

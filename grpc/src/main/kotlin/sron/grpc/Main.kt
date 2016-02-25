@@ -60,11 +60,14 @@ fun main(args: Array<String>) {
                 compiler.compile()
             } catch(e: CompilerException) {
                 Logger.error(e.message)
+                System.exit(1)
             }
         } catch(e: IOException) {
             Logger.error(e.message)
+            System.exit(1)
         }
     } catch (e: UnrecognizedOptionException) {
         Logger.error("unrecognized option ${e.option}")
+        System.exit(1)
     }
 }

@@ -45,6 +45,8 @@ object OpTable {
             BinOp(arithmetic, Type.uint16),
             BinOp(arithmetic, Type.uint32),
             BinOp(arithmetic, Type.uint64),
+            BinOp(arithmetic, Type.float),
+            BinOp(arithmetic, Type.double),
 
             BinOp(comparison, Type.int8, Type.bool),
             BinOp(comparison, Type.int16, Type.bool),
@@ -54,6 +56,8 @@ object OpTable {
             BinOp(comparison, Type.uint16, Type.bool),
             BinOp(comparison, Type.uint32, Type.bool),
             BinOp(comparison, Type.uint64, Type.bool),
+            BinOp(comparison, Type.float, Type.bool),
+            BinOp(comparison, Type.double, Type.bool),
 
             BinOp(comparison, Type.char, Type.bool),
             BinOp(comparison, Type.string, Type.bool),
@@ -74,6 +78,8 @@ object OpTable {
             UnaryOp(sign, Type.uint16),
             UnaryOp(sign, Type.uint32),
             UnaryOp(sign, Type.uint64),
+            UnaryOp(sign, Type.float),
+            UnaryOp(sign, Type.double),
 
             UnaryOp(listOf("!"), Type.bool)
     )
@@ -83,16 +89,14 @@ object OpTable {
                 .filter { it.ops.contains(op) }
                 .filter {
                     (it.x == x && it.y == y) || (it.x == y && it.y == x)
-                }
-                .firstOrNull()
+                }.firstOrNull()
         return o?.result ?: Type.error
     }
 
     fun checkUnary(op: String, x: Type): Type {
         val o = unaryOps
                 .filter { it.ops.contains(op) }
-                .filter { it.x == x }
-                .firstOrNull()
+                .filter { it.x == x }.firstOrNull()
         return o?.result ?: Type.error
     }
 }
