@@ -14,19 +14,4 @@
  * limitations under the License.
  */
 
-apply plugin: 'antlr'
-apply plugin: 'application'
-
-mainClassName = 'sron.grpc.MainKt'
-
-compileKotlin.dependsOn generateGrammarSource
-
-generateGrammarSource {
-    arguments += ['-package', 'sron.grpc.compiler.internal']
-}
-
-dependencies {
-    antlr 'org.antlr:antlr4:4.5.2-1'
-    compile 'commons-cli:commons-cli:1.3.1'
-    compile project(':grp-stdlib')
-}
+apply plugin: 'kotlin'

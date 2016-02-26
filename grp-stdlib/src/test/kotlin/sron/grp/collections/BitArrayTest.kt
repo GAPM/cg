@@ -14,19 +14,34 @@
  * limitations under the License.
  */
 
-apply plugin: 'antlr'
-apply plugin: 'application'
+package sron.grp.collections
 
-mainClassName = 'sron.grpc.MainKt'
+import org.junit.Test
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
-compileKotlin.dependsOn generateGrammarSource
+class BitArrayTest {
+    @Test
+    fun test() {
+        val ba = BitArray(100);
+        val s = ba.size
 
-generateGrammarSource {
-    arguments += ['-package', 'sron.grpc.compiler.internal']
-}
+        assertTrue(s == 100)
 
-dependencies {
-    antlr 'org.antlr:antlr4:4.5.2-1'
-    compile 'commons-cli:commons-cli:1.3.1'
-    compile project(':grp-stdlib')
+        for (i in 0..s - 1) {
+            if (i >= 50) {
+                ba[i] = true
+            }
+        }
+
+        for (i in 0..s - 1) {
+            if (i >= 50) {
+                assertTrue(ba[i])
+            } else {
+                assertFalse(ba[i])
+            }
+        }
+
+        assertFalse(ba[101])
+    }
 }

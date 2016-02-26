@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-apply plugin: 'antlr'
-apply plugin: 'application'
+package sron.grp.collections
 
-mainClassName = 'sron.grpc.MainKt'
+class BitMatrix(val rows: Int, val columns: Int) {
+    private val array = BitArray(rows * columns)
 
-compileKotlin.dependsOn generateGrammarSource
+    operator fun get(r: Int, c: Int) = array[r * rows + c]
 
-generateGrammarSource {
-    arguments += ['-package', 'sron.grpc.compiler.internal']
-}
-
-dependencies {
-    antlr 'org.antlr:antlr4:4.5.2-1'
-    compile 'commons-cli:commons-cli:1.3.1'
-    compile project(':grp-stdlib')
+    operator fun set(r: Int, c: Int, value: Boolean) {
+        array[r * rows + c] = value
+    }
 }

@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-apply plugin: 'antlr'
-apply plugin: 'application'
+package sron.grp.collections
 
-mainClassName = 'sron.grpc.MainKt'
+class BitArray(val size: Int) {
+    private val array = IntArray(Math.ceil(size / 32.0).toInt())
 
-compileKotlin.dependsOn generateGrammarSource
+    operator fun get(idx: Int): Boolean {
+        return (array[idx shr 5] and (1 shl (idx and 31))) != 0
+    }
 
-generateGrammarSource {
-    arguments += ['-package', 'sron.grpc.compiler.internal']
-}
-
-dependencies {
-    antlr 'org.antlr:antlr4:4.5.2-1'
-    compile 'commons-cli:commons-cli:1.3.1'
-    compile project(':grp-stdlib')
+    operator fun set(idx: Int, value: Boolean) {
+        if (value) {
+            array[idx shr 5] = array[idx shr 5] or (1 shl (idx and 31))
+        } else {
+            array[idx shr 5] = array[idx shr 5] and (1 shl (idx and 31)).inv()
+        }
+    }
 }
