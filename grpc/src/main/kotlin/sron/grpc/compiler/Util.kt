@@ -22,6 +22,7 @@ import sron.grpc.compiler.internal.GrpLexer
 import sron.grpc.compiler.internal.GrpParser
 import sron.grpc.compiler.internal.GrpParser.TypeContext
 import sron.grpc.type.Type
+import sron.grpc.util.Unsafe
 
 private var id = 0
 
@@ -31,10 +32,7 @@ fun GrpParser.withFileName(fileName: String): GrpParser {
     return this
 }
 
-fun JVMArch(): Int {
-    val arch = System.getProperty("os.arch")
-    return if (arch.contains("64")) 64 else 32
-}
+fun JVMArch() = Unsafe.addressSize() * 8
 
 fun TypeContext.toGrpType(): Type {
     val tn = this.getChild(0) as TerminalNode
@@ -48,11 +46,6 @@ fun TypeContext.toGrpType(): Type {
         GrpLexer.INT64 -> Type.int64
         GrpLexer.FLOAT -> Type.float
         GrpLexer.DOUBLE -> Type.double
-        GrpLexer.UINT -> if (JVMArch() == 64) Type.uint64 else Type.uint32
-        GrpLexer.UINT8 -> Type.uint8
-        GrpLexer.UINT16 -> Type.uint16
-        GrpLexer.UINT32 -> Type.uint32
-        GrpLexer.UINT64 -> Type.uint64
         GrpLexer.BOOL -> Type.bool
         GrpLexer.VOID -> Type.void
         GrpLexer.STRING -> Type.string

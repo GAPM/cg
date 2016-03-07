@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package sron.grpc.type
+package sron.grpc.util
 
-enum class Type {
-    int8,
-    int16,
-    int32,
-    int64,
-    float,
-    double,
-    bool,
-    void,
-    string,
-    char,
-    error
+import sun.misc.Unsafe
+
+object Unsafe {
+    private val unsafeConstructor = Unsafe::class.java.getDeclaredConstructor()
+    private lateinit var unsafe: Unsafe
+
+    init {
+        unsafeConstructor.isAccessible = true
+        unsafe = unsafeConstructor.newInstance()
+    }
+
+    fun addressSize() = unsafe.addressSize()
 }

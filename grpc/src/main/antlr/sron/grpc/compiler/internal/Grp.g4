@@ -63,11 +63,6 @@ RPAREN : ')' ;
 SEMI : ';' ;
 STRING : 'string' ;
 SUB : '-' ;
-UINT : 'uint' ;
-UINT16 : 'uint16' ;
-UINT32 : 'uint32' ;
-UINT64 : 'uint64' ;
-UINT8 : 'uint8' ;
 VAR : 'var' ;
 VOID : 'void' ;
 WHILE : 'while' ;
@@ -106,11 +101,6 @@ type: 'int'
     | 'int64'
     | 'float'
     | 'double'
-    | 'uint'
-    | 'uint8'
-    | 'uint16'
-    | 'uint32'
-    | 'uint64'
     | 'char'
     | 'string'
     | 'void'

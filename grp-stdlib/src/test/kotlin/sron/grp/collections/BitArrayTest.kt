@@ -17,6 +17,7 @@
 package sron.grp.collections
 
 import org.junit.Test
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -42,6 +43,13 @@ class BitArrayTest {
             }
         }
 
-        assertFalse(ba[101])
+        // Test the excess
+        for (i in 100..127) {
+            assertFalse(ba[i])
+        }
+
+        assertFailsWith(IndexOutOfBoundsException::class) {
+            ba[128]
+        }
     }
 }
