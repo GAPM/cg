@@ -41,10 +41,6 @@ object OpTable {
             BinOp(arithmetic, Type.int16),
             BinOp(arithmetic, Type.int32),
             BinOp(arithmetic, Type.int64),
-            BinOp(arithmetic, Type.uint8),
-            BinOp(arithmetic, Type.uint16),
-            BinOp(arithmetic, Type.uint32),
-            BinOp(arithmetic, Type.uint64),
             BinOp(arithmetic, Type.float),
             BinOp(arithmetic, Type.double),
 
@@ -52,10 +48,6 @@ object OpTable {
             BinOp(comparison, Type.int16, Type.bool),
             BinOp(comparison, Type.int32, Type.bool),
             BinOp(comparison, Type.int64, Type.bool),
-            BinOp(comparison, Type.uint8, Type.bool),
-            BinOp(comparison, Type.uint16, Type.bool),
-            BinOp(comparison, Type.uint32, Type.bool),
-            BinOp(comparison, Type.uint64, Type.bool),
             BinOp(comparison, Type.float, Type.bool),
             BinOp(comparison, Type.double, Type.bool),
 
@@ -74,10 +66,6 @@ object OpTable {
             UnaryOp(sign, Type.int16),
             UnaryOp(sign, Type.int32),
             UnaryOp(sign, Type.int64),
-            UnaryOp(sign, Type.uint8),
-            UnaryOp(sign, Type.uint16),
-            UnaryOp(sign, Type.uint32),
-            UnaryOp(sign, Type.uint64),
             UnaryOp(sign, Type.float),
             UnaryOp(sign, Type.double),
 

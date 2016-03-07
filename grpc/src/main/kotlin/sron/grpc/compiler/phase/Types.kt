@@ -288,19 +288,6 @@ class Types : Phase() {
     }
 
     /**
-     * Sets the type of an unsigned integer literal parse tree to the machine
-     * dependant unsigned integer type.
-     */
-    override fun exitUInteger(ctx: UIntegerContext) {
-        super.exitUInteger(ctx)
-
-        when (JVMArch()) {
-            64 -> setType(ctx, Type.uint64)
-            32 -> setType(ctx, Type.uint32)
-        }
-    }
-
-    /**
      * Sets the type of an float literal parse tree to the float type.
      */
     override fun exitFloat(ctx: FloatContext) {
