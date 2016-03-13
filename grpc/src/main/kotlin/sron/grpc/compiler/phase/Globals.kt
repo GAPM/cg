@@ -136,11 +136,13 @@ class Globals : Phase() {
 
             if (type == Type.void) {
                 voidVarError(location, name, "variable")
+                return
             }
 
-            val variable = Variable(name, type, scopeUID(), location)
+            val scope = scopeUID()
+            val variable = Variable(name, type, scope, location)
 
-            val qry = symTab.getSymbol(name, scopeUID(), SymType.VAR)
+            val qry = symTab.getSymbol(name, scope, SymType.VAR)
             when (qry) {
                 null -> symTab.addSymbol(variable)
                 else ->

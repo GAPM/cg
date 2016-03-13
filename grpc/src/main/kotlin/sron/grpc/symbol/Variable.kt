@@ -20,6 +20,5 @@ import sron.grpc.type.Type
 
 class Variable(name: String, val type: Type, scope: String,
                location: Location) : Symbol(name, scope, location) {
-
     override val symType: SymType = SymType.VAR
 }

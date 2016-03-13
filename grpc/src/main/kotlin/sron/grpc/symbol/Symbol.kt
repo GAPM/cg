@@ -18,6 +18,5 @@ package sron.grpc.symbol
 
 abstract class Symbol(val name: String, val scope: String,
                       val location: Location) {
-
     abstract val symType: SymType
 }

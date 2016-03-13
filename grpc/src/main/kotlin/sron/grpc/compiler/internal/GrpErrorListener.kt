@@ -22,12 +22,9 @@ import org.antlr.v4.runtime.Recognizer
 import sron.grpc.util.Logger
 
 class GrpErrorListener(val fileName: String) : BaseErrorListener() {
-    override fun syntaxError(recognizer: Recognizer<*, *>,
-                             offendingSymbol: Any, line: Int,
-                             charPositionInLine: Int, msg: String,
+    override fun syntaxError(recognizer: Recognizer<*, *>, offendingSymbol: Any,
+                             line: Int, charPositionInLine: Int, msg: String,
                              e: RecognitionException?) {
         Logger.error("$fileName:$line: $msg")
     }
-
-
 }

@@ -184,12 +184,18 @@ class Structure : Phase() {
     override fun exitIfc(ctx: IfcContext) {
         super.exitIfc(ctx)
 
+        if (ctx.elsec() == null) {
+            setReturns(ctx, false)
+            return
+        }
+
         var mainIfReturns = false
         var allElifReturns = true
         var elseReturns = false
 
-        val ifStmts = ctx.stmt()
-        val elifs = ctx.elifc()
+        val ifStmts = ctx.stmt() // statements inside `if` block
+        val elifs = ctx.elifc() // `else if` blocks
+        val elseStmts = ctx.elsec().stmt() // statements inside `else` block
 
         for (s in ifStmts) {
             if (getReturns(s)) {
@@ -212,12 +218,10 @@ class Structure : Phase() {
             allElifReturns = allElifReturns && thisElifReturns
         }
 
-        ctx.elsec()?.let {
-            for (s in it.stmt()) {
-                if (getReturns(s)) {
-                    elseReturns = true
-                    break
-                }
+        for (s in elseStmts) {
+            if (getReturns(s)) {
+                elseReturns = true
+                break
             }
         }
 

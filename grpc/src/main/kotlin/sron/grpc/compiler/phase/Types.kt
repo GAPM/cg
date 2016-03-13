@@ -241,8 +241,8 @@ class Types : Phase() {
             val scope = scopeUID()
 
             val variable = Variable(name, type, scope, location)
-            val qry = symTab.getSymbol(name, scope, SymType.VAR)
 
+            val qry = symTab.getSymbol(name, scope, SymType.VAR)
             when (qry) {
                 null -> symTab.addSymbol(variable)
                 else -> redeclarationError(location, variable.location, name)

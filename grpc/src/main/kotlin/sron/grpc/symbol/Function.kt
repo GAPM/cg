@@ -19,8 +19,6 @@ package sron.grpc.symbol
 import sron.grpc.type.Type
 
 class Function(name: String, scope: String, val type: Type, location: Location,
-               vararg val args: Variable) :
-        Symbol(name, scope, location) {
-
+               vararg val args: Variable) : Symbol(name, scope, location) {
     override val symType: SymType = SymType.FUNC
 }
