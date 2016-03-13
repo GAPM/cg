@@ -14,21 +14,36 @@
  * limitations under the License.
  */
 
-package sron.grp.collections
+package sron.grp.misc
 
-class BitArray(val size: Int) {
-    private val BITS_PER_BLOCK = 32
-    private val array = IntArray((size + BITS_PER_BLOCK - 1) / BITS_PER_BLOCK)
+import org.junit.Test
+import sun.security.util.BitArray
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
-    operator fun get(idx: Int): Boolean {
-        return (array[idx shr 5] and (1 shl (idx and 31))) != 0
-    }
+/**
+ * Testing another implementation of a bit array in order to make comparisions.
+ */
+class SunBitArrayTest {
+    @Test
+    fun test() {
+        val ba = BitArray(100)
+        val s = ba.length()
 
-    operator fun set(idx: Int, value: Boolean) {
-        if (value) {
-            array[idx shr 5] = array[idx shr 5] or (1 shl (idx and 31))
-        } else {
-            array[idx shr 5] = array[idx shr 5] and (1 shl (idx and 31)).inv()
+        assertTrue(s == 100)
+
+        for (i in 0..s - 1) {
+            if (i >= 50) {
+                ba[i] = true
+            }
+        }
+
+        for (i in 0..s - 1) {
+            if (i >= 50) {
+                assertTrue(ba[i])
+            } else {
+                assertFalse(ba[i])
+            }
         }
     }
 }

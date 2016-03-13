@@ -14,21 +14,27 @@
  * limitations under the License.
  */
 
-package sron.grp.collections
+package sron.grp
 
-class BitArray(val size: Int) {
-    private val BITS_PER_BLOCK = 32
-    private val array = IntArray((size + BITS_PER_BLOCK - 1) / BITS_PER_BLOCK)
+import org.junit.Test
+import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
-    operator fun get(idx: Int): Boolean {
-        return (array[idx shr 5] and (1 shl (idx and 31))) != 0
-    }
-
-    operator fun set(idx: Int, value: Boolean) {
-        if (value) {
-            array[idx shr 5] = array[idx shr 5] or (1 shl (idx and 31))
-        } else {
-            array[idx shr 5] = array[idx shr 5] and (1 shl (idx and 31)).inv()
+/**
+ * Dummy test created to be executed before any other test.
+ *
+ * Reason: IntelliJ IDEA seems to take longer in execute the first of all test,
+ * so this test is executed first in order to hide false results from other
+ * tests.
+ */
+class AAAAAStart {
+    @Test
+    fun test() {
+        assertTrue(true)
+        assertFalse(false)
+        assertFailsWith(NotImplementedError::class) {
+            throw NotImplementedError("Error")
         }
     }
 }
