@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-include ':grp-stdlib', ":grpc"
+include ':grpstd', ':grpc'
