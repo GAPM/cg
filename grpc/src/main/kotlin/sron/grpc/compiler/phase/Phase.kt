@@ -27,12 +27,16 @@ import java.util.*
 open class Phase : GrpBaseListener() {
     lateinit var file: File
     lateinit var symTab: SymbolTable
+    lateinit var className: String
+
     lateinit var annotations: ParseTreeProperty<Annotation>
     val errorList = ArrayList<String>()
+
     protected val scope = Stack<String>()
 
     fun init() {
         scope.push(file.name)
+        className = file.name.substring(0, file.name.indexOf('.')).capitalize()
     }
 
     fun addError(location: Location, msg: String) {
