@@ -49,7 +49,7 @@ class Types : Phase() {
      * @param type The context of the type to be assigned
      */
     fun setType(ctx: ParserRuleContext, type: Type) {
-        var r = annotations.get(ctx) ?: Annotation()
+        val r = annotations.get(ctx) ?: Annotation()
         r.type = type
         annotations.put(ctx, r)
     }

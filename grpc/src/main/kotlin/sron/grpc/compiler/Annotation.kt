@@ -23,4 +23,5 @@ class Annotation {
     var returns: Boolean = false
     var assignable: Boolean = false
     var name: String = ""
+    var varIndex = mutableMapOf<String, Int>()
 }

@@ -101,6 +101,7 @@ class Compiler(fileName: String) {
 
         checkForErrors()
 
+        executePhase(::PreGeneration)
         executePhase(::Generation)
     }
 }
