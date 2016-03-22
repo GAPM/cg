@@ -18,7 +18,7 @@ package sron.grpc.compiler.phase
 
 import org.antlr.v4.runtime.ParserRuleContext
 import sron.grpc.compiler.Annotation
-import sron.grpc.compiler.internal.GrpParser.FdefContext
+import sron.grpc.compiler.internal.GrpParser.FuncDefContext
 
 class PreGeneration : Phase() {
     var insideFunction = false
@@ -33,8 +33,8 @@ class PreGeneration : Phase() {
         annotations.put(ctx, r)
     }
 
-    override fun enterFdef(ctx: FdefContext) {
-        super.enterFdef(ctx)
+    override fun enterFuncDef(ctx: FuncDefContext) {
+        super.enterFuncDef(ctx)
         insideFunction = true
         currentFunctionCtx = ctx
 
@@ -49,8 +49,8 @@ class PreGeneration : Phase() {
         setVarIndex(ctx, index)
     }
 
-    override fun exitFdef(ctx: FdefContext) {
-        super.exitFdef(ctx)
+    override fun exitFuncDef(ctx: FuncDefContext) {
+        super.exitFuncDef(ctx)
         insideFunction = false
         currentFunctionCtx = null
         id = 0

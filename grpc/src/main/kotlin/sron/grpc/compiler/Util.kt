@@ -39,11 +39,10 @@ fun TypeContext.toGrpType(): Type {
     val t = tn.symbol.type
 
     return when (t) {
-        GrpLexer.INT -> if (JVMArch() == 64) Type.int64 else Type.int32
-        GrpLexer.INT8 -> Type.int8
-        GrpLexer.INT16 -> Type.int16
-        GrpLexer.INT32 -> Type.int32
-        GrpLexer.INT64 -> Type.int64
+        GrpLexer.BYTE -> Type.byte
+        GrpLexer.SHORT -> Type.short
+        GrpLexer.INT -> Type.int
+        GrpLexer.LONG -> Type.long
         GrpLexer.FLOAT -> Type.float
         GrpLexer.DOUBLE -> Type.double
         GrpLexer.BOOL -> Type.bool

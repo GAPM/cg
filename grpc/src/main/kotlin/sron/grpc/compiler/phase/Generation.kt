@@ -49,13 +49,13 @@ class Generation : Phase() {
     override fun exitInit(ctx: GrpParser.InitContext) {
         super.exitInit(ctx)
         cw.visitEnd()
-        val binaryForm = cw.toByteArray()
-
-        File("$className.class").let {
-            it.outputStream().use {
-                it.write(binaryForm)
-            }
-            Logger.debug("${it.absolutePath} generated")
-        }
+        //val binaryForm = cw.toByteArray()
+        //
+        //File("$className.class").let {
+        //    it.outputStream().use {
+        //        it.write(binaryForm)
+        //    }
+        //    Logger.debug("${it.absolutePath} generated")
+        //}
     }
 }

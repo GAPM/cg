@@ -17,10 +17,10 @@
 package sron.grpc.type
 
 enum class Type {
-    int8,
-    int16,
-    int32,
-    int64,
+    byte,
+    short,
+    int,
+    long,
     float,
     double,
     bool,
@@ -28,4 +28,46 @@ enum class Type {
     string,
     char,
     error
+}
+
+fun Type.isIntegral(): Boolean {
+    return this == Type.byte || this == Type.short || this == Type.int || this == Type.long
+}
+
+fun Type.isFP(): Boolean {
+    return this == Type.float || this == Type.double
+}
+
+infix fun Type.lowerOrEqual(other: Type): Boolean {
+    if (this == Type.error || other == Type.error) {
+        return false
+    }
+
+    if ((!this.isIntegral() && !this.isFP()) ||
+            (!other.isIntegral() && !other.isFP())) {
+        throw UnsupportedOperationException("Type must be integral or floating point")
+    }
+
+    if ((this.isFP() && other.isIntegral()) ||
+            (this.isIntegral() && other.isFP())) {
+        throw UnsupportedOperationException("Types must be from the same class")
+    }
+
+    return this <= other
+}
+
+infix fun Type.equivalent(other: Type): Boolean {
+    if (this == other) {
+        return true
+    }
+
+    if (this.isIntegral() && this lowerOrEqual other) {
+        return true
+    }
+
+    if (this.isFP() && this lowerOrEqual other) {
+        return true
+    }
+
+    return false
 }

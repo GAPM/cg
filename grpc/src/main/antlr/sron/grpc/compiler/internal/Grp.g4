@@ -23,6 +23,7 @@ AND_ASSIGN : '&&=' ;
 BANG : '!' ;
 BOOL : 'bool' ;
 BREAK : 'break' ;
+BYTE : 'byte' ;
 CHAR : 'char' ;
 COLON : ':' ;
 COMMA : ',' ;
@@ -36,17 +37,14 @@ EQUAL : '=' ;
 EQUAL_EQUAL : '==' ;
 FLOAT : 'float' ;
 FOR : 'for' ;
-FUN : 'fun' ;
+FUNC : 'func' ;
 GE : '>=' ;
 GT : '>' ;
 IF : 'if' ;
 INT : 'int' ;
-INT16 : 'int16' ;
-INT32 : 'int32' ;
-INT64 : 'int64' ;
-INT8 : 'int8' ;
 LBRACE : '{' ;
 LE : '<=' ;
+LONG : 'long' ;
 LPAREN : '(' ;
 LT : '<' ;
 ML_COMMENT : '/*' (.)*? '*/' -> skip ;
@@ -61,6 +59,7 @@ RBRACE : '}' ;
 RETURN : 'return' ;
 RPAREN : ')' ;
 SEMI : ';' ;
+SHORT : 'short' ;
 STRING : 'string' ;
 SUB : '-' ;
 VAR : 'var' ;
@@ -78,10 +77,7 @@ fragment HexDigit: [0-9a-fA-F];
 Identifier: Letter (Letter | DecimalDigit)*;
 
 fragment DecimalLit: [0-9] DecimalDigit*;
-fragment OctalLit: '0' [oO] OctalDigit+;
-fragment HexLit: '0' [xX] HexDigit+;
-IntLit: DecimalLit | OctalLit | HexLit;
-UIntLit: DecimalLit 'u';
+IntLit: DecimalLit;
 
 fragment Decimals: DecimalDigit DecimalDigit*;
 fragment Exponent: [eE] [+-]? Decimals;
@@ -94,11 +90,10 @@ FloatLit: (DoubleLit | DecimalLit) 'f';
 CharLit: '\'' . '\'';
 StringLit: '"' (.)*? '"';
 
-type: 'int'
-    | 'int8'
-    | 'int16'
-    | 'int32'
-    | 'int64'
+type: 'byte'
+    | 'short'
+    | 'int'
+    | 'long'
     | 'float'
     | 'double'
     | 'char'
@@ -111,14 +106,13 @@ arg: Identifier ':' type;
 argList: (arg (',' arg)*)?;
 
 atom: IntLit            #Integer
-    | UIntLit           #UInteger
     | FloatLit          #Float
     | DoubleLit         #Double
     | BoolLit           #Boolean
     | CharLit           #Character
     | StringLit         #StringAtom
     | Identifier        #VarName
-    | fcall             #FunctionCall
+    | funcCall          #FunctionCall
     | type '(' expr ')' #Cast
     ;
 
@@ -134,19 +128,21 @@ expr: atom                                #Atomic
     ;
 exprList: (expr (',' expr)*)?;
 
-vdec: 'var' Identifier ':' type ('=' expr)?;
+glExpr: IntLit | FloatLit | DoubleLit | BoolLit | CharLit | StringLit;
+glVarDec: 'var' Identifier ':' type ('=' glExpr)?;
+varDec: 'var' Identifier ':' type ('=' expr)?;
 
-fdef: 'fun' Identifier '(' argList ')' (':' type)? '{' stmt* '}';
+funcDef: 'func' Identifier '(' argList ')' (':' type)? '{' stmt* '}';
 
-fcall: Identifier '(' exprList ')';
+funcCall: Identifier '(' exprList ')';
 
-assign: expr op=('='|'+='|'*='|'/='|'%='|'&&='|'||=') expr;
+assignment: expr op=('='|'+='|'*='|'/='|'%='|'&&='|'||=') expr;
 
 ifc: 'if' '(' expr ')' '{' stmt* '}' elifc* elsec?;
 elifc: 'elif' '(' expr ')' '{' stmt* '}';
 elsec: 'else' '{' stmt* '}';
 
-forc: 'for' '(' start=assign? ';' cond=expr? ';' mod=assign? ')' '{' stmt* '}';
+forc: 'for' '(' start=assignment? ';' cond=expr? ';' mod=assignment? ')' '{' stmt* '}';
 whilec: 'while' '(' expr ')' '{' stmt* '}';
 
 controlStmt: 'return' expr? #Return
@@ -159,8 +155,8 @@ compoundStmt: ifc
             | whilec
             ;
 
-simpleStmt: vdec
-          | assign
+simpleStmt: varDec
+          | assignment
           | controlStmt
           | expr
           ;
@@ -169,4 +165,4 @@ stmt: simpleStmt ';'
     | compoundStmt
     ;
 
-init: (fdef | vdec ';')*;
+init: (funcDef | glVarDec ';')*;

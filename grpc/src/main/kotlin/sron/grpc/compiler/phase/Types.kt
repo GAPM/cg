@@ -18,7 +18,6 @@ package sron.grpc.compiler.phase
 
 import org.antlr.v4.runtime.ParserRuleContext
 import sron.grpc.compiler.Annotation
-import sron.grpc.compiler.JVMArch
 import sron.grpc.compiler.internal.GrpParser.*
 import sron.grpc.compiler.nextId
 import sron.grpc.compiler.toGrpType
@@ -26,9 +25,7 @@ import sron.grpc.symbol.Function
 import sron.grpc.symbol.Location
 import sron.grpc.symbol.SymType
 import sron.grpc.symbol.Variable
-import sron.grpc.type.CastTable
-import sron.grpc.type.OpTable
-import sron.grpc.type.Type
+import sron.grpc.type.*
 
 class Types : Phase() {
     private var insideSimpleStmt = false
@@ -195,8 +192,8 @@ class Types : Phase() {
     /**
      * Updates the scope whenever the phase enters a function definition.
      */
-    override fun enterFdef(ctx: FdefContext) {
-        super.enterFdef(ctx)
+    override fun enterFuncDef(ctx: FuncDefContext) {
+        super.enterFuncDef(ctx)
         val name = ctx.Identifier().text
         scope.push(name)
     }
@@ -205,8 +202,8 @@ class Types : Phase() {
      * Updates the scope to `"global"` whenever the phase leaves a function
      * definition.
      */
-    override fun exitFdef(ctx: FdefContext) {
-        super.exitFdef(ctx)
+    override fun exitFuncDef(ctx: FuncDefContext) {
+        super.exitFuncDef(ctx)
         scope.pop()
     }
 
@@ -229,24 +226,94 @@ class Types : Phase() {
     }
 
     /**
-     * Checks that the variable being declared is not declared already.
+     * Sets the type of an global expression.
      */
-    override fun exitVdec(ctx: VdecContext) {
-        super.exitVdec(ctx)
+    override fun exitGlExpr(ctx: GlExprContext) {
+        super.exitGlExpr(ctx)
 
-        if (insideSimpleStmt) {
-            val name = ctx.Identifier().text
-            val type = ctx.type().toGrpType()
-            val location = Location(ctx.Identifier())
-            val scope = scopeUID()
+        if (ctx.IntLit() != null) {
+            val value = ctx.IntLit().text.toLong()
+            setType(ctx, IntTypes.getType(value))
+        }
 
-            val variable = Variable(name, type, scope, location)
+        if (ctx.FloatLit() != null) {
+            setType(ctx, Type.float)
+        }
 
-            val qry = symTab.getSymbol(name, scope, SymType.VAR)
-            when (qry) {
-                null -> symTab.addSymbol(variable)
-                else -> redeclarationError(location, variable.location, name)
+        if (ctx.DoubleLit() != null) {
+            setType(ctx, Type.double)
+        }
+
+        if (ctx.BoolLit() != null) {
+            setType(ctx, Type.bool)
+        }
+
+        if (ctx.CharLit() != null) {
+            setType(ctx, Type.char)
+        }
+
+        if (ctx.StringLit() != null) {
+            setType(ctx, Type.string)
+        }
+    }
+
+    /**
+     * Checks that the global variable being declared is not declared already
+     * and that if it is an assignment, check the type of the right hand value.
+     */
+    override fun exitGlVarDec(ctx: GlVarDecContext) {
+        super.exitGlVarDec(ctx)
+
+        val name = ctx.Identifier().text
+        val type = ctx.type().toGrpType()
+        val location = Location(ctx.Identifier())
+        val scope = scopeUID()
+        val expr = ctx.glExpr()
+        val exprType = getType(expr)
+
+        if (expr != null && exprType != Type.error) {
+            if (!(exprType equivalent type)) {
+                assignmentError(location, expr.text, type, exprType)
+                return
             }
+        }
+
+        val variable = Variable(name, type, scope, location)
+
+        val qry = symTab.getSymbol(name, scope, SymType.VAR)
+        when (qry) {
+            null -> symTab.addSymbol(variable)
+            else -> redeclarationError(location, qry.location, name)
+        }
+    }
+
+    /**
+     * Checks that the variable being declared is not declared already and that
+     * if it is an assignment, check the type of the right hand value.
+     */
+    override fun exitVarDec(ctx: VarDecContext) {
+        super.exitVarDec(ctx)
+
+        val name = ctx.Identifier().text
+        val type = ctx.type().toGrpType()
+        val location = Location(ctx.Identifier())
+        val scope = scopeUID()
+        val expr = ctx.expr()
+        val exprType = getType(expr)
+
+        if (expr != null && exprType != Type.error) {
+            if (!(exprType equivalent type)) {
+                assignmentError(location, expr.text, type, exprType)
+                return
+            }
+        }
+
+        val variable = Variable(name, type, scope, location)
+
+        val qry = symTab.getSymbol(name, scope, SymType.VAR)
+        when (qry) {
+            null -> symTab.addSymbol(variable)
+            else -> redeclarationError(location, variable.location, name)
         }
     }
 
@@ -280,11 +347,8 @@ class Types : Phase() {
      */
     override fun exitInteger(ctx: IntegerContext) {
         super.exitInteger(ctx)
-
-        when (JVMArch()) {
-            64 -> setType(ctx, Type.int64)
-            32 -> setType(ctx, Type.int32)
-        }
+        val value = ctx.IntLit().text.toLong()
+        setType(ctx, IntTypes.getType(value))
     }
 
     /**
@@ -334,8 +398,8 @@ class Types : Phase() {
      * have the required type and in the end, sets the type to the function
      * type.
      */
-    override fun exitFcall(ctx: FcallContext) {
-        super.exitFcall(ctx)
+    override fun exitFuncCall(ctx: FuncCallContext) {
+        super.exitFuncCall(ctx)
 
         val name = ctx.Identifier().text
         val location = Location(ctx.Identifier())
@@ -369,7 +433,7 @@ class Types : Phase() {
                             return
                         }
 
-                        if (typeArg != typeExpr) {
+                        if (!(typeArg equivalent typeExpr)) {
                             argumentError(location, exp, typeExpr, typeArg, name)
                             error = true
                         }
@@ -592,8 +656,8 @@ class Types : Phase() {
      * Checks that an expression is assignable and that there is not type
      * mismatch in the assignment.
      */
-    override fun exitAssign(ctx: AssignContext) {
-        super.exitAssign(ctx)
+    override fun exitAssignment(ctx: AssignmentContext) {
+        super.exitAssignment(ctx)
 
         val exp1 = ctx.expr(0)
         val exp2 = ctx.expr(1)

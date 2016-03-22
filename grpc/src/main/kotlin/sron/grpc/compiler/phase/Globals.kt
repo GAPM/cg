@@ -81,8 +81,8 @@ class Globals : Phase() {
     /**
      * Inserts a function and its arguments into the symbol table.
      */
-    override fun exitFdef(ctx: FdefContext) {
-        super.exitFdef(ctx)
+    override fun exitFuncDef(ctx: FuncDefContext) {
+        super.exitFuncDef(ctx)
 
         val name = ctx.Identifier().text
         val type = ctx.type()?.toGrpType() ?: Type.void
@@ -126,8 +126,8 @@ class Globals : Phase() {
     /**
      * Inserts a global variable into the symbol table.
      */
-    override fun exitVdec(ctx: VdecContext) {
-        super.exitVdec(ctx)
+    override fun exitVarDec(ctx: VarDecContext) {
+        super.exitVarDec(ctx)
 
         if (!insideSimpleStmt) {
             val name = ctx.Identifier().text

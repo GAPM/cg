@@ -14,26 +14,20 @@
  * limitations under the License.
  */
 
-apply plugin: 'antlr'
-apply plugin: 'application'
-apply plugin: 'kotlin'
+package sron.grpc.type
 
-mainClassName = 'sron.grpc.MainKt'
+object IntTypes {
+    val byte = Byte.MIN_VALUE..Byte.MAX_VALUE
+    val short = Short.MIN_VALUE..Short.MAX_VALUE
+    val int = Int.MIN_VALUE..Int.MAX_VALUE
+    val long = Long.MIN_VALUE..Long.MAX_VALUE
 
-compileKotlin.dependsOn generateGrammarSource
-
-generateGrammarSource {
-    arguments += ['-package', 'sron.grpc.compiler.internal']
-}
-
-dependencies {
-    antlr 'org.antlr:antlr4:4.5.2-1'
-
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compile 'commons-cli:commons-cli:1.3.1'
-    compile 'org.ow2.asm:asm:5.0.4'
-    compile project(':grpstd')
-
-    testCompile 'junit:junit:4.12'
-    testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
+    fun getType(l: Long): Type {
+        return when {
+            byte.contains(l) -> Type.byte
+            short.contains(l) -> Type.short
+            int.contains(l) -> Type.int
+            else -> Type.long
+        }
+    }
 }

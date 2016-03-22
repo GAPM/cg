@@ -145,8 +145,8 @@ class Structure : Phase() {
      * Marks that the phase entered a function definition, saving its name and
      * return type.
      */
-    override fun enterFdef(ctx: FdefContext) {
-        super.enterFdef(ctx)
+    override fun enterFuncDef(ctx: FuncDefContext) {
+        super.enterFuncDef(ctx)
 
         insideFunction = true
         currentFunctionType = ctx.type()?.toGrpType() ?: Type.void
@@ -158,8 +158,8 @@ class Structure : Phase() {
      * returns a value (unless its type is `void`) and remove current name and
      * return type.
      */
-    override fun exitFdef(ctx: FdefContext) {
-        super.exitFdef(ctx)
+    override fun exitFuncDef(ctx: FuncDefContext) {
+        super.exitFuncDef(ctx)
 
         for (stmt in ctx.stmt()) {
             if (getReturns(stmt)) {
@@ -256,11 +256,11 @@ class Structure : Phase() {
     override fun exitSimpleStmt(ctx: SimpleStmtContext) {
         super.exitSimpleStmt(ctx)
 
-        ctx.vdec()?.let {
+        ctx.varDec()?.let {
             annotations.put(ctx, annotations.get(it))
         }
 
-        ctx.assign()?.let {
+        ctx.assignment()?.let {
             annotations.put(ctx, annotations.get(it))
         }
 

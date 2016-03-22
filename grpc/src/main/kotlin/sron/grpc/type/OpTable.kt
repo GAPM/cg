@@ -37,17 +37,17 @@ object OpTable {
     }
 
     private val binOps = listOf(
-            BinOp(arithmetic, Type.int8),
-            BinOp(arithmetic, Type.int16),
-            BinOp(arithmetic, Type.int32),
-            BinOp(arithmetic, Type.int64),
+            BinOp(arithmetic, Type.byte),
+            BinOp(arithmetic, Type.short),
+            BinOp(arithmetic, Type.int),
+            BinOp(arithmetic, Type.long),
             BinOp(arithmetic, Type.float),
             BinOp(arithmetic, Type.double),
 
-            BinOp(comparison, Type.int8, Type.bool),
-            BinOp(comparison, Type.int16, Type.bool),
-            BinOp(comparison, Type.int32, Type.bool),
-            BinOp(comparison, Type.int64, Type.bool),
+            BinOp(comparison, Type.byte, Type.bool),
+            BinOp(comparison, Type.short, Type.bool),
+            BinOp(comparison, Type.int, Type.bool),
+            BinOp(comparison, Type.long, Type.bool),
             BinOp(comparison, Type.float, Type.bool),
             BinOp(comparison, Type.double, Type.bool),
 
@@ -62,10 +62,10 @@ object OpTable {
     )
 
     private val unaryOps = listOf (
-            UnaryOp(sign, Type.int8),
-            UnaryOp(sign, Type.int16),
-            UnaryOp(sign, Type.int32),
-            UnaryOp(sign, Type.int64),
+            UnaryOp(sign, Type.byte),
+            UnaryOp(sign, Type.short),
+            UnaryOp(sign, Type.int),
+            UnaryOp(sign, Type.long),
             UnaryOp(sign, Type.float),
             UnaryOp(sign, Type.double),
 
@@ -76,7 +76,8 @@ object OpTable {
         val o = binOps
                 .filter { it.ops.contains(op) }
                 .filter {
-                    (it.x == x && it.y == y) || (it.x == y && it.y == x)
+                    (it.x equivalent x && it.y equivalent y) ||
+                            (it.x equivalent y && it.y equivalent x)
                 }.firstOrNull()
         return o?.result ?: Type.error
     }
@@ -84,7 +85,7 @@ object OpTable {
     fun checkUnary(op: String, x: Type): Type {
         val o = unaryOps
                 .filter { it.ops.contains(op) }
-                .filter { it.x == x }.firstOrNull()
+                .filter { it.x equivalent x }.firstOrNull()
         return o?.result ?: Type.error
     }
 }
