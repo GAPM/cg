@@ -31,7 +31,7 @@ import sron.grpc.util.Logger
 import java.io.File
 import kotlin.system.measureTimeMillis
 
-class Compiler(fileName: String) {
+class Compiler(fileName: String, val parameters: CompilerParameters) {
     private val file = File(fileName)
     lateinit private var tree: ParseTree
 
@@ -78,6 +78,7 @@ class Compiler(fileName: String) {
             file = this@Compiler.file
             symTab = this@Compiler.symTab
             annotations = this@Compiler.annotations
+            parameters = this@Compiler.parameters
             init()
         }
 

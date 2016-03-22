@@ -20,7 +20,6 @@ import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes.*
 import sron.grpc.compiler.internal.GrpParser
-import sron.grpc.util.Logger
 import java.io.File
 
 class Generation : Phase() {
@@ -28,7 +27,7 @@ class Generation : Phase() {
 
     override fun enterInit(ctx: GrpParser.InitContext) {
         super.enterInit(ctx)
-        cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, className, null, "java/lang/Object", null)
+        cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, "EntryPoint", null, "java/lang/Object", null)
 
         // Creation of default constructor
         cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null).let { mv ->
@@ -49,13 +48,14 @@ class Generation : Phase() {
     override fun exitInit(ctx: GrpParser.InitContext) {
         super.exitInit(ctx)
         cw.visitEnd()
-        //val binaryForm = cw.toByteArray()
-        //
-        //File("$className.class").let {
-        //    it.outputStream().use {
-        //        it.write(binaryForm)
-        //    }
-        //    Logger.debug("${it.absolutePath} generated")
-        //}
+        if (!parameters.justCheck) {
+            val binaryForm = cw.toByteArray()
+
+            File("EntryPoint.class").let {
+                it.outputStream().use {
+                    it.write(binaryForm)
+                }
+            }
+        }
     }
 }

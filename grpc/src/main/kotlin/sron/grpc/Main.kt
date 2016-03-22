@@ -21,6 +21,7 @@ import org.apache.commons.cli.HelpFormatter
 import org.apache.commons.cli.Options
 import org.apache.commons.cli.UnrecognizedOptionException
 import sron.grpc.compiler.Compiler
+import sron.grpc.compiler.CompilerParameters
 import sron.grpc.exception.CompilerException
 import sron.grpc.util.Logger
 import java.io.IOException
@@ -28,15 +29,16 @@ import java.io.IOException
 fun main(args: Array<String>) {
     val options = Options()
 
-    options.addOption("c", false, "Just generate code")
+    options.addOption("c", false, "Just check the code, don't compile")
     options.addOption("d", "debug", false, "Print compiler debug messages")
     options.addOption("h", "help", false, "Show this help")
-    options.addOption("o", "output", true, "The compiler output")
+    options.addOption("o", "output", true, "The name of the generated jar")
 
     val cmdParser = DefaultParser()
 
     try {
         val cmd = cmdParser.parse(options, args)
+        val parameters = CompilerParameters()
 
         if (cmd.hasOption("h")) {
             val hf = HelpFormatter()
@@ -53,8 +55,16 @@ fun main(args: Array<String>) {
             Logger.maxLevel = Logger.LogLevel.DEBUG
         }
 
+        if (cmd.hasOption("c")) {
+            parameters.justCheck = true
+        }
+
+        if (cmd.hasOption("o")) {
+            parameters.output = cmd.getOptionValue("o")
+        }
+
         try {
-            val compiler = Compiler(cmd.args[0])
+            val compiler = Compiler(cmd.args[0], parameters)
 
             try {
                 compiler.compile()

@@ -18,6 +18,7 @@ package sron.grpc.compiler.phase
 
 import org.antlr.v4.runtime.tree.ParseTreeProperty
 import sron.grpc.compiler.Annotation
+import sron.grpc.compiler.CompilerParameters
 import sron.grpc.compiler.internal.GrpBaseListener
 import sron.grpc.symbol.Location
 import sron.grpc.symbol.SymbolTable
@@ -28,6 +29,7 @@ open class Phase : GrpBaseListener() {
     lateinit var file: File
     lateinit var symTab: SymbolTable
     lateinit var className: String
+    lateinit var parameters: CompilerParameters
 
     lateinit var annotations: ParseTreeProperty<Annotation>
     val errorList = ArrayList<String>()
