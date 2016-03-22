@@ -22,7 +22,6 @@ import sron.grpc.compiler.internal.GrpLexer
 import sron.grpc.compiler.internal.GrpParser
 import sron.grpc.compiler.internal.GrpParser.TypeContext
 import sron.grpc.type.Type
-import sron.grpc.util.Unsafe
 
 private var id = 0
 
@@ -31,8 +30,6 @@ fun GrpParser.withFileName(fileName: String): GrpParser {
     this.addErrorListener(GrpErrorListener(fileName))
     return this
 }
-
-fun JVMArch() = Unsafe.addressSize() * 8
 
 fun TypeContext.toGrpType(): Type {
     val tn = this.getChild(0) as TerminalNode
