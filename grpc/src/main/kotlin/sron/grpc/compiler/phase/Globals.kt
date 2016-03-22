@@ -61,6 +61,13 @@ class Globals : Phase() {
             addError(location, "$t $name declared with type `void`")
 
     /**
+     * Reports that no main method returning an int was found
+     */
+    fun noEntryPointError() {
+        addError(Location(0), "No main method defined")
+    }
+
+    /**
      * Marks whenever the phase enters in a simple statement. Variables being
      * declared inside a simple statement are not global.
      */
@@ -147,6 +154,25 @@ class Globals : Phase() {
                 null -> symTab.addSymbol(variable)
                 else ->
                     redeclarationError(location, qry.location, name, SymType.VAR)
+            }
+        }
+    }
+
+    /**
+     * After adding all the functions to the symbol table, check if a main
+     * function was declared.
+     */
+    override fun exitInit(ctx: InitContext) {
+        super.exitInit(ctx)
+
+        val qry = symTab.getSymbol("main", scopeUID(), SymType.FUNC)
+        when (qry) {
+            null -> noEntryPointError()
+            else -> {
+                val function = qry as Function
+                if (function.type != Type.int) {
+                    noEntryPointError()
+                }
             }
         }
     }

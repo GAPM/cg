@@ -73,19 +73,36 @@ object OpTable {
     )
 
     fun checkBinary(op: String, x: Type, y: Type): Type {
-        val o = binOps
-                .filter { it.ops.contains(op) }
-                .filter {
-                    (it.x equivalent x && it.y equivalent y) ||
-                            (it.x equivalent y && it.y equivalent x)
-                }.firstOrNull()
-        return o?.result ?: Type.error
+        var bOps = binOps.filter { it.ops.contains(op) }
+
+        if (x.isIntegral() && y.isIntegral()) {
+            bOps = bOps.filter { it.x.isIntegral() }
+            bOps = bOps.filter { it.y.isIntegral() }
+        }
+
+        if (x.isFP() && y.isFP()) {
+            bOps = bOps.filter { it.x.isFP() }
+            bOps = bOps.filter { it.y.isFP() }
+        }
+
+        bOps = bOps.filter {
+            (it.x equivalent x && it.y equivalent y) || (it.y equivalent x && it.x equivalent y)
+        }
+
+        return bOps.firstOrNull()?.result ?: Type.error
     }
 
     fun checkUnary(op: String, x: Type): Type {
-        val o = unaryOps
-                .filter { it.ops.contains(op) }
-                .filter { it.x equivalent x }.firstOrNull()
-        return o?.result ?: Type.error
+        var uOps = unaryOps.filter { it.ops.contains(op) }
+
+        if (x.isIntegral()) {
+            uOps = uOps.filter { it.x.isIntegral() }
+        }
+
+        if (x.isFP()) {
+            uOps = uOps.filter { it.x.isFP() }
+        }
+
+        return uOps.firstOrNull()?.result ?: Type.error
     }
 }
