@@ -22,23 +22,32 @@ import sron.grpc.compiler.internal.GrpParser.FuncDefContext
 import sron.grpc.compiler.internal.GrpParser.VarDecContext
 
 class PreGeneration : Phase() {
-    private var insideFunction = false
     private lateinit var currentFunctionCtx: ParserRuleContext
-    var id = 0
+    private var id = 0
 
+    /**
+     * Retrieves the map of variable indexes of a (sub)parse tree
+     */
     private fun getVarIndex(ctx: ParserRuleContext): MutableMap<String, Int> {
         return annotations.get(ctx)?.varIndex ?: mutableMapOf<String, Int>()
     }
 
+    /**
+     * Sets the map of variable indexes of a (sub)parse tree
+     */
     private fun setVarIndex(ctx: ParserRuleContext, varIndex: Map<String, Int>) {
         val r = annotations.get(ctx) ?: Annotation()
         r.varIndex.putAll(varIndex)
         annotations.put(ctx, r)
     }
 
+    /**
+     * Sets a function arguments as the first indexes whenever the phase enters
+     * a function definition. Indexes are assigned to arguments in left-to-right
+     * order.
+     */
     override fun enterFuncDef(ctx: FuncDefContext) {
         super.enterFuncDef(ctx)
-        insideFunction = true
         currentFunctionCtx = ctx
 
         val args = ctx.argList().arg()
@@ -52,6 +61,10 @@ class PreGeneration : Phase() {
         setVarIndex(ctx, index)
     }
 
+    /**
+     * Sets de index of a local variable being declared. Indexes of local
+     * variables (non-arguments) are assigned in order of appearance.
+     */
     override fun enterVarDec(ctx: VarDecContext) {
         super.enterVarDec(ctx)
         val index = getVarIndex(currentFunctionCtx)
@@ -62,9 +75,12 @@ class PreGeneration : Phase() {
         setVarIndex(currentFunctionCtx, index)
     }
 
+    /**
+     * Whenever the phase leaves a function definition the variable holding the
+     * next id for a variable is reset.
+     */
     override fun exitFuncDef(ctx: FuncDefContext) {
         super.exitFuncDef(ctx)
-        insideFunction = false
         id = 0
     }
 }
