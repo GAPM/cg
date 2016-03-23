@@ -22,11 +22,10 @@ import sron.grpc.compiler.CompilerParameters
 import sron.grpc.compiler.internal.GrpBaseListener
 import sron.grpc.symbol.Location
 import sron.grpc.symbol.SymbolTable
-import java.io.File
 import java.util.*
 
 open class Phase : GrpBaseListener() {
-    lateinit var file: File
+    lateinit var fileName: String
     lateinit var symTab: SymbolTable
     lateinit var className: String
     lateinit var parameters: CompilerParameters
@@ -37,12 +36,12 @@ open class Phase : GrpBaseListener() {
     protected val scope = Stack<String>()
 
     fun init() {
-        scope.push(file.name)
-        className = file.name.substring(0, file.name.indexOf('.')).capitalize()
+        scope.push(fileName)
+        className = fileName.substring(0, fileName.indexOf('.')).capitalize()
     }
 
     fun addError(location: Location, msg: String) {
-        errorList.add("${file.name}:$location: $msg")
+        errorList.add("$fileName:$location: $msg")
     }
 
     fun scopeUID() = scope.reduce { a, b -> "$a.$b" }

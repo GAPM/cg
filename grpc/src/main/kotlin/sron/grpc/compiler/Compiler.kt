@@ -75,7 +75,7 @@ class Compiler(fileName: String, val parameters: CompilerParameters) {
         val walker = ParseTreeWalker()
 
         with(phase) {
-            file = this@Compiler.file
+            fileName = this@Compiler.file.name
             symTab = this@Compiler.symTab
             annotations = this@Compiler.annotations
             parameters = this@Compiler.parameters
