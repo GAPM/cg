@@ -19,13 +19,16 @@ package sron.grpc.compiler.phase
 import org.antlr.v4.runtime.ParserRuleContext
 import sron.grpc.compiler.Annotation
 import sron.grpc.compiler.internal.GrpParser.FuncDefContext
+import sron.grpc.compiler.internal.GrpParser.VarDecContext
 
 class PreGeneration : Phase() {
-    var insideFunction = false
-    var currentFunctionCtx: ParserRuleContext? = null
+    private var insideFunction = false
+    private lateinit var currentFunctionCtx: ParserRuleContext
     var id = 0
 
-    private fun getVarIndex(ctx: ParserRuleContext) = annotations.get(ctx)?.varIndex ?: mutableMapOf<String, Int>()
+    private fun getVarIndex(ctx: ParserRuleContext): MutableMap<String, Int> {
+        return annotations.get(ctx)?.varIndex ?: mutableMapOf<String, Int>()
+    }
 
     private fun setVarIndex(ctx: ParserRuleContext, varIndex: Map<String, Int>) {
         val r = annotations.get(ctx) ?: Annotation()
@@ -49,10 +52,20 @@ class PreGeneration : Phase() {
         setVarIndex(ctx, index)
     }
 
+    override fun enterVarDec(ctx: VarDecContext) {
+        super.enterVarDec(ctx)
+        val index = getVarIndex(currentFunctionCtx)
+
+        val name = ctx.Identifier().text
+        index[name] = id++
+
+        setVarIndex(currentFunctionCtx, index)
+    }
+
     override fun exitFuncDef(ctx: FuncDefContext) {
         super.exitFuncDef(ctx)
         insideFunction = false
-        currentFunctionCtx = null
         id = 0
     }
 }
+
