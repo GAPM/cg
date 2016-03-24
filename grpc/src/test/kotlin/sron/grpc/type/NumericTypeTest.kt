@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sron.grpc
+package sron.grpc.type
 
 import org.junit.Test
 import sron.grpc.type.Type
