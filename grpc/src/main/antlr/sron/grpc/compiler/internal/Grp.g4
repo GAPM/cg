@@ -87,8 +87,11 @@ DoubleLit: Decimals '.' Decimals Exponent?
                  ;
 FloatLit: (DoubleLit | DecimalLit) 'f';
 
-CharLit: '\'' . '\'';
-StringLit: '"' (.)*? '"';
+fragment Escape: '\\' [tbnr"'\\];
+fragment Char: ~[\\'"];
+CharLit: '\'' (Escape | Char) '\'';
+
+StringLit: '"' (Escape | Char)* '"';
 
 type: 'byte'
     | 'short'
