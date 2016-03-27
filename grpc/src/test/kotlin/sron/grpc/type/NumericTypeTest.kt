@@ -27,37 +27,37 @@ class NumericTypeTest {
     @Test
     fun test() {
         assertFailsWith<UnsupportedOperationException> {
-            Type.string lowerOrEqual Type.long
+            Type.STRING lowerOrEqual Type.LONG
         }
 
         assertFailsWith<UnsupportedOperationException> {
-            Type.long lowerOrEqual Type.float
+            Type.LONG lowerOrEqual Type.FLOAT
         }
 
-        assertTrue(Type.byte lowerOrEqual Type.long)
-        assertTrue(Type.short lowerOrEqual Type.long)
-        assertTrue(Type.int lowerOrEqual Type.long)
-        assertTrue(Type.long lowerOrEqual Type.long)
+        assertTrue(Type.BYTE lowerOrEqual Type.LONG)
+        assertTrue(Type.SHORT lowerOrEqual Type.LONG)
+        assertTrue(Type.INT lowerOrEqual Type.LONG)
+        assertTrue(Type.LONG lowerOrEqual Type.LONG)
 
-        assertTrue(Type.byte lowerOrEqual Type.int)
-        assertTrue(Type.short lowerOrEqual Type.int)
-        assertTrue(Type.int lowerOrEqual Type.int)
-        assertFalse(Type.long lowerOrEqual Type.int)
+        assertTrue(Type.BYTE lowerOrEqual Type.INT)
+        assertTrue(Type.SHORT lowerOrEqual Type.INT)
+        assertTrue(Type.INT lowerOrEqual Type.INT)
+        assertFalse(Type.LONG lowerOrEqual Type.INT)
 
-        assertTrue(Type.byte lowerOrEqual Type.short)
-        assertTrue(Type.short lowerOrEqual Type.short)
-        assertFalse(Type.int lowerOrEqual Type.short)
-        assertFalse(Type.long lowerOrEqual Type.short)
+        assertTrue(Type.BYTE lowerOrEqual Type.SHORT)
+        assertTrue(Type.SHORT lowerOrEqual Type.SHORT)
+        assertFalse(Type.INT lowerOrEqual Type.SHORT)
+        assertFalse(Type.LONG lowerOrEqual Type.SHORT)
 
-        assertTrue(Type.byte lowerOrEqual Type.byte)
-        assertFalse(Type.short lowerOrEqual Type.byte)
-        assertFalse(Type.int lowerOrEqual Type.byte)
-        assertFalse(Type.long lowerOrEqual Type.byte)
+        assertTrue(Type.BYTE lowerOrEqual Type.BYTE)
+        assertFalse(Type.SHORT lowerOrEqual Type.BYTE)
+        assertFalse(Type.INT lowerOrEqual Type.BYTE)
+        assertFalse(Type.LONG lowerOrEqual Type.BYTE)
 
-        assertTrue(Type.float lowerOrEqual Type.double)
-        assertTrue(Type.double lowerOrEqual Type.double)
+        assertTrue(Type.FLOAT lowerOrEqual Type.DOUBLE)
+        assertTrue(Type.DOUBLE lowerOrEqual Type.DOUBLE)
 
-        assertTrue(Type.float lowerOrEqual Type.float)
-        assertFalse(Type.double lowerOrEqual Type.float)
+        assertTrue(Type.FLOAT lowerOrEqual Type.FLOAT)
+        assertFalse(Type.DOUBLE lowerOrEqual Type.FLOAT)
     }
 }

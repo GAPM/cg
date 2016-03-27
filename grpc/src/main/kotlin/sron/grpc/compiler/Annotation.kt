@@ -19,7 +19,7 @@ package sron.grpc.compiler
 import sron.grpc.type.Type
 
 class Annotation {
-    var type: Type = Type.error
+    var type: Type = Type.ERROR
     var returns: Boolean = false
     var assignable: Boolean = false
     var name: String = ""

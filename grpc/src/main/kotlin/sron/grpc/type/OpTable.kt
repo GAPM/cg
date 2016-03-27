@@ -37,39 +37,39 @@ object OpTable {
     }
 
     private val binOps = listOf(
-            BinOp(arithmetic, Type.byte),
-            BinOp(arithmetic, Type.short),
-            BinOp(arithmetic, Type.int),
-            BinOp(arithmetic, Type.long),
-            BinOp(arithmetic, Type.float),
-            BinOp(arithmetic, Type.double),
+            BinOp(arithmetic, Type.BYTE),
+            BinOp(arithmetic, Type.SHORT),
+            BinOp(arithmetic, Type.INT),
+            BinOp(arithmetic, Type.LONG),
+            BinOp(arithmetic, Type.FLOAT),
+            BinOp(arithmetic, Type.DOUBLE),
 
-            BinOp(comparison, Type.byte, Type.bool),
-            BinOp(comparison, Type.short, Type.bool),
-            BinOp(comparison, Type.int, Type.bool),
-            BinOp(comparison, Type.long, Type.bool),
-            BinOp(comparison, Type.float, Type.bool),
-            BinOp(comparison, Type.double, Type.bool),
+            BinOp(comparison, Type.BYTE, Type.BOOL),
+            BinOp(comparison, Type.SHORT, Type.BOOL),
+            BinOp(comparison, Type.INT, Type.BOOL),
+            BinOp(comparison, Type.LONG, Type.BOOL),
+            BinOp(comparison, Type.FLOAT, Type.BOOL),
+            BinOp(comparison, Type.DOUBLE, Type.BOOL),
 
-            BinOp(comparison, Type.char, Type.bool),
-            BinOp(comparison, Type.string, Type.bool),
-            BinOp(comparison, Type.bool),
+            BinOp(comparison, Type.CHAR, Type.BOOL),
+            BinOp(comparison, Type.STRING, Type.BOOL),
+            BinOp(comparison, Type.BOOL),
 
-            BinOp(listOf("+"), Type.char, Type.string, Type.string),
-            BinOp(listOf("+"), Type.char, Type.char, Type.string),
+            BinOp(listOf("+"), Type.CHAR, Type.STRING, Type.STRING),
+            BinOp(listOf("+"), Type.CHAR, Type.CHAR, Type.STRING),
 
-            BinOp(logic, Type.bool)
+            BinOp(logic, Type.BOOL)
     )
 
     private val unaryOps = listOf (
-            UnaryOp(sign, Type.byte),
-            UnaryOp(sign, Type.short),
-            UnaryOp(sign, Type.int),
-            UnaryOp(sign, Type.long),
-            UnaryOp(sign, Type.float),
-            UnaryOp(sign, Type.double),
+            UnaryOp(sign, Type.BYTE),
+            UnaryOp(sign, Type.SHORT),
+            UnaryOp(sign, Type.INT),
+            UnaryOp(sign, Type.LONG),
+            UnaryOp(sign, Type.FLOAT),
+            UnaryOp(sign, Type.DOUBLE),
 
-            UnaryOp(listOf("!"), Type.bool)
+            UnaryOp(listOf("!"), Type.BOOL)
     )
 
     fun checkBinary(op: String, x: Type, y: Type): Type {
@@ -89,7 +89,7 @@ object OpTable {
             (it.x equivalent x && it.y equivalent y) || (it.y equivalent x && it.x equivalent y)
         }
 
-        return bOps.firstOrNull()?.result ?: Type.error
+        return bOps.firstOrNull()?.result ?: Type.ERROR
     }
 
     fun checkUnary(op: String, x: Type): Type {
@@ -103,6 +103,6 @@ object OpTable {
             uOps = uOps.filter { it.x.isFP() }
         }
 
-        return uOps.firstOrNull()?.result ?: Type.error
+        return uOps.firstOrNull()?.result ?: Type.ERROR
     }
 }

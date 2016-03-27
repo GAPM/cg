@@ -17,29 +17,30 @@
 package sron.grpc.type
 
 enum class Type {
-    byte,
-    short,
-    int,
-    long,
-    float,
-    double,
-    bool,
-    void,
-    string,
-    char,
-    error
+    BYTE,
+    SHORT,
+    INT,
+    LONG,
+    FLOAT,
+    DOUBLE,
+    BOOL,
+    VOID,
+    STRING,
+    CHAR,
+
+    ERROR
 }
 
 fun Type.isIntegral(): Boolean {
-    return this == Type.byte || this == Type.short || this == Type.int || this == Type.long
+    return this == Type.BYTE || this == Type.SHORT || this == Type.INT || this == Type.LONG
 }
 
 fun Type.isFP(): Boolean {
-    return this == Type.float || this == Type.double
+    return this == Type.FLOAT || this == Type.DOUBLE
 }
 
 infix fun Type.lowerOrEqual(other: Type): Boolean {
-    if (this == Type.error || other == Type.error) {
+    if (this == Type.ERROR || other == Type.ERROR) {
         return false
     }
 
@@ -73,15 +74,16 @@ infix fun Type.equivalent(other: Type): Boolean {
 }
 
 fun Type.toJVMDescriptor() = when(this) {
-    Type.byte -> "B"
-    Type.short -> "S"
-    Type.int -> "I"
-    Type.long -> "J"
-    Type.float -> "F"
-    Type.double -> "D"
-    Type.bool -> "Z"
-    Type.void -> "V"
-    Type.string -> "Ljava/lang/String"
-    Type.char -> "C"
-    Type.error -> ""
+    Type.BYTE -> "B"
+    Type.SHORT -> "S"
+    Type.INT -> "I"
+    Type.LONG -> "J"
+    Type.FLOAT -> "F"
+    Type.DOUBLE -> "D"
+    Type.BOOL -> "Z"
+    Type.VOID -> "V"
+    Type.STRING -> "Ljava/lang/String"
+    Type.CHAR -> "C"
+
+    else -> ""
 }

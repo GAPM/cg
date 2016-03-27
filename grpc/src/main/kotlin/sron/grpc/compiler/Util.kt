@@ -36,17 +36,17 @@ fun TypeContext.toGrpType(): Type {
     val t = tn.symbol.type
 
     return when (t) {
-        GrpLexer.BYTE -> Type.byte
-        GrpLexer.SHORT -> Type.short
-        GrpLexer.INT -> Type.int
-        GrpLexer.LONG -> Type.long
-        GrpLexer.FLOAT -> Type.float
-        GrpLexer.DOUBLE -> Type.double
-        GrpLexer.BOOL -> Type.bool
-        GrpLexer.VOID -> Type.void
-        GrpLexer.STRING -> Type.string
-        GrpLexer.CHAR -> Type.char
-        else -> Type.error
+        GrpLexer.BYTE -> Type.BYTE
+        GrpLexer.SHORT -> Type.SHORT
+        GrpLexer.INT -> Type.INT
+        GrpLexer.LONG -> Type.LONG
+        GrpLexer.FLOAT -> Type.FLOAT
+        GrpLexer.DOUBLE -> Type.DOUBLE
+        GrpLexer.BOOL -> Type.BOOL
+        GrpLexer.VOID -> Type.VOID
+        GrpLexer.STRING -> Type.STRING
+        GrpLexer.CHAR -> Type.CHAR
+        else -> Type.ERROR
     }
 }
 

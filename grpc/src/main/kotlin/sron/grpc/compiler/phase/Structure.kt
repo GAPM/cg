@@ -31,7 +31,7 @@ import sron.grpc.type.Type
 class Structure : Phase() {
     private var insideLoop = false
     private var insideFunction = false
-    private var currentFunctionType = Type.error
+    private var currentFunctionType = Type.ERROR
     private var fName = ""
 
     /**
@@ -149,7 +149,7 @@ class Structure : Phase() {
         super.enterFuncDef(ctx)
 
         insideFunction = true
-        currentFunctionType = ctx.type()?.toGrpType() ?: Type.void
+        currentFunctionType = ctx.type()?.toGrpType() ?: Type.VOID
         fName = ctx.Identifier().text
     }
 
@@ -168,12 +168,12 @@ class Structure : Phase() {
             }
         }
 
-        if (!getReturns(ctx) && currentFunctionType != Type.void && fName != "main") {
+        if (!getReturns(ctx) && currentFunctionType != Type.VOID && fName != "main") {
             notAllPathsReturnError(Location(ctx.Identifier()))
         }
 
         insideFunction = false
-        currentFunctionType = Type.error
+        currentFunctionType = Type.ERROR
         fName = ""
     }
 
@@ -238,7 +238,7 @@ class Structure : Phase() {
         setReturns(ctx, true)
         val location = Location(ctx.start)
 
-        if (currentFunctionType == Type.void) {
+        if (currentFunctionType == Type.VOID) {
             if (ctx.expr() != null) {
                 nonEmptyReturnError(location)
             }

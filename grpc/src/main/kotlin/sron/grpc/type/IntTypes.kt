@@ -24,10 +24,10 @@ object IntTypes {
 
     fun getType(l: Long): Type {
         return when {
-            byte.contains(l) -> Type.byte
-            short.contains(l) -> Type.short
-            int.contains(l) -> Type.int
-            else -> Type.long
+            byte.contains(l) -> Type.BYTE
+            short.contains(l) -> Type.SHORT
+            int.contains(l) -> Type.INT
+            else -> Type.LONG
         }
     }
 }
