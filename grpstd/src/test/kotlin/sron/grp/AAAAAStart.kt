@@ -22,11 +22,8 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 /**
- * Dummy test created to be executed before any other test.
- *
- * Reason: IntelliJ IDEA seems to take longer in execute the first of all test,
- * so this test is executed first in order to hide false results from other
- * tests.
+ * Dummy test created to be executed before any other test in order to "heat up"
+ * the JVM.
  */
 class AAAAAStart {
     @Test
@@ -36,5 +33,6 @@ class AAAAAStart {
         assertFailsWith(NotImplementedError::class) {
             throw NotImplementedError("Error")
         }
+        Thread.sleep(1000)
     }
 }
