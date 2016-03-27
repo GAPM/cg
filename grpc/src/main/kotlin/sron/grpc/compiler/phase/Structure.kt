@@ -17,9 +17,9 @@
 package sron.grpc.compiler.phase
 
 import org.antlr.v4.runtime.ParserRuleContext
+import sron.grpc.compiler.*
 import sron.grpc.compiler.Annotation
 import sron.grpc.compiler.internal.GrpParser.*
-import sron.grpc.compiler.toGrpType
 import sron.grpc.symbol.Location
 import sron.grpc.type.Type
 
@@ -48,43 +48,6 @@ class Structure : Phase() {
      */
     private fun getReturns(ctx: ParserRuleContext): Boolean {
         return annotations.get(ctx)?.returns ?: false
-    }
-
-    /**
-     * Reports that `continue` or `break` were used outside a loop.
-     *
-     * @param location The location of the error
-     * @param word `continue` or `break`
-     */
-    private fun controlStmtError(location: Location, word: String) {
-        addError(location, "`$word` not inside a loop")
-    }
-
-    /**
-     * Reports that a non-empty return is inside a `void` function.
-     *
-     * @param location The location of the error
-     */
-    private fun nonEmptyReturnError(location: Location) {
-        addError(location, "non-empty return in void function `$fName`")
-    }
-
-    /**
-     * Reports that a empty return is inside a non-void function.
-     *
-     * @param location The location of the error
-     */
-    private fun emptyReturnError(location: Location) {
-        addError(location, "empty return in non-void function `$fName`")
-    }
-
-    /**
-     * Reports that a non-void function doesn't guarantee a return.
-     *
-     * @param location The location of the function
-     */
-    private fun notAllPathsReturnError(location: Location) {
-        addError(location, "in function $fName: not all paths have a return")
     }
 
     /**
@@ -126,7 +89,7 @@ class Structure : Phase() {
     override fun enterContinue(ctx: ContinueContext) {
         super.enterContinue(ctx)
         if (!insideLoop) {
-            controlStmtError(Location(ctx.start), "continue")
+            error(ControlNotInLoop(Location(ctx.start), "continue"))
         }
     }
 
@@ -137,7 +100,7 @@ class Structure : Phase() {
     override fun enterBreak(ctx: BreakContext) {
         super.enterBreak(ctx)
         if (!insideLoop) {
-            controlStmtError(Location(ctx.start), "break")
+            error(ControlNotInLoop(Location(ctx.start), "break"))
         }
     }
 
@@ -169,7 +132,7 @@ class Structure : Phase() {
         }
 
         if (!getReturns(ctx) && currentFunctionType != Type.VOID && fName != "main") {
-            notAllPathsReturnError(Location(ctx.Identifier()))
+            error(NotAllPathsReturn(Location(ctx.Identifier()), fName))
         }
 
         insideFunction = false
@@ -240,11 +203,11 @@ class Structure : Phase() {
 
         if (currentFunctionType == Type.VOID) {
             if (ctx.expr() != null) {
-                nonEmptyReturnError(location)
+                error(NonEmptyReturn(location, fName))
             }
         } else {
             if (ctx.expr() == null) {
-                emptyReturnError(location)
+                error(EmptyReturn(location, fName))
             }
         }
     }

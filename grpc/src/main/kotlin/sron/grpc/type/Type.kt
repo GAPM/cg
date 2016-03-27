@@ -28,7 +28,8 @@ enum class Type {
     STRING,
     CHAR,
 
-    ERROR
+    ERROR,
+    INTEGER_CONSTANT
 }
 
 fun Type.isIntegral(): Boolean {

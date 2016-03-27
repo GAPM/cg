@@ -17,10 +17,9 @@
 package sron.grpc.compiler.phase
 
 import org.antlr.v4.runtime.ParserRuleContext
+import sron.grpc.compiler.*
 import sron.grpc.compiler.Annotation
 import sron.grpc.compiler.internal.GrpParser.*
-import sron.grpc.compiler.nextId
-import sron.grpc.compiler.toGrpType
 import sron.grpc.symbol.Function
 import sron.grpc.symbol.Location
 import sron.grpc.symbol.SymType
@@ -70,123 +69,6 @@ class Types : Phase() {
         var r = annotations.get(ctx) ?: Annotation()
         r.assignable = v
         annotations.put(ctx, r)
-    }
-
-    /**
-     * Reports that a variable is being re-declared in a common scope
-     *
-     * @param last The re-declaration location
-     * @param first The location of the already declared variable
-     * @param name The name of the variable
-     */
-    fun redeclarationError(last: Location, first: Location, name: String) {
-        val e = "redeclaration of variable `$name`. Previously declared at $first"
-        addError(last, e)
-    }
-
-    /**
-     * Reports that a function or variable that is not in the symbol table is
-     * being used
-     *
-     * @param location the location of the use
-     * @param name the name of the symbol
-     * @param typ the symbol type
-     */
-    fun notFoundError(location: Location, name: String, typ: SymType) {
-        val t = if (typ == SymType.FUNC) "function" else "variable"
-        addError(location, "$t $name not found in current scope")
-    }
-
-    /**
-     * Reports a type mismatch error while using an unary operator
-     *
-     * @param location The location of the error
-     * @param op The operator
-     * @param typ The type
-     */
-    fun unaryOpError(location: Location, op: String, typ: Type) {
-        addError(location, "invalid unary operation: $op $typ")
-    }
-
-    /**
-     * Reports a type mismatch error while using an binary operator
-     *
-     * @param location The location of the error
-     * @param op The operator
-     * @param typ1 The type of the left operand
-     * @param typ2 The type of the right operand
-     */
-    fun binaryOpError(location: Location, op: String, typ1: Type, typ2: Type) {
-        addError(location, "invalid binary operation: $typ1 $op $typ2")
-    }
-
-    /**
-     * Reports a type mismatch in a function call regarding one of the
-     * parameters
-     *
-     * @param location The location of the function call
-     * @param expr The text of the expression with mismatched type
-     * @param etype The type of the expression
-     * @param atype The type expected by te argument
-     * @param fName The function name
-     */
-    fun argumentError(location: Location, expr: String, etype: Type,
-                      atype: Type, fName: String) {
-        val msg = "can not use $expr (type $etype) as type $atype in argument to $fName"
-        addError(location, msg)
-    }
-
-    /**
-     * Reports an argument number mismatch in function call error
-     *
-     * @param location The location of the error
-     * @param type The type of error: `+` for too many arguments, `-` for not
-     *            enough arguments
-     * @param fName The function name
-     */
-    fun argumentNumberError(location: Location, type: Char, fName: String) {
-        val t = when (type) {
-            '+' -> "too many arguments in call to $fName"
-            else -> "not enough arguments in call to $fName"
-        }
-
-        addError(location, t)
-    }
-
-    /**
-     * Reports that an assignment was attempted over a non-assignable
-     * expression.
-     *
-     * @param location The location of the error
-     * @param exp The non-assignable expression
-     */
-    fun nonAssignableError(location: Location, exp: String) {
-        addError(location, "can not assign to $exp")
-    }
-
-    /**
-     * Reports a type mismatch in an assignment.
-     *
-     * @param location The location of the error
-     * @param exp The expression with a wrong type
-     * @param type1 The expected type
-     * @param type2 The received type
-     */
-    fun assignmentError(location: Location, exp: String, type1: Type,
-                        type2: Type) {
-        val m = "can not use $exp (type $type2) as type $type1 in assignment"
-        addError(location, m)
-    }
-
-    /**
-     * Reports that a condition is not of type bool.
-     *
-     * @param location The location of the error
-     * @param exp The expression with a wrong type
-     * @param type The type of the expression
-     */
-    fun conditionError(location: Location, exp: String, type: Type) {
-        addError(location, "can not use $exp (type $type) as type bool in condition")
     }
 
     /**
@@ -273,7 +155,7 @@ class Types : Phase() {
         if (expr != null) {
             val exprType = getType(expr)
             if (exprType != Type.ERROR && !(exprType equivalent type)) {
-                assignmentError(location, expr.text, type, exprType)
+                error(BadAssignment(location, expr.text, type, exprType))
                 return
             }
         }
@@ -283,7 +165,7 @@ class Types : Phase() {
         val qry = symTab.getSymbol(name, scope, SymType.VAR)
         when (qry) {
             null -> symTab.addSymbol(variable)
-            else -> redeclarationError(location, qry.location, name)
+            else -> error(Redeclaration(location, qry.location, name, SymType.VAR))
         }
     }
 
@@ -303,7 +185,7 @@ class Types : Phase() {
 
         if (expr != null && exprType != Type.ERROR) {
             if (!(exprType equivalent type)) {
-                assignmentError(location, expr.text, type, exprType)
+                error(BadAssignment(location, expr.text, type, exprType))
                 return
             }
         }
@@ -313,7 +195,7 @@ class Types : Phase() {
         val qry = symTab.getSymbol(name, scope, SymType.VAR)
         when (qry) {
             null -> symTab.addSymbol(variable)
-            else -> redeclarationError(location, variable.location, name)
+            else -> error(Redeclaration(location, variable.location, name, SymType.VAR))
         }
     }
 
@@ -330,7 +212,7 @@ class Types : Phase() {
         val qry = symTab.getSymbol(name, scope, SymType.VAR)
         when (qry) {
             null -> {
-                notFoundError(location, name, SymType.VAR)
+                error(NotFound(location, name, SymType.VAR))
                 setType(ctx, Type.ERROR)
             }
             else -> {
@@ -347,8 +229,10 @@ class Types : Phase() {
      */
     override fun exitInteger(ctx: IntegerContext) {
         super.exitInteger(ctx)
-        val value = ctx.IntLit().text.toLong()
-        setType(ctx, IntTypes.getType(value))
+
+        // TODO: fix integer behavior
+
+        setType(ctx, Type.INTEGER_CONSTANT)
     }
 
     /**
@@ -403,12 +287,12 @@ class Types : Phase() {
 
         val name = ctx.Identifier().text
         val location = Location(ctx.Identifier())
-        var error = false
+        var errorFound = false
 
         val qry = symTab.getSymbol(name, SymType.FUNC)
         when (qry) {
             null -> {
-                notFoundError(location, name, SymType.FUNC)
+                error(NotFound(location, name, SymType.FUNC))
                 setType(ctx, Type.ERROR)
             }
             else -> {
@@ -417,10 +301,10 @@ class Types : Phase() {
                 val exprs = ctx.exprList().expr()
 
                 if (args.size > exprs.size) {
-                    argumentNumberError(location, '-', name)
+                    error(ArgumentNumber(location, '-', name))
                     setType(ctx, Type.ERROR)
                 } else if (args.size < exprs.size) {
-                    argumentNumberError(location, '+', name)
+                    error(ArgumentNumber(location, '+', name))
                     setType(ctx, Type.ERROR)
                 } else {
                     for (i in args.indices) {
@@ -434,12 +318,12 @@ class Types : Phase() {
                         }
 
                         if (!(typeArg equivalent typeExpr)) {
-                            argumentError(location, exp, typeExpr, typeArg, name)
-                            error = true
+                            error(Argument(location, exp, typeExpr, typeArg, name))
+                            errorFound = true
                         }
                     }
 
-                    setType(ctx, if (error) Type.ERROR else f.type)
+                    setType(ctx, if (errorFound) Type.ERROR else f.type)
                 }
             }
         }
@@ -485,7 +369,7 @@ class Types : Phase() {
             val operationResult = OpTable.checkUnary(op, type)
 
             if (operationResult == Type.ERROR) {
-                unaryOpError(location, op, type)
+                error(BadUnaryOp(location, op, type))
                 setType(ctx, Type.ERROR)
             } else {
                 setType(ctx, operationResult)
@@ -519,7 +403,7 @@ class Types : Phase() {
             val operationResult = OpTable.checkBinary(op, type1, type2)
 
             if (operationResult == Type.ERROR) {
-                binaryOpError(location, op, type1, type2)
+                error(BadBinaryOp(location, op, type1, type2))
                 setType(ctx, Type.ERROR)
             } else {
                 setType(ctx, operationResult)
@@ -544,7 +428,7 @@ class Types : Phase() {
             val operationResult = OpTable.checkBinary(op, type1, type2)
 
             if (operationResult == Type.ERROR) {
-                binaryOpError(location, op, type1, type2)
+                error(BadBinaryOp(location, op, type1, type2))
                 setType(ctx, Type.ERROR)
             } else {
                 setType(ctx, operationResult)
@@ -569,7 +453,7 @@ class Types : Phase() {
             val operationResult = OpTable.checkBinary(op, type1, type2)
 
             if (operationResult == Type.ERROR) {
-                binaryOpError(location, op, type1, type2)
+                error(BadBinaryOp(location, op, type1, type2))
                 setType(ctx, Type.ERROR)
             } else {
                 setType(ctx, operationResult)
@@ -594,7 +478,7 @@ class Types : Phase() {
             val operationResult = OpTable.checkBinary(op, type1, type2)
 
             if (operationResult == Type.ERROR) {
-                binaryOpError(location, op, type1, type2)
+                error(BadBinaryOp(location, op, type1, type2))
                 setType(ctx, Type.ERROR)
             } else {
                 setType(ctx, operationResult)
@@ -618,7 +502,7 @@ class Types : Phase() {
             val operationResult = OpTable.checkBinary("&&", type1, type2)
 
             if (operationResult == Type.ERROR) {
-                binaryOpError(location, "&&", type1, type2)
+                error(BadBinaryOp(location, "&&", type1, type2))
                 setType(ctx, Type.ERROR)
             } else {
                 setType(ctx, operationResult)
@@ -642,7 +526,7 @@ class Types : Phase() {
             val operationResult = OpTable.checkBinary("||", type1, type2)
 
             if (operationResult == Type.ERROR) {
-                binaryOpError(location, "||", type1, type2)
+                error(BadBinaryOp(location, "||", type1, type2))
                 setType(ctx, Type.ERROR)
             } else {
                 setType(ctx, operationResult)
@@ -667,10 +551,10 @@ class Types : Phase() {
 
         if (type1 != Type.ERROR && type2 != Type.ERROR) {
             if (!getAssignable(exp1)) {
-                nonAssignableError(location, exp1.text)
+                error(NonAssignable(location, exp1.text))
             } else {
                 if (type1 != type2) {
-                    assignmentError(location, exp2.text, type1, type2)
+                    error(BadAssignment(location, exp2.text, type1, type2))
                 }
             }
         }
@@ -699,7 +583,7 @@ class Types : Phase() {
         val ifCondLoc = Location(ctx.expr().start)
 
         if (ifCondType != Type.ERROR && ifCondType != Type.BOOL) {
-            conditionError(ifCondLoc, ifCond, ifCondType)
+            error(NonBoolCondition(ifCondLoc, ifCond, ifCondType))
         }
 
         for (s in ctx.elifc()) {
@@ -708,7 +592,7 @@ class Types : Phase() {
             val loc = Location(s.expr().start)
 
             if (type != Type.ERROR && type != Type.BOOL) {
-                conditionError(loc, cond, type)
+                error(NonBoolCondition(loc, cond, type))
             }
         }
     }
@@ -777,7 +661,7 @@ class Types : Phase() {
             val exp = ctx.cond.text
 
             if (type != Type.ERROR && type != Type.BOOL) {
-                conditionError(location, exp, type)
+                error(NonBoolCondition(location, exp, type))
             }
         }
     }
@@ -803,7 +687,7 @@ class Types : Phase() {
         val location = Location(ctx.expr().start)
 
         if (type != Type.ERROR && type != Type.BOOL) {
-            conditionError(location, exp, type)
+            error(NonBoolCondition(location, exp, type))
         }
     }
 }

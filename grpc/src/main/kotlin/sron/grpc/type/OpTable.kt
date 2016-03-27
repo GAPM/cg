@@ -25,15 +25,15 @@ object OpTable {
     private data class BinOp(val ops: List<String>, val x: Type, val y: Type,
                              val result: Type) {
 
-        constructor(ops: List<String>, t: Type) : this(ops, t, t, t)
+        constructor(ops: List<String>, type: Type) : this(ops, type, type, type)
 
-        constructor(ops: List<String>, t: Type, r: Type) : this(ops, t, t, r)
+        constructor(ops: List<String>, type: Type, ret: Type) : this(ops, type, type, ret)
     }
 
     private data class UnaryOp(val ops: List<String>, val x: Type,
                                val result: Type) {
 
-        constructor(ops: List<String>, t: Type) : this(ops, t, t)
+        constructor(ops: List<String>, type: Type) : this(ops, type, type)
     }
 
     private val binOps = listOf(

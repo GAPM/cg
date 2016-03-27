@@ -85,7 +85,7 @@ class Compiler(fileName: String, val parameters: CompilerParameters) {
         val ms = measureTimeMillis { walker.walk(phase, tree) }
 
         totalErrors += phase.errorList.size
-        phase.errorList.forEach { Logger.error(it) }
+        phase.errorList.forEach { Logger.error("${file.name}:${it.message()}") }
 
         Logger.debug("${file.name} [${phase.javaClass.simpleName}]: $ms ms")
     }

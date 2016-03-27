@@ -16,6 +16,9 @@
 
 package sron.grpc.compiler.phase
 
+import sron.grpc.compiler.NoEntryPoint
+import sron.grpc.compiler.Redeclaration
+import sron.grpc.compiler.VoidVar
 import sron.grpc.compiler.internal.GrpParser.*
 import sron.grpc.compiler.toGrpType
 import sron.grpc.symbol.Function
@@ -30,42 +33,6 @@ import sron.grpc.type.Type
  */
 class Globals : Phase() {
     private var insideSimpleStmt = false
-
-    /**
-     * Reports a global function or variable redeclaration
-     *
-     * @param last The location of the redeclaration
-     * @param first The location of the previously declared symbol
-     * @param name The name of the symbol
-     * @param symType  Whether it is a function or a variable
-     */
-    fun redeclarationError(last: Location, first: Location, name: String,
-                           symType: SymType) {
-        val t = when (symType) {
-            SymType.VAR -> "variable"
-            SymType.FUNC -> "function"
-        }
-
-        val m = "redeclaration of $t `$name`. Previously declared at $first"
-        addError(last, m)
-    }
-
-    /**
-     * Reports that a variable or argument is being declared with type void
-     *
-     * @param location The location of the declaration
-     * @param name The name of the variable or argument
-     * @param t "variable" or "argument"
-     */
-    fun voidVarError(location: Location, name: String, t: String) =
-            addError(location, "$t $name declared with type `void`")
-
-    /**
-     * Reports that no main method returning an int was found
-     */
-    fun noEntryPointError() {
-        addError(Location(0), "No main method defined")
-    }
 
     /**
      * Marks whenever the phase enters in a simple statement. Variables being
@@ -108,7 +75,7 @@ class Globals : Phase() {
             val argLoc = Location(a.Identifier())
 
             if (argType == Type.VOID) {
-                voidVarError(argLoc, argName, "argument")
+                error(VoidVar(argLoc, argName, "argument"))
             }
 
             Variable(argName, argType, scopeStr, argLoc)
@@ -125,7 +92,7 @@ class Globals : Phase() {
                 }
             }
             else -> {
-                redeclarationError(location, qry.location, name, SymType.FUNC)
+                error(Redeclaration(location, qry.location, name, SymType.FUNC))
             }
         }
     }
@@ -142,7 +109,7 @@ class Globals : Phase() {
             val location = Location(ctx.Identifier())
 
             if (type == Type.VOID) {
-                voidVarError(location, name, "variable")
+                error(VoidVar(location, name, "variable"))
                 return
             }
 
@@ -153,7 +120,7 @@ class Globals : Phase() {
             when (qry) {
                 null -> symTab.addSymbol(variable)
                 else ->
-                    redeclarationError(location, qry.location, name, SymType.VAR)
+                    error(Redeclaration(location, qry.location, name, SymType.FUNC))
             }
         }
     }
@@ -164,14 +131,15 @@ class Globals : Phase() {
      */
     override fun exitInit(ctx: InitContext) {
         super.exitInit(ctx)
+        val location = Location(0)
 
         val qry = symTab.getSymbol("main", scopeUID(), SymType.FUNC)
         when (qry) {
-            null -> noEntryPointError()
+            null -> error(NoEntryPoint(location))
             else -> {
                 val function = qry as Function
                 if (function.type != Type.INT) {
-                    noEntryPointError()
+                    error(NoEntryPoint(location))
                 }
             }
         }

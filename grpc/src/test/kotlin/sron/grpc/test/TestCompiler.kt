@@ -83,7 +83,7 @@ class TestCompiler(code: String) {
         walker.walk(phase, tree)
 
         totalErrors += phase.errorList.size
-        phase.errorList.forEach { Logger.error(it) }
+        phase.errorList.forEach { Logger.error(it.message()) }
     }
 
     fun compile() {

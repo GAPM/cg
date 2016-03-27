@@ -19,8 +19,8 @@ package sron.grpc.compiler.phase
 import org.antlr.v4.runtime.tree.ParseTreeProperty
 import sron.grpc.compiler.Annotation
 import sron.grpc.compiler.CompilerParameters
+import sron.grpc.compiler.Error
 import sron.grpc.compiler.internal.GrpBaseListener
-import sron.grpc.symbol.Location
 import sron.grpc.symbol.SymbolTable
 import java.util.*
 
@@ -31,7 +31,7 @@ open class Phase : GrpBaseListener() {
     lateinit var parameters: CompilerParameters
 
     lateinit var annotations: ParseTreeProperty<Annotation>
-    val errorList = ArrayList<String>()
+    val errorList = ArrayList<Error>()
 
     protected val scope = Stack<String>()
 
@@ -40,9 +40,7 @@ open class Phase : GrpBaseListener() {
         className = fileName.substring(0, fileName.indexOf('.')).capitalize()
     }
 
-    fun addError(location: Location, msg: String) {
-        errorList.add("$fileName:$location: $msg")
-    }
+    fun error(error: Error) = errorList.add(error)
 
     fun scopeUID() = scope.reduce { a, b -> "$a.$b" }
 }
