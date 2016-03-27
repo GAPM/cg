@@ -269,10 +269,10 @@ class Types : Phase() {
         val location = Location(ctx.Identifier())
         val scope = scopeUID()
         val expr = ctx.glExpr()
-        val exprType = getType(expr)
 
-        if (expr != null && exprType != Type.error) {
-            if (!(exprType equivalent type)) {
+        if (expr != null) {
+            val exprType = getType(expr)
+            if (exprType != Type.error && !(exprType equivalent type)) {
                 assignmentError(location, expr.text, type, exprType)
                 return
             }
