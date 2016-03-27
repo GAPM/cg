@@ -20,26 +20,22 @@ import sron.grpc.symbol.Location
 import sron.grpc.symbol.SymType
 import sron.grpc.type.Type
 
-inline private fun <T> v(block: () -> T): T {
-    return block()
-}
-
 abstract class Error(private val last: Location) {
     abstract val msg: String
 
-    fun message() = v {
-        "$last: $msg"
-    }
+    fun message() = "$last: $msg"
 }
 
 class Redeclaration(last: Location, first: Location, name: String, symType: SymType) : Error(last) {
-    override val msg = v {
+    override val msg: String
+
+    init {
         val t = when (symType) {
             SymType.FUNC -> "function"
             SymType.VAR -> "variable"
         }
 
-        "redeclaration of $t `$name`. Previously declared at $first"
+        msg = "redeclaration of $t `$name`. Previously declared at $first"
     }
 }
 
@@ -68,9 +64,11 @@ class NotAllPathsReturn(location: Location, fName: String) : Error(location) {
 }
 
 class NotFound(location: Location, name: String, typ: SymType) : Error(location) {
-    override val msg = v {
+    override val msg: String
+
+    init {
         val t = if (typ == SymType.FUNC) "function" else "variable"
-        "$t $name not found in current scope"
+        msg = "$t $name not found in current scope"
     }
 }
 
