@@ -17,35 +17,52 @@
 package sron.grpc.compiler.phase
 
 import org.objectweb.asm.ClassWriter
+import org.objectweb.asm.FieldVisitor
 import org.objectweb.asm.Label
+import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes.*
-import sron.grpc.compiler.internal.GrpParser
+import sron.grpc.compiler.internal.GrpParser.GlVarDecContext
+import sron.grpc.compiler.internal.GrpParser.InitContext
+import sron.grpc.compiler.toGrpType
+import sron.grpc.type.toJVMDescriptor
 import java.io.File
 
 class Generation : Phase() {
     private val cw = ClassWriter(0)
+    lateinit private var mv: MethodVisitor
+    lateinit private var fv: FieldVisitor
 
-    override fun enterInit(ctx: GrpParser.InitContext) {
+    override fun enterInit(ctx: InitContext) {
         super.enterInit(ctx)
         cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, "EntryPoint", null, "java/lang/Object", null)
 
         // Creation of default constructor
-        cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null).let { mv ->
-            mv.visitCode()
-            val l0 = Label()
-            mv.visitLabel(l0)
-            mv.visitVarInsn(ALOAD, 0)
-            mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false)
-            mv.visitInsn(RETURN)
-            val l1 = Label()
-            mv.visitLabel(l1)
-            mv.visitLocalVariable("this", "LSimon;", null, l0, l1, 0);
-            mv.visitMaxs(1, 1)
-            mv.visitEnd()
-        }
+        mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null)
+        mv.visitCode()
+        val l0 = Label()
+        mv.visitLabel(l0)
+        mv.visitVarInsn(ALOAD, 0)
+        mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false)
+        mv.visitInsn(RETURN)
+        val l1 = Label()
+        mv.visitLabel(l1)
+        mv.visitLocalVariable("this", "LSimon;", null, l0, l1, 0);
+        mv.visitMaxs(1, 1)
+        mv.visitEnd()
     }
 
-    override fun exitInit(ctx: GrpParser.InitContext) {
+    override fun exitGlVarDec(ctx: GlVarDecContext) {
+        super.exitGlVarDec(ctx)
+        val name = ctx.Identifier().text
+        val type = ctx.type().toGrpType()
+
+        // TODO: initial value
+
+        fv = cw.visitField(ACC_STATIC, name, type.toJVMDescriptor(), null, null)
+        fv.visitEnd()
+    }
+
+    override fun exitInit(ctx: InitContext) {
         super.exitInit(ctx)
         cw.visitEnd()
         if (!parameters.justCheck) {

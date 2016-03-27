@@ -71,3 +71,17 @@ infix fun Type.equivalent(other: Type): Boolean {
 
     return false
 }
+
+fun Type.toJVMDescriptor() = when(this) {
+    Type.byte -> "B"
+    Type.short -> "S"
+    Type.int -> "I"
+    Type.long -> "J"
+    Type.float -> "F"
+    Type.double -> "D"
+    Type.bool -> "Z"
+    Type.void -> "V"
+    Type.string -> "Ljava/lang/String"
+    Type.char -> "C"
+    Type.error -> ""
+}
