@@ -25,7 +25,6 @@ BOOL : 'bool' ;
 BREAK : 'break' ;
 BYTE : 'byte' ;
 CHAR : 'char' ;
-COLON : ':' ;
 COMMA : ',' ;
 CONTINUE : 'continue' ;
 DIV : '/' ;
@@ -105,7 +104,7 @@ type: 'byte'
     | 'bool'
     ;
 
-arg: Identifier ':' type;
+arg: Identifier type;
 argList: (arg (',' arg)*)?;
 
 atom: IntLit            #Integer
@@ -132,10 +131,10 @@ expr: atom                                #Atomic
 exprList: (expr (',' expr)*)?;
 
 glExpr: IntLit | FloatLit | DoubleLit | BoolLit | CharLit | StringLit;
-glVarDec: 'var' Identifier ':' type ('=' glExpr)?;
-varDec: 'var' Identifier ':' type ('=' expr)?;
+glVarDec: 'var' Identifier type ('=' glExpr)?;
+varDec: 'var' Identifier type ('=' expr)?;
 
-funcDef: 'func' Identifier '(' argList ')' (':' type)? '{' stmt* '}';
+funcDef: 'func' Identifier '(' argList ')' type? '{' stmt* '}';
 
 funcCall: Identifier '(' exprList ')';
 
