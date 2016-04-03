@@ -16,75 +16,56 @@
 
 package sron.grpc.type
 
+import org.antlr.v4.runtime.tree.TerminalNode
+import sron.grpc.compiler.internal.GrpLexer
+import sron.grpc.compiler.internal.GrpParser
+
 enum class Type {
-    BYTE,
-    SHORT,
-    INT,
-    LONG,
-    FLOAT,
-    DOUBLE,
-    BOOL,
-    VOID,
-    STRING,
-    CHAR,
+    byte,
+    short,
+    int,
+    long,
+    float,
+    double,
+    bool,
+    void,
+    string,
+    char,
 
     ERROR,
     INTEGER_CONSTANT
 }
 
-fun Type.isIntegral(): Boolean {
-    return this == Type.BYTE || this == Type.SHORT || this == Type.INT || this == Type.LONG
+fun GrpParser.TypeContext.toGrpType(): Type {
+    val tn = this.getChild(0) as TerminalNode
+    val t = tn.symbol.type
+
+    return when (t) {
+        GrpLexer.BYTE -> Type.byte
+        GrpLexer.SHORT -> Type.short
+        GrpLexer.INT -> Type.int
+        GrpLexer.LONG -> Type.long
+        GrpLexer.FLOAT -> Type.float
+        GrpLexer.DOUBLE -> Type.double
+        GrpLexer.BOOL -> Type.bool
+        GrpLexer.VOID -> Type.void
+        GrpLexer.STRING -> Type.string
+        GrpLexer.CHAR -> Type.char
+        else -> Type.ERROR
+    }
 }
 
-fun Type.isFP(): Boolean {
-    return this == Type.FLOAT || this == Type.DOUBLE
-}
-
-infix fun Type.lowerOrEqual(other: Type): Boolean {
-    if (this == Type.ERROR || other == Type.ERROR) {
-        return false
-    }
-
-    if ((!this.isIntegral() && !this.isFP()) ||
-            (!other.isIntegral() && !other.isFP())) {
-        throw UnsupportedOperationException("Type must be integral or floating point")
-    }
-
-    if ((this.isFP() && other.isIntegral()) ||
-            (this.isIntegral() && other.isFP())) {
-        throw UnsupportedOperationException("Types must be from the same class")
-    }
-
-    return this <= other
-}
-
-infix fun Type.equivalent(other: Type): Boolean {
-    if (this == other) {
-        return true
-    }
-
-    if (this.isIntegral() && this lowerOrEqual other) {
-        return true
-    }
-
-    if (this.isFP() && this lowerOrEqual other) {
-        return true
-    }
-
-    return false
-}
-
-fun Type.toJVMDescriptor() = when(this) {
-    Type.BYTE -> "B"
-    Type.SHORT -> "S"
-    Type.INT -> "I"
-    Type.LONG -> "J"
-    Type.FLOAT -> "F"
-    Type.DOUBLE -> "D"
-    Type.BOOL -> "Z"
-    Type.VOID -> "V"
-    Type.STRING -> "Ljava/lang/String"
-    Type.CHAR -> "C"
+fun Type.toJVMDescriptor() = when (this) {
+    Type.byte -> "B"
+    Type.short -> "S"
+    Type.int -> "I"
+    Type.long -> "J"
+    Type.float -> "F"
+    Type.double -> "D"
+    Type.bool -> "Z"
+    Type.void -> "V"
+    Type.string -> "Ljava/lang/String"
+    Type.char -> "C"
 
     else -> ""
 }

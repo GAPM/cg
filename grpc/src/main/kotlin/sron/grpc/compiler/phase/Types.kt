@@ -24,7 +24,10 @@ import sron.grpc.symbol.Function
 import sron.grpc.symbol.Location
 import sron.grpc.symbol.SymType
 import sron.grpc.symbol.Variable
-import sron.grpc.type.*
+import sron.grpc.type.CastTable
+import sron.grpc.type.IntTypes
+import sron.grpc.type.OpTable
+import sron.grpc.type.Type
 
 class Types : Phase() {
     private var insideSimpleStmt = false
@@ -114,28 +117,27 @@ class Types : Phase() {
         super.exitGlExpr(ctx)
 
         if (ctx.IntLit() != null) {
-            val value = ctx.IntLit().text.toLong()
-            setType(ctx, IntTypes.getType(value))
+            setType(ctx, Type.INTEGER_CONSTANT)
         }
 
         if (ctx.FloatLit() != null) {
-            setType(ctx, Type.FLOAT)
+            setType(ctx, Type.float)
         }
 
         if (ctx.DoubleLit() != null) {
-            setType(ctx, Type.DOUBLE)
+            setType(ctx, Type.double)
         }
 
         if (ctx.BoolLit() != null) {
-            setType(ctx, Type.BOOL)
+            setType(ctx, Type.bool)
         }
 
         if (ctx.CharLit() != null) {
-            setType(ctx, Type.CHAR)
+            setType(ctx, Type.char)
         }
 
         if (ctx.StringLit() != null) {
-            setType(ctx, Type.STRING)
+            setType(ctx, Type.string)
         }
     }
 
@@ -150,13 +152,28 @@ class Types : Phase() {
         val type = ctx.type().toGrpType()
         val location = Location(ctx.Identifier())
         val scope = scopeUID()
-        val expr = ctx.glExpr()
+        val rhs = ctx.glExpr()
 
-        if (expr != null) {
-            val exprType = getType(expr)
-            if (exprType != Type.ERROR && !(exprType equivalent type)) {
-                error(BadAssignment(location, expr.text, type, exprType))
-                return
+        if (rhs != null) {
+            val rhsType = getType(rhs)
+            val rhsText = rhs.text
+
+            if (rhsType != Type.ERROR) {
+                if (rhsType == Type.INTEGER_CONSTANT) {
+                    try {
+                        val value = rhsText.toLong()
+                        val realRhsType = IntTypes.getType(value)
+                        if (!IntTypes.checkRange(value, type)) {
+                            error(BadAssignment(location, rhsText, type, realRhsType))
+                        }
+                    } catch (e: NumberFormatException) {
+                        error(IntegerOutOfRange(Location(rhs.IntLit()), rhsText))
+                    }
+                } else {
+                    if (type != rhsType) {
+                        error(BadAssignment(location, rhsText, type, rhsType))
+                    }
+                }
             }
         }
 
@@ -180,13 +197,16 @@ class Types : Phase() {
         val type = ctx.type().toGrpType()
         val location = Location(ctx.Identifier())
         val scope = scopeUID()
-        val expr = ctx.expr()
-        val exprType = getType(expr)
+        val rhs = ctx.expr()
 
-        if (expr != null && exprType != Type.ERROR) {
-            if (!(exprType equivalent type)) {
-                error(BadAssignment(location, expr.text, type, exprType))
-                return
+        if (rhs != null) {
+            val rhsType = getType(rhs)
+            val rhsText = rhs.text
+
+            if (rhsType != Type.ERROR) {
+                if (type != rhsType) {
+                    error(BadAssignment(location, rhsText, type, rhsType))
+                }
             }
         }
 
@@ -229,10 +249,13 @@ class Types : Phase() {
      */
     override fun exitInteger(ctx: IntegerContext) {
         super.exitInteger(ctx)
-
-        // TODO: fix integer behavior
-
-        setType(ctx, Type.INTEGER_CONSTANT)
+        try {
+            val value = ctx.IntLit().text.toLong()
+            setType(ctx, IntTypes.getConstType(value))
+        } catch (e: NumberFormatException) {
+            error(IntegerOutOfRange(Location(ctx.IntLit()), ctx.IntLit().text))
+            setType(ctx, Type.ERROR)
+        }
     }
 
     /**
@@ -240,7 +263,7 @@ class Types : Phase() {
      */
     override fun exitFloat(ctx: FloatContext) {
         super.exitFloat(ctx)
-        setType(ctx, Type.FLOAT)
+        setType(ctx, Type.float)
     }
 
     /**
@@ -249,7 +272,7 @@ class Types : Phase() {
      */
     override fun exitDouble(ctx: DoubleContext) {
         super.exitDouble(ctx)
-        setType(ctx, Type.DOUBLE)
+        setType(ctx, Type.double)
     }
 
     /**
@@ -257,7 +280,7 @@ class Types : Phase() {
      */
     override fun exitBoolean(ctx: BooleanContext) {
         super.exitBoolean(ctx)
-        setType(ctx, Type.BOOL)
+        setType(ctx, Type.bool)
     }
 
     /**
@@ -265,7 +288,7 @@ class Types : Phase() {
      */
     override fun exitCharacter(ctx: CharacterContext) {
         super.exitCharacter(ctx)
-        setType(ctx, Type.CHAR)
+        setType(ctx, Type.char)
     }
 
     /**
@@ -273,7 +296,7 @@ class Types : Phase() {
      */
     override fun exitStringAtom(ctx: StringAtomContext) {
         super.exitStringAtom(ctx)
-        setType(ctx, Type.STRING)
+        setType(ctx, Type.string)
     }
 
     /**
@@ -290,41 +313,38 @@ class Types : Phase() {
         var errorFound = false
 
         val qry = symTab.getSymbol(name, SymType.FUNC)
-        when (qry) {
-            null -> {
-                error(NotFound(location, name, SymType.FUNC))
+        if (qry == null) {
+            error(NotFound(location, name, SymType.FUNC))
+            setType(ctx, Type.ERROR)
+        } else {
+            val f = qry as Function
+            val args = f.args
+            val exprs = ctx.exprList().expr()
+
+            if (args.size > exprs.size) {
+                error(ArgumentNumber(location, '-', name))
                 setType(ctx, Type.ERROR)
-            }
-            else -> {
-                val f = qry as Function
-                val args = f.args
-                val exprs = ctx.exprList().expr()
+            } else if (args.size < exprs.size) {
+                error(ArgumentNumber(location, '+', name))
+                setType(ctx, Type.ERROR)
+            } else {
+                for (i in args.indices) {
+                    val argType = args[i].type
+                    val exprType = getType(exprs[i])
+                    val exp = exprs[i].text
 
-                if (args.size > exprs.size) {
-                    error(ArgumentNumber(location, '-', name))
-                    setType(ctx, Type.ERROR)
-                } else if (args.size < exprs.size) {
-                    error(ArgumentNumber(location, '+', name))
-                    setType(ctx, Type.ERROR)
-                } else {
-                    for (i in args.indices) {
-                        val typeArg = args[i].type
-                        val typeExpr = getType(exprs[i])
-                        val exp = exprs[i].text
-
-                        if (typeArg == Type.ERROR || typeExpr == Type.ERROR) {
-                            setType(ctx, Type.ERROR)
-                            return
-                        }
-
-                        if (!(typeArg equivalent typeExpr)) {
-                            error(Argument(location, exp, typeExpr, typeArg, name))
-                            errorFound = true
-                        }
+                    if (argType == Type.ERROR || exprType == Type.ERROR) {
+                        setType(ctx, Type.ERROR)
+                        return
                     }
 
-                    setType(ctx, if (errorFound) Type.ERROR else f.type)
+                    if (exprType != argType) {
+                        error(Argument(location, exp, exprType, argType, name))
+                        errorFound = true
+                    }
                 }
+
+                setType(ctx, if (errorFound) Type.ERROR else f.type)
             }
         }
     }
@@ -366,7 +386,7 @@ class Types : Phase() {
         val location = Location(ctx.op)
 
         if (type != Type.ERROR) {
-            val operationResult = OpTable.checkUnary(op, type)
+            val operationResult = OpTable.checkUnaryOp(op, type)
 
             if (operationResult == Type.ERROR) {
                 error(BadUnaryOp(location, op, type))
@@ -400,7 +420,7 @@ class Types : Phase() {
         val location = Location(ctx.start)
 
         if (type1 != Type.ERROR && type2 != Type.ERROR) {
-            val operationResult = OpTable.checkBinary(op, type1, type2)
+            val operationResult = OpTable.checkBinaryOp(op, type1, type2)
 
             if (operationResult == Type.ERROR) {
                 error(BadBinaryOp(location, op, type1, type2))
@@ -425,7 +445,7 @@ class Types : Phase() {
         val location = Location(ctx.start)
 
         if (type1 != Type.ERROR && type2 != Type.ERROR) {
-            val operationResult = OpTable.checkBinary(op, type1, type2)
+            val operationResult = OpTable.checkBinaryOp(op, type1, type2)
 
             if (operationResult == Type.ERROR) {
                 error(BadBinaryOp(location, op, type1, type2))
@@ -450,7 +470,7 @@ class Types : Phase() {
         val location = Location(ctx.start)
 
         if (type1 != Type.ERROR && type2 != Type.ERROR) {
-            val operationResult = OpTable.checkBinary(op, type1, type2)
+            val operationResult = OpTable.checkBinaryOp(op, type1, type2)
 
             if (operationResult == Type.ERROR) {
                 error(BadBinaryOp(location, op, type1, type2))
@@ -475,7 +495,7 @@ class Types : Phase() {
         val location = Location(ctx.start)
 
         if (type1 != Type.ERROR && type2 != Type.ERROR) {
-            val operationResult = OpTable.checkBinary(op, type1, type2)
+            val operationResult = OpTable.checkBinaryOp(op, type1, type2)
 
             if (operationResult == Type.ERROR) {
                 error(BadBinaryOp(location, op, type1, type2))
@@ -499,7 +519,7 @@ class Types : Phase() {
         val location = Location(ctx.start)
 
         if (type1 != Type.ERROR && type2 != Type.ERROR) {
-            val operationResult = OpTable.checkBinary("&&", type1, type2)
+            val operationResult = OpTable.checkBinaryOp("&&", type1, type2)
 
             if (operationResult == Type.ERROR) {
                 error(BadBinaryOp(location, "&&", type1, type2))
@@ -523,7 +543,7 @@ class Types : Phase() {
         val location = Location(ctx.start)
 
         if (type1 != Type.ERROR && type2 != Type.ERROR) {
-            val operationResult = OpTable.checkBinary("||", type1, type2)
+            val operationResult = OpTable.checkBinaryOp("||", type1, type2)
 
             if (operationResult == Type.ERROR) {
                 error(BadBinaryOp(location, "||", type1, type2))
@@ -543,18 +563,18 @@ class Types : Phase() {
     override fun exitAssignment(ctx: AssignmentContext) {
         super.exitAssignment(ctx)
 
-        val exp1 = ctx.expr(0)
-        val exp2 = ctx.expr(1)
-        val type1 = getType(exp1)
-        val type2 = getType(exp2)
-        val location = Location(exp1.start)
+        val lhs = ctx.expr(0)
+        val rhs = ctx.expr(1)
+        val lhsType = getType(lhs)
+        val rhsType = getType(rhs)
+        val location = Location(lhs.start)
 
-        if (type1 != Type.ERROR && type2 != Type.ERROR) {
-            if (!getAssignable(exp1)) {
-                error(NonAssignable(location, exp1.text))
+        if (lhsType != Type.ERROR && rhsType != Type.ERROR) {
+            if (!getAssignable(lhs)) {
+                error(NonAssignable(location, lhs.text))
             } else {
-                if (type1 != type2) {
-                    error(BadAssignment(location, exp2.text, type1, type2))
+                if (lhsType != rhsType) {
+                    error(BadAssignment(location, rhs.text, lhsType, rhsType))
                 }
             }
         }
@@ -582,7 +602,7 @@ class Types : Phase() {
         val ifCondType = getType(ctx.expr())
         val ifCondLoc = Location(ctx.expr().start)
 
-        if (ifCondType != Type.ERROR && ifCondType != Type.BOOL) {
+        if (ifCondType != Type.ERROR && ifCondType != Type.bool) {
             error(NonBoolCondition(ifCondLoc, ifCond, ifCondType))
         }
 
@@ -591,7 +611,7 @@ class Types : Phase() {
             val type = getType(s.expr())
             val loc = Location(s.expr().start)
 
-            if (type != Type.ERROR && type != Type.BOOL) {
+            if (type != Type.ERROR && type != Type.bool) {
                 error(NonBoolCondition(loc, cond, type))
             }
         }
@@ -660,7 +680,7 @@ class Types : Phase() {
             val location = Location(ctx.cond.start)
             val exp = ctx.cond.text
 
-            if (type != Type.ERROR && type != Type.BOOL) {
+            if (type != Type.ERROR && type != Type.bool) {
                 error(NonBoolCondition(location, exp, type))
             }
         }
@@ -686,7 +706,7 @@ class Types : Phase() {
         val exp = ctx.expr().text
         val location = Location(ctx.expr().start)
 
-        if (type != Type.ERROR && type != Type.BOOL) {
+        if (type != Type.ERROR && type != Type.bool) {
             error(NonBoolCondition(location, exp, type))
         }
     }

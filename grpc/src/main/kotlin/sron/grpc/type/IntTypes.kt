@@ -17,17 +17,32 @@
 package sron.grpc.type
 
 object IntTypes {
-    val byte = Byte.MIN_VALUE..Byte.MAX_VALUE
-    val short = Short.MIN_VALUE..Short.MAX_VALUE
-    val int = Int.MIN_VALUE..Int.MAX_VALUE
-    val long = Long.MIN_VALUE..Long.MAX_VALUE
+    private val byte = Byte.MIN_VALUE..Byte.MAX_VALUE
+    private val short = Short.MIN_VALUE..Short.MAX_VALUE
+    private val int = Int.MIN_VALUE..Int.MAX_VALUE
+    private val long = Long.MIN_VALUE..Long.MAX_VALUE
 
-    fun getType(l: Long): Type {
-        return when {
-            byte.contains(l) -> Type.BYTE
-            short.contains(l) -> Type.SHORT
-            int.contains(l) -> Type.INT
-            else -> Type.LONG
-        }
+    fun checkRange(value: Long, type: Type): Boolean = when (type) {
+        Type.byte -> byte.contains(value)
+        Type.short -> short.contains(value)
+        Type.int -> int.contains(value)
+        Type.long -> long.contains(value)
+        else -> false
+    }
+
+    fun getType(value: Long) = if (byte.contains(value)) {
+        Type.byte
+    } else if (short.contains(value)) {
+        Type.short
+    } else if (int.contains(value)) {
+        Type.int
+    } else {
+        Type.long
+    }
+
+    fun getConstType(value: Long) = if (int.contains(value)) {
+        Type.int
+    } else {
+        Type.long
     }
 }

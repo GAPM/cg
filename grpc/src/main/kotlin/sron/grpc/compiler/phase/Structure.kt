@@ -112,7 +112,7 @@ class Structure : Phase() {
         super.enterFuncDef(ctx)
 
         insideFunction = true
-        currentFunctionType = ctx.type()?.toGrpType() ?: Type.VOID
+        currentFunctionType = ctx.type()?.toGrpType() ?: Type.void
         fName = ctx.Identifier().text
     }
 
@@ -131,7 +131,7 @@ class Structure : Phase() {
             }
         }
 
-        if (!getReturns(ctx) && currentFunctionType != Type.VOID && fName != "main") {
+        if (!getReturns(ctx) && currentFunctionType != Type.void && fName != "main") {
             error(NotAllPathsReturn(Location(ctx.Identifier()), fName))
         }
 
@@ -201,7 +201,7 @@ class Structure : Phase() {
         setReturns(ctx, true)
         val location = Location(ctx.start)
 
-        if (currentFunctionType == Type.VOID) {
+        if (currentFunctionType == Type.void) {
             if (ctx.expr() != null) {
                 error(NonEmptyReturn(location, fName))
             }

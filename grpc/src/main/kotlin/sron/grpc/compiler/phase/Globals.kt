@@ -59,7 +59,7 @@ class Globals : Phase() {
         super.exitFuncDef(ctx)
 
         val name = ctx.Identifier().text
-        val type = ctx.type()?.toGrpType() ?: Type.VOID
+        val type = ctx.type()?.toGrpType() ?: Type.void
         val location = Location(ctx.Identifier())
 
         val ar = ctx.argList().arg()
@@ -74,7 +74,7 @@ class Globals : Phase() {
             val argType = a.type().toGrpType()
             val argLoc = Location(a.Identifier())
 
-            if (argType == Type.VOID) {
+            if (argType == Type.void) {
                 error(VoidVar(argLoc, argName, "argument"))
             }
 
@@ -108,7 +108,7 @@ class Globals : Phase() {
             val type = ctx.type().toGrpType()
             val location = Location(ctx.Identifier())
 
-            if (type == Type.VOID) {
+            if (type == Type.void) {
                 error(VoidVar(location, name, "variable"))
                 return
             }
@@ -138,7 +138,7 @@ class Globals : Phase() {
             null -> error(NoEntryPoint(location))
             else -> {
                 val function = qry as Function
-                if (function.type != Type.INT) {
+                if (function.type != Type.int) {
                     error(NoEntryPoint(location))
                 }
             }

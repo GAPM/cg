@@ -16,12 +16,8 @@
 
 package sron.grpc.compiler
 
-import org.antlr.v4.runtime.tree.TerminalNode
 import sron.grpc.compiler.internal.GrpErrorListener
-import sron.grpc.compiler.internal.GrpLexer
 import sron.grpc.compiler.internal.GrpParser
-import sron.grpc.compiler.internal.GrpParser.TypeContext
-import sron.grpc.type.Type
 
 private var id = 0
 
@@ -29,25 +25,6 @@ fun GrpParser.withFileName(fileName: String): GrpParser {
     this.removeErrorListeners()
     this.addErrorListener(GrpErrorListener(fileName))
     return this
-}
-
-fun TypeContext.toGrpType(): Type {
-    val tn = this.getChild(0) as TerminalNode
-    val t = tn.symbol.type
-
-    return when (t) {
-        GrpLexer.BYTE -> Type.BYTE
-        GrpLexer.SHORT -> Type.SHORT
-        GrpLexer.INT -> Type.INT
-        GrpLexer.LONG -> Type.LONG
-        GrpLexer.FLOAT -> Type.FLOAT
-        GrpLexer.DOUBLE -> Type.DOUBLE
-        GrpLexer.BOOL -> Type.BOOL
-        GrpLexer.VOID -> Type.VOID
-        GrpLexer.STRING -> Type.STRING
-        GrpLexer.CHAR -> Type.CHAR
-        else -> Type.ERROR
-    }
 }
 
 fun nextId(): Int = id++

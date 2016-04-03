@@ -18,18 +18,18 @@ package sron.grpc.type
 
 object CastTable {
     private val numeric =
-            listOf(Type.BYTE, Type.SHORT, Type.INT, Type.LONG, Type.FLOAT, Type.DOUBLE)
+            listOf(Type.byte, Type.short, Type.int, Type.long, Type.float, Type.double)
 
     private val tab = mapOf(
-            Type.BYTE to numeric,
-            Type.SHORT to numeric,
-            Type.INT to numeric,
-            Type.LONG to numeric,
-            Type.FLOAT to numeric,
-            Type.DOUBLE to numeric,
-            Type.BOOL to numeric,
-            Type.CHAR to listOf(Type.STRING),
-            Type.STRING to listOf()
+            Type.byte to numeric,
+            Type.short to numeric,
+            Type.int to numeric,
+            Type.long to numeric,
+            Type.float to numeric,
+            Type.double to numeric,
+            Type.bool to numeric,
+            Type.char to listOf(Type.string),
+            Type.string to listOf()
     )
 
     fun check(type1: Type, type2: Type) = tab[type1]?.contains(type2) ?: false
