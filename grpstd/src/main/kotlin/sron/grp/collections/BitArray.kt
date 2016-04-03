@@ -17,8 +17,7 @@
 package sron.grp.collections
 
 class BitArray(val size: Int) {
-    private val BITS_PER_BLOCK = 32
-    private val array = IntArray((size + BITS_PER_BLOCK - 1) / BITS_PER_BLOCK)
+    private val array = IntArray((size + 32 - 1) / 32)
 
     operator fun get(idx: Int): Boolean {
         return (array[idx shr 5] and (1 shl (idx and 31))) != 0
