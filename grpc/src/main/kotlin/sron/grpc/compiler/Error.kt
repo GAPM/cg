@@ -40,7 +40,7 @@ class Redeclaration(last: Location, first: Location, name: String, symType: SymT
 }
 
 class VoidVar(location: Location, name: String, t: String) : Error(location) {
-    override val msg = "$t $name declared with type `void`"
+    override val msg = "$t `$name`g declared with type `void`"
 }
 
 class NoEntryPoint(location: Location) : Error(location) {
@@ -52,7 +52,7 @@ class ControlNotInLoop(location: Location, word: String) : Error(location) {
 }
 
 class NonEmptyReturn(location: Location, fName: String) : Error(location) {
-    override val msg = "non-empty return in function `$fName`"
+    override val msg = "non-empty return in void function `$fName`"
 }
 
 class EmptyReturn(location: Location, fName: String) : Error(location) {
@@ -60,7 +60,7 @@ class EmptyReturn(location: Location, fName: String) : Error(location) {
 }
 
 class NotAllPathsReturn(location: Location, fName: String) : Error(location) {
-    override val msg = "in function $fName: not all paths have a return"
+    override val msg = "in function `$fName`: not all paths have a return"
 }
 
 class NotFound(location: Location, name: String, typ: SymType) : Error(location) {
@@ -68,7 +68,7 @@ class NotFound(location: Location, name: String, typ: SymType) : Error(location)
 
     init {
         val t = if (typ == SymType.FUNC) "function" else "variable"
-        msg = "$t $name not found in current scope"
+        msg = "$t `$name` not found in current scope"
     }
 }
 
@@ -81,13 +81,13 @@ class BadBinaryOp(location: Location, op: String, typ1: Type, typ2: Type) : Erro
 }
 
 class Argument(location: Location, expr: String, etype: Type, atype: Type, fName: String) : Error(location) {
-    override val msg = "can not use $expr (type $etype) as type $atype in argument to $fName"
+    override val msg = "can not use $expr (type $etype) as type $atype in argument to `$fName`"
 }
 
 class ArgumentNumber(location: Location, type: Char, fName: String) : Error(location) {
     override val msg = when (type) {
-        '+' -> "too many arguments in call to $fName"
-        else -> "not enough arguments in call to $fName"
+        '+' -> "too many arguments in call to `$fName`"
+        else -> "not enough arguments in call to `$fName`"
     }
 }
 
@@ -101,4 +101,8 @@ class BadAssignment(location: Location, exp: String, type1: Type, type2: Type) :
 
 class NonBoolCondition(location: Location, exp: String, type: Type) : Error(location) {
     override val msg = "can not use $exp (type $type) as type bool in condition"
+}
+
+class IntegerOutOfRange(location: Location, exp: String) : Error(location) {
+    override val msg = "value $exp is out of range"
 }
