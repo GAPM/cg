@@ -24,10 +24,7 @@ import sron.grpc.symbol.Function
 import sron.grpc.symbol.Location
 import sron.grpc.symbol.SymType
 import sron.grpc.symbol.Variable
-import sron.grpc.type.CastTable
-import sron.grpc.type.IntTypes
-import sron.grpc.type.OpTable
-import sron.grpc.type.Type
+import sron.grpc.type.*
 
 class Types : Phase() {
     private var insideSimpleStmt = false

@@ -23,7 +23,7 @@ import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes.*
 import sron.grpc.compiler.internal.GrpParser.GlVarDecContext
 import sron.grpc.compiler.internal.GrpParser.InitContext
-import sron.grpc.compiler.toGrpType
+import sron.grpc.type.toGrpType
 import sron.grpc.type.toJVMDescriptor
 import java.io.File
 
