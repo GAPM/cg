@@ -16,9 +16,10 @@
 
 package sron.grpc.compiler.phase
 
-import org.antlr.v4.runtime.ParserRuleContext
-import sron.grpc.compiler.*
-import sron.grpc.compiler.Annotation
+import sron.grpc.compiler.ControlNotInLoop
+import sron.grpc.compiler.EmptyReturn
+import sron.grpc.compiler.NonEmptyReturn
+import sron.grpc.compiler.NotAllPathsReturn
 import sron.grpc.compiler.internal.GrpParser.*
 import sron.grpc.symbol.Location
 import sron.grpc.type.Type
@@ -34,22 +35,6 @@ class Structure : Phase() {
     private var insideFunction = false
     private var currentFunctionType = Type.ERROR
     private var fName = ""
-
-    /**
-     *
-     */
-    private fun setReturns(ctx: ParserRuleContext, v: Boolean) {
-        var r = annotations.get(ctx) ?: Annotation()
-        r.returns = v
-        annotations.put(ctx, r)
-    }
-
-    /**
-     *
-     */
-    private fun getReturns(ctx: ParserRuleContext): Boolean {
-        return annotations.get(ctx)?.returns ?: false
-    }
 
     /**
      * Marks that the phase entered inside a loop (`for`).
