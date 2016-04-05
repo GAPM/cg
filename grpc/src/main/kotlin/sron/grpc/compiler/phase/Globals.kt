@@ -32,42 +32,19 @@ import sron.grpc.type.toGrpType
  * variables) are stored in the symbol table.
  */
 class Globals : Phase() {
-    private var insideSimpleStmt = false
-
-    /**
-     * Marks whenever the phase enters in a simple statement. Variables being
-     * declared inside a simple statement are not global.
-     */
-    override fun enterSimpleStmt(ctx: SimpleStmtContext) {
-        super.enterSimpleStmt(ctx)
-        insideSimpleStmt = true
-    }
-
-    /**
-     * Marks whenever the phase leaves a simple statement. Variables being
-     * declared inside a simple statement are not global.
-     */
-    override fun exitSimpleStmt(ctx: SimpleStmtContext) {
-        super.exitSimpleStmt(ctx)
-        insideSimpleStmt = false
-    }
 
     /**
      * Inserts a function and its arguments into the symbol table.
      */
     override fun exitFuncDef(ctx: FuncDefContext) {
-        super.exitFuncDef(ctx)
+        val scopeStr = scopeUID() // scope was updated from `Scoper`
+        super.exitFuncDef(ctx) // now we let `Scoper` update the scope
 
         val name = ctx.Identifier().text
         val type = ctx.type()?.toGrpType() ?: Type.void
         val location = Location(ctx.Identifier())
 
         val ar = ctx.argList().arg()
-
-        scope.push(name)
-        val scopeStr = scopeUID()
-        scope.pop()
-
         val args = Array(ar.size) {
             val a = ar[it]
             val argName = a.Identifier().text
@@ -87,9 +64,7 @@ class Globals : Phase() {
         when (qry) {
             null -> {
                 symTab.addSymbol(function)
-                for (v in args) {
-                    symTab.addSymbol(v)
-                }
+                args.forEach { symTab.addSymbol(it) }
             }
             else -> {
                 error(Redeclaration(location, qry.location, name, SymType.FUNC))
@@ -100,28 +75,26 @@ class Globals : Phase() {
     /**
      * Inserts a global variable into the symbol table.
      */
-    override fun exitVarDec(ctx: VarDecContext) {
-        super.exitVarDec(ctx)
+    override fun exitGlVarDec(ctx: GlVarDecContext) {
+        super.exitGlVarDec(ctx)
 
-        if (!insideSimpleStmt) {
-            val name = ctx.Identifier().text
-            val type = ctx.type().toGrpType()
-            val location = Location(ctx.Identifier())
+        val name = ctx.Identifier().text
+        val type = ctx.type().toGrpType()
+        val location = Location(ctx.Identifier())
 
-            if (type == Type.void) {
-                error(VoidVar(location, name, "variable"))
-                return
-            }
+        if (type == Type.void) {
+            error(VoidVar(location, name, "variable"))
+            return
+        }
 
-            val scope = scopeUID()
-            val variable = Variable(name, type, scope, location)
+        val scope = scopeUID()
+        val variable = Variable(name, type, scope, location)
 
-            val qry = symTab.getSymbol(name, scope, SymType.VAR)
-            when (qry) {
-                null -> symTab.addSymbol(variable)
-                else ->
-                    error(Redeclaration(location, qry.location, name, SymType.FUNC))
-            }
+        val qry = symTab.getSymbol(name, scope, SymType.VAR)
+        when (qry) {
+            null -> symTab.addSymbol(variable)
+            else ->
+                error(Redeclaration(location, qry.location, name, SymType.FUNC))
         }
     }
 

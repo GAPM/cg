@@ -16,15 +16,16 @@
 
 package sron.grpc.compiler.phase
 
+import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.tree.ParseTreeProperty
 import sron.grpc.compiler.Annotation
 import sron.grpc.compiler.CompilerParameters
 import sron.grpc.compiler.Error
-import sron.grpc.compiler.internal.GrpBaseListener
 import sron.grpc.symbol.SymbolTable
+import sron.grpc.type.Type
 import java.util.*
 
-open class Phase : GrpBaseListener() {
+open class Phase : Scoper() {
     lateinit var fileName: String
     lateinit var symTab: SymbolTable
     lateinit var className: String
@@ -33,8 +34,6 @@ open class Phase : GrpBaseListener() {
     lateinit var annotations: ParseTreeProperty<Annotation>
     val errorList = ArrayList<Error>()
 
-    protected val scope = Stack<String>()
-
     fun init() {
         scope.push(fileName)
         className = fileName.substring(0, fileName.indexOf('.')).capitalize()
@@ -42,5 +41,77 @@ open class Phase : GrpBaseListener() {
 
     fun error(error: Error) = errorList.add(error)
 
-    fun scopeUID() = scope.reduce { a, b -> "$a.$b" }
+    /**
+     * Retrieves the type of a (sub)parse tree
+     *
+     * @param ctx The parse tree
+     * @return The type of the parse tree, `Type.error` if it does not exists
+     */
+    fun getType(ctx: ParserRuleContext) = annotations.get(ctx)?.type ?: Type.ERROR
+
+    /**
+     * Sets the type of a (sub)parse tree, if the parse tree does not have an
+     * entry in the result map, it's created
+     *
+     * @param ctx The parse tree
+     * @param type The context of the type to be assigned
+     */
+    fun setType(ctx: ParserRuleContext, type: Type) {
+        val r = annotations.get(ctx) ?: Annotation()
+        r.type = type
+        annotations.put(ctx, r)
+    }
+
+    /**
+     * Returns whether a (sub)parse tree correspond to an assignable expression.
+     *
+     * @param ctx The parse tree
+     */
+    fun getAssignable(ctx: ParserRuleContext) = annotations.get(ctx)?.assignable ?: false
+
+    /**
+     * Sets whether a (sub) parse tree correspond to an assignable expression.
+     * If the parse tree  does not have an entry in the result map, it's
+     * created.
+     *
+     * @param ctx The parse tree
+     * @param v `true` if it's assignable, `false` otherwise
+     */
+    fun setAssignable(ctx: ParserRuleContext, v: Boolean) {
+        var r = annotations.get(ctx) ?: Annotation()
+        r.assignable = v
+        annotations.put(ctx, r)
+    }
+
+    /**
+     *
+     */
+    fun getReturns(ctx: ParserRuleContext): Boolean {
+        return annotations.get(ctx)?.returns ?: false
+    }
+
+    /**
+     *
+     */
+    fun setReturns(ctx: ParserRuleContext, v: Boolean) {
+        var r = annotations.get(ctx) ?: Annotation()
+        r.returns = v
+        annotations.put(ctx, r)
+    }
+
+    /**
+     * Retrieves the map of variable indexes of a (sub)parse tree
+     */
+    fun getVarIndex(ctx: ParserRuleContext): MutableMap<String, Int> {
+        return annotations.get(ctx)?.varIndex ?: mutableMapOf<String, Int>()
+    }
+
+    /**
+     * Sets the map of variable indexes of a (sub)parse tree
+     */
+    fun setVarIndex(ctx: ParserRuleContext, varIndex: Map<String, Int>) {
+        val r = annotations.get(ctx) ?: Annotation()
+        r.varIndex.putAll(varIndex)
+        annotations.put(ctx, r)
+    }
 }
