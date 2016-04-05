@@ -17,29 +17,12 @@
 package sron.grpc.compiler.phase
 
 import org.antlr.v4.runtime.ParserRuleContext
-import sron.grpc.compiler.Annotation
 import sron.grpc.compiler.internal.GrpParser.FuncDefContext
 import sron.grpc.compiler.internal.GrpParser.VarDecContext
 
 class PreGeneration : Phase() {
     private lateinit var currentFunctionCtx: ParserRuleContext
     private var id = 0
-
-    /**
-     * Retrieves the map of variable indexes of a (sub)parse tree
-     */
-    private fun getVarIndex(ctx: ParserRuleContext): MutableMap<String, Int> {
-        return annotations.get(ctx)?.varIndex ?: mutableMapOf<String, Int>()
-    }
-
-    /**
-     * Sets the map of variable indexes of a (sub)parse tree
-     */
-    private fun setVarIndex(ctx: ParserRuleContext, varIndex: Map<String, Int>) {
-        val r = annotations.get(ctx) ?: Annotation()
-        r.varIndex.putAll(varIndex)
-        annotations.put(ctx, r)
-    }
 
     /**
      * Sets a function arguments as the first indexes whenever the phase enters
