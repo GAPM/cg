@@ -17,7 +17,8 @@
 package sron.grpc.compiler.phase
 
 import sron.grpc.compiler.internal.GrpBaseListener
-import sron.grpc.compiler.internal.GrpParser.FuncDefContext
+import sron.grpc.compiler.internal.GrpParser.*
+import sron.grpc.compiler.nextId
 import java.util.*
 
 open class Scoper : GrpBaseListener() {
@@ -40,6 +41,69 @@ open class Scoper : GrpBaseListener() {
      */
     override fun exitFuncDef(ctx: FuncDefContext) {
         super.exitFuncDef(ctx)
+        scope.pop()
+    }
+
+    override fun enterIfc(ctx: IfcContext) {
+        super.enterIfc(ctx)
+        scope.push("if${nextId()}")
+    }
+
+    override fun exitIfc(ctx: IfcContext) {
+        super.exitIfc(ctx)
+
+        if (scope.lastElement().startsWith("if")) {
+            scope.pop()
+        }
+    }
+
+    override fun enterElifc(ctx: ElifcContext) {
+        super.enterElifc(ctx)
+
+        if (scope.lastElement().startsWith("if")) {
+            scope.pop()
+        }
+
+        scope.push("elif${nextId()}")
+    }
+
+    override fun exitElifc(ctx: ElifcContext) {
+        super.exitElifc(ctx)
+        scope.pop()
+    }
+
+    override fun enterElsec(ctx: ElsecContext) {
+        super.enterElsec(ctx)
+
+        if (scope.lastElement().startsWith("if")) {
+            scope.pop()
+        }
+
+        scope.push("else${nextId()}")
+    }
+
+    override fun exitElsec(ctx: ElsecContext) {
+        super.exitElsec(ctx)
+        scope.pop()
+    }
+
+    override fun enterForc(ctx: ForcContext) {
+        super.enterForc(ctx)
+        scope.push("for${nextId()}")
+    }
+
+    override fun exitForc(ctx: ForcContext) {
+        super.exitForc(ctx)
+        scope.pop()
+    }
+
+    override fun enterWhilec(ctx: WhilecContext) {
+        super.enterWhilec(ctx)
+        scope.push("while${nextId()}")
+    }
+
+    override fun exitWhilec(ctx: WhilecContext) {
+        super.exitWhilec(ctx)
         scope.pop()
     }
 }
