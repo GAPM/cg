@@ -103,6 +103,10 @@ class NonBoolCondition(location: Location, exp: String, type: Type) : Error(loca
     override val msg = "can not use $exp (type $type) as type bool in condition"
 }
 
-class IntegerOutOfRange(location: Location, exp: String) : Error(location) {
+class OutOfRange(location: Location, exp: String) : Error(location) {
     override val msg = "value $exp is out of range"
+}
+
+class CastError(location: Location, target: Type, current: Type): Error(location) {
+    override val msg = "invalid cast from `$current` to `$target`"
 }
