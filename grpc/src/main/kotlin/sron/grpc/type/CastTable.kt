@@ -18,15 +18,11 @@ package sron.grpc.type
 
 object CastTable {
     private val numeric =
-            listOf(Type.byte, Type.short, Type.int, Type.long, Type.float, Type.double)
+            listOf(Type.int, Type.float)
 
     private val tab = mapOf(
-            Type.byte to numeric,
-            Type.short to numeric,
             Type.int to numeric,
-            Type.long to numeric,
             Type.float to numeric,
-            Type.double to numeric,
             Type.bool to numeric,
             Type.char to listOf(Type.string),
             Type.string to listOf()

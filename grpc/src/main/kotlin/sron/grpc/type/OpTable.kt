@@ -56,19 +56,11 @@ object OpTable {
     }
 
     private val binOps = listOf(
-            BinOp(arithmetic, Type.byte),
-            BinOp(arithmetic, Type.short),
             BinOp(arithmetic, Type.int),
-            BinOp(arithmetic, Type.long),
             BinOp(arithmetic, Type.float),
-            BinOp(arithmetic, Type.double),
 
-            BinOp(comparison, Type.byte, Type.bool),
-            BinOp(comparison, Type.short, Type.bool),
             BinOp(comparison, Type.int, Type.bool),
-            BinOp(comparison, Type.long, Type.bool),
             BinOp(comparison, Type.float, Type.bool),
-            BinOp(comparison, Type.double, Type.bool),
 
             BinOp(comparison, Type.char, Type.bool),
             BinOp(comparison, Type.string, Type.bool),
@@ -81,12 +73,8 @@ object OpTable {
     )
 
     private val unaryOps = listOf (
-            UnaryOp(sign, Type.byte),
-            UnaryOp(sign, Type.short),
             UnaryOp(sign, Type.int),
-            UnaryOp(sign, Type.long),
             UnaryOp(sign, Type.float),
-            UnaryOp(sign, Type.double),
 
             UnaryOp(listOf("!"), Type.bool)
     )

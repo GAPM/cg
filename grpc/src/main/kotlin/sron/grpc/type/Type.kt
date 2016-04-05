@@ -21,19 +21,14 @@ import sron.grpc.compiler.internal.GrpLexer
 import sron.grpc.compiler.internal.GrpParser
 
 enum class Type {
-    byte,
-    short,
     int,
-    long,
     float,
-    double,
     bool,
     void,
     string,
     char,
 
-    ERROR,
-    INTEGER_CONSTANT
+    ERROR
 }
 
 fun GrpParser.TypeContext.toGrpType(): Type {
@@ -41,12 +36,8 @@ fun GrpParser.TypeContext.toGrpType(): Type {
     val t = tn.symbol.type
 
     return when (t) {
-        GrpLexer.BYTE -> Type.byte
-        GrpLexer.SHORT -> Type.short
         GrpLexer.INT -> Type.int
-        GrpLexer.LONG -> Type.long
         GrpLexer.FLOAT -> Type.float
-        GrpLexer.DOUBLE -> Type.double
         GrpLexer.BOOL -> Type.bool
         GrpLexer.VOID -> Type.void
         GrpLexer.STRING -> Type.string
@@ -56,12 +47,8 @@ fun GrpParser.TypeContext.toGrpType(): Type {
 }
 
 fun Type.toJVMDescriptor() = when (this) {
-    Type.byte -> "B"
-    Type.short -> "S"
-    Type.int -> "I"
-    Type.long -> "J"
-    Type.float -> "F"
-    Type.double -> "D"
+    Type.int -> "J"
+    Type.float -> "D"
     Type.bool -> "Z"
     Type.void -> "V"
     Type.string -> "Ljava/lang/String"
