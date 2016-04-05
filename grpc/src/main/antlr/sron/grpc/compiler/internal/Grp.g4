@@ -23,13 +23,11 @@ AND_ASSIGN : '&&=' ;
 BANG : '!' ;
 BOOL : 'bool' ;
 BREAK : 'break' ;
-BYTE : 'byte' ;
 CHAR : 'char' ;
 COMMA : ',' ;
 CONTINUE : 'continue' ;
 DIV : '/' ;
 DIV_ASSIGN : '/=' ;
-DOUBLE : 'double' ;
 ELIF : 'elif' ;
 ELSE : 'else' ;
 EQUAL : '=' ;
@@ -43,7 +41,6 @@ IF : 'if' ;
 INT : 'int' ;
 LBRACE : '{' ;
 LE : '<=' ;
-LONG : 'long' ;
 LPAREN : '(' ;
 LT : '<' ;
 ML_COMMENT : '/*' (.)*? '*/' -> skip ;
@@ -58,7 +55,6 @@ RBRACE : '}' ;
 RETURN : 'return' ;
 RPAREN : ')' ;
 SEMI : ';' ;
-SHORT : 'short' ;
 STRING : 'string' ;
 SUB : '-' ;
 VAR : 'var' ;
@@ -80,11 +76,10 @@ IntLit: DecimalLit;
 
 fragment Decimals: DecimalDigit DecimalDigit*;
 fragment Exponent: [eE] [+-]? Decimals;
-DoubleLit: Decimals '.' Decimals Exponent?
+FloatLit: Decimals '.' Decimals Exponent?
                  | Decimals Exponent
                  | '.' Decimals Exponent?
                  ;
-FloatLit: (DoubleLit | DecimalLit) 'f';
 
 fragment Escape: '\\' [tbnr"'\\];
 fragment Char: ~[\\'"];
@@ -92,12 +87,8 @@ CharLit: '\'' (Escape | Char) '\'';
 
 StringLit: '"' (Escape | Char)* '"';
 
-type: 'byte'
-    | 'short'
-    | 'int'
-    | 'long'
+type: 'int'
     | 'float'
-    | 'double'
     | 'char'
     | 'string'
     | 'void'
@@ -109,7 +100,6 @@ argList: (arg (',' arg)*)?;
 
 atom: IntLit            #Integer
     | FloatLit          #Float
-    | DoubleLit         #Double
     | BoolLit           #Boolean
     | CharLit           #Character
     | StringLit         #StringAtom
@@ -128,29 +118,30 @@ expr: atom                                #Atomic
     | expr '&&' expr                      #LogicAnd
     | expr '||' expr                      #LogicOr
     ;
-exprList: (expr (',' expr)*)?;
+exprList: (expr (',' expr)*)? ;
 
-glExpr: IntLit | FloatLit | DoubleLit | BoolLit | CharLit | StringLit;
-glVarDec: 'var' Identifier type ('=' glExpr)?;
-varDec: 'var' Identifier type ('=' expr)?;
+glExpr: IntLit | FloatLit | BoolLit | CharLit | StringLit ;
+glVarDec: 'var' Identifier type ('=' glExpr)? ;
+varDec: 'var' Identifier type ('=' expr)? ;
 
-funcDef: 'func' Identifier '(' argList ')' type? '{' stmt* '}';
+funcDef: 'func' Identifier '(' argList ')' type? '{' stmt* '}' ;
 
-funcCall: Identifier '(' exprList ')';
+funcCall: Identifier '(' exprList ')' ;
 
-assignment: expr op=('='|'+='|'*='|'/='|'%='|'&&='|'||=') expr;
+assignment: expr op=('='|'+='|'*='|'/='|'%='|'&&='|'||=') expr ;
 
-ifc: 'if' '(' expr ')' '{' stmt* '}' elifc* elsec?;
-elifc: 'elif' '(' expr ')' '{' stmt* '}';
-elsec: 'else' '{' stmt* '}';
+ifc: 'if' '(' expr ')' '{' stmt* '}' elifc* elsec? ;
+elifc: 'elif' '(' expr ')' '{' stmt* '}' ;
+elsec: 'else' '{' stmt* '}' ;
 
-forc: 'for' '(' start=assignment? ';' cond=expr? ';' mod=assignment? ')' '{' stmt* '}';
-whilec: 'while' '(' expr ')' '{' stmt* '}';
+forc: 'for' '(' start=assignment? ';' cond=expr? ';' mod=assignment? ')' '{' loopStmt* '}' ;
+whilec: 'while' '(' expr ')' '{' (stmt | controlStmt)* '}' ;
 
-controlStmt: 'return' expr? #Return
-           | 'continue'     #Continue
-           | 'break'        #Break
+controlStmt: 'continue' ';' #Continue
+           | 'break' ';'    #Break
            ;
+
+returnStmt: 'return' expr? ;
 
 compoundStmt: ifc
             | forc
@@ -159,12 +150,14 @@ compoundStmt: ifc
 
 simpleStmt: varDec
           | assignment
-          | controlStmt
           | expr
+          | returnStmt
           ;
 
 stmt: simpleStmt ';'
     | compoundStmt
     ;
+
+loopStmt: (stmt | controlStmt) ';' ;
 
 init: (funcDef | glVarDec ';')*;
