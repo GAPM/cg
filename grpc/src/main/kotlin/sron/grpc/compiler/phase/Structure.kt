@@ -16,7 +16,6 @@
 
 package sron.grpc.compiler.phase
 
-import sron.grpc.compiler.ControlNotInLoop
 import sron.grpc.compiler.EmptyReturn
 import sron.grpc.compiler.NonEmptyReturn
 import sron.grpc.compiler.NotAllPathsReturn
@@ -27,86 +26,21 @@ import sron.grpc.type.toGrpType
 
 /**
  * [Structure] is the compilation phase that checks that all non-void functions
- * return a value, that void functions have only empty returns and that control
- * statements such as `continue` and `break` are used only inside loops.
+ * return a value and that void functions have only empty returns.
  */
 class Structure : Phase() {
-    private var insideLoop = false
     private var insideFunction = false
     private var currentFunctionType = Type.ERROR
-    private var fName = ""
+    private var currentFunctionName = ""
 
-    /**
-     * Marks that the phase entered inside a loop (`for`).
-     */
-    override fun enterForc(ctx: ForcContext) {
-        super.enterForc(ctx)
-        insideLoop = true
-    }
-
-    /**
-     * Marks that the phase entered inside a loop (`while`).
-     */
-    override fun enterWhilec(ctx: WhilecContext) {
-        super.enterWhilec(ctx)
-        insideLoop = true
-    }
-
-    /**
-     * Marks that the phase leaved a loop (`for`).
-     */
-    override fun exitForc(ctx: ForcContext) {
-        super.exitForc(ctx)
-        insideLoop = false
-    }
-
-    /**
-     * Marks that the phase leaved a loop (`while`).
-     */
-    override fun exitWhilec(ctx: WhilecContext) {
-        super.exitWhilec(ctx)
-        insideLoop = false
-    }
-
-    /**
-     * Checks whenever the phase enters a `continue` statement that it is inside
-     * a loop.
-     */
-    override fun enterContinue(ctx: ContinueContext) {
-        super.enterContinue(ctx)
-        if (!insideLoop) {
-            error(ControlNotInLoop(Location(ctx.start), "continue"))
-        }
-    }
-
-    /**
-     * Checks whenever the phase enters a `break` statement that it is inside
-     * a loop.
-     */
-    override fun enterBreak(ctx: BreakContext) {
-        super.enterBreak(ctx)
-        if (!insideLoop) {
-            error(ControlNotInLoop(Location(ctx.start), "break"))
-        }
-    }
-
-    /**
-     * Marks that the phase entered a function definition, saving its name and
-     * return type.
-     */
     override fun enterFuncDef(ctx: FuncDefContext) {
         super.enterFuncDef(ctx)
 
         insideFunction = true
         currentFunctionType = ctx.type()?.toGrpType() ?: Type.void
-        fName = ctx.Identifier().text
+        currentFunctionName = ctx.Identifier().text
     }
 
-    /**
-     * Marks that the phase left a function definition, checking that all paths
-     * returns a value (unless its type is `void`) and remove current name and
-     * return type.
-     */
     override fun exitFuncDef(ctx: FuncDefContext) {
         super.exitFuncDef(ctx)
 
@@ -117,19 +51,15 @@ class Structure : Phase() {
             }
         }
 
-        if (!getReturns(ctx) && currentFunctionType != Type.void && fName != "main") {
-            error(NotAllPathsReturn(Location(ctx.Identifier()), fName))
+        if (!getReturns(ctx) && currentFunctionType != Type.void && currentFunctionName != "main") {
+            error(NotAllPathsReturn(Location(ctx.Identifier()), currentFunctionName))
         }
 
         insideFunction = false
         currentFunctionType = Type.ERROR
-        fName = ""
+        currentFunctionName = ""
     }
 
-    /**
-     * Checks whenever the phase leaves an if statement that all branches have a
-     * return statement.
-     */
     override fun exitIfc(ctx: IfcContext) {
         super.exitIfc(ctx)
 
@@ -177,83 +107,49 @@ class Structure : Phase() {
         setReturns(ctx, mainIfReturns && allElifReturns && elseReturns)
     }
 
-    /**
-     * Marks that a return statement is indeed a return statement (used to check
-     * that all paths in a function have a return) and reports if a void
-     * function has non-empty return or a non-void function has empty return.
-     */
-    override fun enterReturn(ctx: ReturnContext) {
-        super.enterReturn(ctx)
+    override fun exitReturnStmt(ctx: ReturnStmtContext) {
+        super.exitReturnStmt(ctx)
         setReturns(ctx, true)
         val location = Location(ctx.start)
 
-        if (currentFunctionType == Type.void) {
-            if (ctx.expr() != null) {
-                error(NonEmptyReturn(location, fName))
-            }
-        } else {
-            if (ctx.expr() == null) {
-                error(EmptyReturn(location, fName))
-            }
+        if (currentFunctionType == Type.void && ctx.expr() != null) {
+            error(NonEmptyReturn(location, currentFunctionName))
+        }
+
+        if (currentFunctionType != Type.void && ctx.expr() == null) {
+            error(EmptyReturn(location, currentFunctionName))
         }
     }
 
-    /**
-     * Sets the result of a simple statement to the same result of its used
-     * child.
-     */
     override fun exitSimpleStmt(ctx: SimpleStmtContext) {
         super.exitSimpleStmt(ctx)
 
-        ctx.varDec()?.let {
-            annotations.put(ctx, annotations.get(it))
-        }
-
-        ctx.assignment()?.let {
-            annotations.put(ctx, annotations.get(it))
-        }
-
-        ctx.controlStmt()?.let {
-            annotations.put(ctx, annotations.get(it))
-        }
-
-        ctx.expr()?.let {
-            annotations.put(ctx, annotations.get(it))
+        if (ctx.returnStmt() != null) {
+            setReturns(ctx, true)
+        } else {
+            setReturns(ctx, false)
         }
     }
 
-    /**
-     * Sets the result of a compound statement to the same result of its used
-     * child.
-     */
     override fun exitCompoundStmt(ctx: CompoundStmtContext) {
         super.exitCompoundStmt(ctx)
 
+        // Only the if statement can be guaranteed to return or not, so loop
+        // are ignored
         ctx.ifc()?.let {
-            annotations.put(ctx, annotations.get(it))
-        }
-
-        ctx.forc()?.let {
-            annotations.put(ctx, annotations.get(it))
-        }
-
-        ctx.whilec()?.let {
-            annotations.put(ctx, annotations.get(it))
+            setReturns(ctx, getReturns(it))
         }
     }
 
-    /**
-     * Sets the result of a statement to the same result of its used child.
-     */
     override fun exitStmt(ctx: StmtContext) {
         super.exitStmt(ctx)
 
         ctx.simpleStmt()?.let {
-            annotations.put(ctx, annotations.get(it))
+            setReturns(ctx, getReturns(it))
         }
 
         ctx.compoundStmt()?.let {
-            annotations.put(ctx, annotations.get(it))
+            setReturns(ctx, getReturns(it))
         }
     }
 }
