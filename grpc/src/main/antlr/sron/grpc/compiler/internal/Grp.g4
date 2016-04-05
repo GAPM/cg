@@ -102,7 +102,7 @@ atom: IntLit            #Integer
     | FloatLit          #Float
     | BoolLit           #Boolean
     | CharLit           #Character
-    | StringLit         #StringAtom
+    | StringLit         #String
     | Identifier        #VarName
     | funcCall          #FunctionCall
     | type '(' expr ')' #Cast
