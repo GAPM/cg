@@ -98,7 +98,7 @@ class Compiler(fileName: String, val parameters: CompilerParameters) {
 
         executePhase(::Globals)
         executePhase(::Structure)
-        executePhase(::Types)
+        executePhase(::StaticCheck)
 
         checkForErrors()
 
