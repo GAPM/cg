@@ -23,6 +23,7 @@ import org.antlr.v4.runtime.tree.ParseTreeProperty
 import org.antlr.v4.runtime.tree.ParseTreeWalker
 import sron.grpc.compiler.Annotation
 import sron.grpc.compiler.CompilerParameters
+import sron.grpc.compiler.Error
 import sron.grpc.compiler.internal.GrpLexer
 import sron.grpc.compiler.internal.GrpParser
 import sron.grpc.compiler.phase.*
@@ -32,11 +33,13 @@ import sron.grpc.symbol.SymbolTable
 import sron.grpc.util.Logger
 import java.io.ByteArrayInputStream
 import java.nio.charset.Charset
+import java.util.*
 
 class TestCompiler(code: String) {
     private val parameters = CompilerParameters()
     val symTab = SymbolTable()
     val annotations = ParseTreeProperty<Annotation>()
+    val errors = ArrayList<Error>()
 
     var syntaxErrors = 0
     var totalErrors = 0
@@ -83,6 +86,7 @@ class TestCompiler(code: String) {
         walker.walk(phase, tree)
 
         totalErrors += phase.errorList.size
+        errors.addAll(phase.errorList)
         phase.errorList.forEach { Logger.error(it.message()) }
     }
 
@@ -91,7 +95,7 @@ class TestCompiler(code: String) {
 
         executePhase(::Globals)
         executePhase(::Structure)
-        executePhase(::Types)
+        executePhase(::StaticCheck)
 
         checkForErrors()
 

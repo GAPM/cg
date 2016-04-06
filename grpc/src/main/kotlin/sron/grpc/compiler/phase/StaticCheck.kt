@@ -260,16 +260,16 @@ class StaticCheck : Phase() {
     override fun exitComparison(ctx: ComparisonContext) {
         super.exitComparison(ctx)
 
-        val type1 = getType(ctx.expr(0))
-        val type2 = getType(ctx.expr(1))
+        val lhs = getType(ctx.expr(0))
+        val rhs = getType(ctx.expr(1))
         val op = ctx.op.text
         val location = Location(ctx.start)
 
-        if (type1 != Type.ERROR && type2 != Type.ERROR) {
-            val operationResult = OpTable.checkBinaryOp(op, type1, type2)
+        if (lhs != Type.ERROR && rhs != Type.ERROR) {
+            val operationResult = OpTable.checkBinaryOp(op, lhs, rhs)
 
             if (operationResult == Type.ERROR) {
-                error(BadBinaryOp(location, op, type1, type2))
+                error(BadBinaryOp(location, op, lhs, rhs))
                 setType(ctx, Type.ERROR)
             } else {
                 setType(ctx, operationResult)

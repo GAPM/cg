@@ -28,7 +28,6 @@ import java.util.*
 open class Phase : Scoper() {
     lateinit var fileName: String
     lateinit var symTab: SymbolTable
-    lateinit var className: String
     lateinit var parameters: CompilerParameters
 
     lateinit var annotations: ParseTreeProperty<Annotation>
@@ -36,7 +35,6 @@ open class Phase : Scoper() {
 
     fun init() {
         scope.push(fileName)
-        className = fileName.substring(0, fileName.indexOf('.')).capitalize()
     }
 
     fun error(error: Error) = errorList.add(error)

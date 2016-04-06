@@ -22,7 +22,7 @@ object OpTable {
     val sign = listOf("+", "-")
     val logic = listOf("&&", "||")
 
-    private class BinOp(val ops: List<String>, val lhs: Type, val rhs: Type, val result: Type) {
+    private data class BinOp(val ops: List<String>, val lhs: Type, val rhs: Type, val result: Type) {
 
         constructor(ops: List<String>, type: Type) : this(ops, type, type, type)
 
@@ -30,17 +30,15 @@ object OpTable {
 
         fun match(operation: Triple<String, Type, Type>): Boolean {
             val (op, lhs, rhs) = operation
-            var result = true
 
-            result = result && ops.contains(op)
-            result = result &&
-                    (lhs == this.lhs && rhs == this.rhs) || (lhs == this.rhs && rhs == this.lhs)
+            var opMatches = ops.contains(op)
+            var typesMatch = (lhs == this.lhs && rhs == this.rhs) || (lhs == this.rhs && rhs == this.lhs)
 
-            return result
+            return opMatches && typesMatch
         }
     }
 
-    private class UnaryOp(val ops: List<String>, val exp: Type, val result: Type) {
+    private data class UnaryOp(val ops: List<String>, val exp: Type, val result: Type) {
 
         constructor(ops: List<String>, type: Type) : this(ops, type, type)
 
@@ -80,7 +78,8 @@ object OpTable {
     )
 
     fun checkBinaryOp(op: String, lhs: Type, rhs: Type): Type {
-        val operation = binOps.filter { it.match(Triple(op, lhs, rhs)) }.firstOrNull()
+        val operations = binOps.filter { it.match(Triple(op, lhs, rhs)) }
+        val operation = operations.firstOrNull()
         return operation?.result ?: Type.ERROR
     }
 
