@@ -14,4 +14,19 @@
  * limitations under the License.
  */
 
-include ':cgpl-stdlib', ':cgplc'
+package sron.cgpl.compiler
+
+class JarWriter {
+
+    /**
+     * Reads a class into a byte array
+     */
+    private fun classToByteArray(fullName: String): ByteArray {
+        var result = ByteArray(0)
+        val realName = "${fullName.replace('.', '/')}.class"
+        ClassLoader.getSystemResourceAsStream(realName).use {
+            result = it.readBytes()
+        }
+        return result
+    }
+}

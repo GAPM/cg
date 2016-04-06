@@ -14,4 +14,20 @@
  * limitations under the License.
  */
 
-include ':cgpl-stdlib', ':cgplc'
+package sron.cgpl.runtime.collections
+
+class BitArray(val size: Int) {
+    private val array = IntArray((size + 32 - 1) / 32)
+
+    operator fun get(idx: Int): Boolean {
+        return (array[idx shr 5] and (1 shl (idx and 31))) != 0
+    }
+
+    operator fun set(idx: Int, value: Boolean) {
+        if (value) {
+            array[idx shr 5] = array[idx shr 5] or (1 shl (idx and 31))
+        } else {
+            array[idx shr 5] = array[idx shr 5] and (1 shl (idx and 31)).inv()
+        }
+    }
+}

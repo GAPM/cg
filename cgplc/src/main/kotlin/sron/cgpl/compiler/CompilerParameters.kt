@@ -14,4 +14,9 @@
  * limitations under the License.
  */
 
-include ':cgpl-stdlib', ':cgplc'
+package sron.cgpl.compiler
+
+class CompilerParameters() {
+    var justCheck = false
+    var output = ""
+}

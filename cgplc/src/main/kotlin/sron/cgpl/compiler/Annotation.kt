@@ -14,4 +14,14 @@
  * limitations under the License.
  */
 
-include ':cgpl-stdlib', ':cgplc'
+package sron.cgpl.compiler
+
+import sron.cgpl.type.Type
+
+class Annotation {
+    var type: Type = Type.ERROR
+    var returns: Boolean = false
+    var assignable: Boolean = false
+    var name: String = ""
+    var varIndex = mutableMapOf<String, Int>()
+}

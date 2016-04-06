@@ -14,4 +14,11 @@
  * limitations under the License.
  */
 
-include ':cgpl-stdlib', ':cgplc'
+package sron.cgpl.symbol
+
+import sron.cgpl.type.Type
+
+class Variable(name: String, val type: Type, scope: String,
+               location: Location) : Symbol(name, scope, location) {
+    override val symType: SymType = SymType.VAR
+}

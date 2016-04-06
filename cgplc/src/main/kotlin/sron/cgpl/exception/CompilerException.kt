@@ -14,4 +14,6 @@
  * limitations under the License.
  */
 
-include ':cgpl-stdlib', ':cgplc'
+package sron.cgpl.exception
+
+open class CompilerException(msg: String) : Exception(msg)
