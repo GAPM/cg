@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package sron.grpc.compiler.ast
+package sron.cgpl.compiler.ast
 
-import sron.grpc.type.Type
+import sron.cgpl.type.Type
 
 class FuncDef(val name: String, val type: Type, val args: List<Arg>,
               val stmt: List<Stmt>) : Generable {

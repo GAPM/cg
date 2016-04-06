@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-package sron.grpc.compiler.ast
+package sron.cgpl.compiler.ast
 
-interface Generable {
-    fun generate()
+import java.util.*
+
+class Init : Generable {
+    val glVarDec = ArrayList<GlVarDec>()
+    val funcDef = ArrayList<FuncDef>()
+
+    override fun generate() {
+    }
 }

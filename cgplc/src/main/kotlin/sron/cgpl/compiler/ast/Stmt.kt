@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-package sron.grpc.compiler.ast
+package sron.cgpl.compiler.ast
 
-import sron.grpc.type.Type
-
-class GlVarDec(val name: String, val type: Type, val exp: GlExpr) : Generable {
+class Stmt : Generable {
     override fun generate() {
     }
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sron.grpc.compiler.ast
+package sron.cgpl.compiler.ast
 
 data class VarDec(val name: String) : Generable {
     override fun generate() {
