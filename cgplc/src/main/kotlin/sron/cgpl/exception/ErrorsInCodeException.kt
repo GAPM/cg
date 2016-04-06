@@ -14,4 +14,7 @@
  * limitations under the License.
  */
 
-include ':cgpl-stdlib', ':cgplc'
+package sron.cgpl.exception
+
+class ErrorsInCodeException :
+        CompilerException("Error(s) found in code. Won't continue")

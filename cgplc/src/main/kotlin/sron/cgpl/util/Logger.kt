@@ -14,4 +14,25 @@
  * limitations under the License.
  */
 
-include ':cgpl-stdlib', ':cgplc'
+package sron.cgpl.util
+
+object Logger {
+    enum class LogLevel {
+        ERROR,
+        DEBUG
+    }
+
+    var maxLevel = LogLevel.ERROR
+
+    private fun log(msg: String?, level: LogLevel) {
+        if (level <= maxLevel) {
+            when (level) {
+                LogLevel.ERROR -> System.err.println("$level: $msg")
+                else -> println("$level: $msg")
+            }
+        }
+    }
+
+    fun debug(msg: String?) = log(msg, LogLevel.DEBUG)
+    fun error(msg: String?) = log(msg, LogLevel.ERROR)
+}

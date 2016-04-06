@@ -14,4 +14,17 @@
  * limitations under the License.
  */
 
-include ':cgpl-stdlib', ':cgplc'
+package sron.cgpl.compiler
+
+import sron.cgpl.compiler.internal.GrpErrorListener
+import sron.cgpl.compiler.internal.GrpParser
+
+private var id = 0
+
+fun GrpParser.withFileName(fileName: String): GrpParser {
+    this.removeErrorListeners()
+    this.addErrorListener(GrpErrorListener(fileName))
+    return this
+}
+
+fun nextId(): Int = id++

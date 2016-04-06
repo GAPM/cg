@@ -14,4 +14,7 @@
  * limitations under the License.
  */
 
-include ':cgpl-stdlib', ':cgplc'
+package sron.cgpl.exception
+
+class ParsingException :
+        CompilerException("there were errors during parsing. Won't continue.")

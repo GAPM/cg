@@ -14,4 +14,9 @@
  * limitations under the License.
  */
 
-include ':cgpl-stdlib', ':cgplc'
+package sron.cgpl.symbol
+
+abstract class Symbol(val name: String, val scope: String,
+                      val location: Location) {
+    abstract val symType: SymType
+}
