@@ -18,4 +18,4 @@ package sron.cgpl.compiler.ast
 
 import sron.cgpl.type.Type
 
-data class Arg(val name: String, val type: Type)
+class Arg(val name: String, val type: Type) : ASTNode()

@@ -18,10 +18,7 @@ package sron.cgpl.compiler.ast
 
 import java.util.*
 
-class Init : Generable {
+class Init : ASTNode() {
     val glVarDec = ArrayList<GlVarDec>()
     val funcDef = ArrayList<FuncDef>()
-
-    override fun generate() {
-    }
 }

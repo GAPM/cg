@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
-package sron.cgpl.compiler.ast
+package sron.cgpl.compiler
 
-interface Generable {
-    fun generate()
+import sron.cgpl.compiler.internal.CGPLBaseListener
+import sron.cgpl.compiler.internal.CGPLParser.InitContext
+
+class ToAST : CGPLBaseListener() {
+    override fun exitInit(ctx: InitContext) {
+        super.exitInit(ctx)
+
+
+    }
 }

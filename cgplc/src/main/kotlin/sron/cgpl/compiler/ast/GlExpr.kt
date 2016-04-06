@@ -16,7 +16,5 @@
 
 package sron.cgpl.compiler.ast
 
-class GlExpr : Generable {
-    override fun generate() {
-    }
+class GlExpr : ASTNode() {
 }

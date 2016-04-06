@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-grammar Grp;
+grammar CGPL;
 
 ADD : '+' ;
 ADD_ASSIGN : '+=' ;

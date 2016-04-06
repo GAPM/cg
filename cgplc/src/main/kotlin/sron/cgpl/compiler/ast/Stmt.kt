@@ -16,7 +16,5 @@
 
 package sron.cgpl.compiler.ast
 
-class Stmt : Generable {
-    override fun generate() {
-    }
+class Stmt : ASTNode() {
 }

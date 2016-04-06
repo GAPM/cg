@@ -21,9 +21,8 @@ import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.tree.ParseTree
 import org.antlr.v4.runtime.tree.ParseTreeProperty
 import org.antlr.v4.runtime.tree.ParseTreeWalker
-import sron.cgpl.compiler.internal.GrpLexer
-import sron.cgpl.compiler.internal.GrpParser
-import sron.cgpl.compiler.phase.*
+import sron.cgpl.compiler.internal.CGPLLexer
+import sron.cgpl.compiler.internal.CGPLParser
 import sron.cgpl.exception.ErrorsInCodeException
 import sron.cgpl.exception.ParsingException
 import sron.cgpl.symbol.SymbolTable
@@ -44,9 +43,9 @@ class Compiler(fileName: String, val parameters: CompilerParameters) {
     init {
         file.inputStream().use {
             val input = ANTLRInputStream(it)
-            val lexer = GrpLexer(input)
+            val lexer = CGPLLexer(input)
             val tokens = CommonTokenStream(lexer)
-            val parser = GrpParser(tokens).withFileName(file.name)
+            val parser = CGPLParser(tokens).withFileName(file.name)
             tree = parser.init()
             syntaxErrors = parser.numberOfSyntaxErrors
         }
@@ -70,39 +69,14 @@ class Compiler(fileName: String, val parameters: CompilerParameters) {
         }
     }
 
-    private fun <T : Phase> executePhase(constructor: () -> T) {
-        val phase = constructor()
-        val walker = ParseTreeWalker()
-
-        with(phase) {
-            fileName = this@Compiler.file.name
-            symTab = this@Compiler.symTab
-            annotations = this@Compiler.annotations
-            parameters = this@Compiler.parameters
-            init()
-        }
-
-        val ms = measureTimeMillis { walker.walk(phase, tree) }
-
-        totalErrors += phase.errorList.size
-        phase.errorList.forEach { Logger.error("${file.name}:${it.message()}") }
-
-        Logger.debug("${file.name} [${phase.javaClass.simpleName}]: $ms ms")
-    }
-
     /**
      * Handles the compilation process.
      */
     fun compile() {
-        checkParsing()
+        val walker = ParseTreeWalker()
+        val converter = ToAST()
 
-        executePhase(::Globals)
-        executePhase(::Structure)
-        executePhase(::StaticCheck)
-
-        checkForErrors()
-
-        executePhase(::PreGeneration)
-        executePhase(::Generation)
+        val conversionTime = measureTimeMillis { walker.walk(converter, tree) }
+        Logger.debug("Conversion from parse tree to AST: $conversionTime")
     }
 }

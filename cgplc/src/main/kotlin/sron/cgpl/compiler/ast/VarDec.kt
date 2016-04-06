@@ -16,7 +16,5 @@
 
 package sron.cgpl.compiler.ast
 
-data class VarDec(val name: String) : Generable {
-    override fun generate() {
-    }
+class VarDec(val name: String) : ASTNode() {
 }

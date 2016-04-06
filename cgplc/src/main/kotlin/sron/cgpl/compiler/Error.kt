@@ -107,6 +107,6 @@ class OutOfRange(location: Location, exp: String) : Error(location) {
     override val msg = "value $exp is out of range"
 }
 
-class CastError(location: Location, target: Type, current: Type): Error(location) {
+class CastError(location: Location, target: Type, current: Type) : Error(location) {
     override val msg = "invalid cast from `$current` to `$target`"
 }

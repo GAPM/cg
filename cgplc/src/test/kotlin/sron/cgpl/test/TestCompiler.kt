@@ -20,17 +20,14 @@ import org.antlr.v4.runtime.ANTLRInputStream
 import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.tree.ParseTree
 import org.antlr.v4.runtime.tree.ParseTreeProperty
-import org.antlr.v4.runtime.tree.ParseTreeWalker
 import sron.cgpl.compiler.Annotation
 import sron.cgpl.compiler.CompilerParameters
 import sron.cgpl.compiler.Error
-import sron.cgpl.compiler.internal.GrpLexer
-import sron.cgpl.compiler.internal.GrpParser
-import sron.cgpl.compiler.phase.*
+import sron.cgpl.compiler.internal.CGPLLexer
+import sron.cgpl.compiler.internal.CGPLParser
 import sron.cgpl.exception.ErrorsInCodeException
 import sron.cgpl.exception.ParsingException
 import sron.cgpl.symbol.SymbolTable
-import sron.cgpl.util.Logger
 import java.io.ByteArrayInputStream
 import java.nio.charset.Charset
 import java.util.*
@@ -51,9 +48,9 @@ class TestCompiler(code: String) {
 
         val stream = ByteArrayInputStream(code.toByteArray(Charset.defaultCharset()))
         val input = ANTLRInputStream(stream)
-        val lexer = GrpLexer(input)
+        val lexer = CGPLLexer(input)
         val tokens = CommonTokenStream(lexer)
-        val parser = GrpParser(tokens)
+        val parser = CGPLParser(tokens)
 
         tree = parser.init()
         syntaxErrors = parser.numberOfSyntaxErrors
@@ -71,34 +68,8 @@ class TestCompiler(code: String) {
         }
     }
 
-    private fun <T : Phase> executePhase(constructor: () -> T) {
-        val phase = constructor()
-        val walker = ParseTreeWalker()
-
-        with(phase) {
-            fileName = "inlineCode"
-            symTab = this@TestCompiler.symTab
-            annotations = this@TestCompiler.annotations
-            parameters = this@TestCompiler.parameters
-            init()
-        }
-
-        walker.walk(phase, tree)
-
-        totalErrors += phase.errorList.size
-        errors.addAll(phase.errorList)
-        phase.errorList.forEach { Logger.error(it.message()) }
-    }
-
     fun compile() {
         checkParsing()
 
-        executePhase(::Globals)
-        executePhase(::Structure)
-        executePhase(::StaticCheck)
-
-        checkForErrors()
-
-        executePhase(::PreGeneration)
     }
 }

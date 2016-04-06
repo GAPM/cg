@@ -17,8 +17,8 @@
 package sron.cgpl.type
 
 import org.antlr.v4.runtime.tree.TerminalNode
-import sron.cgpl.compiler.internal.GrpLexer
-import sron.cgpl.compiler.internal.GrpParser
+import sron.cgpl.compiler.internal.CGPLLexer
+import sron.cgpl.compiler.internal.CGPLParser
 
 enum class Type {
     int,
@@ -31,17 +31,17 @@ enum class Type {
     ERROR
 }
 
-fun GrpParser.TypeContext.toGrpType(): Type {
+fun CGPLParser.TypeContext.toCGPLType(): Type {
     val tn = this.getChild(0) as TerminalNode
     val t = tn.symbol.type
 
     return when (t) {
-        GrpLexer.INT -> Type.int
-        GrpLexer.FLOAT -> Type.float
-        GrpLexer.BOOL -> Type.bool
-        GrpLexer.VOID -> Type.void
-        GrpLexer.STRING -> Type.string
-        GrpLexer.CHAR -> Type.char
+        CGPLLexer.INT -> Type.int
+        CGPLLexer.FLOAT -> Type.float
+        CGPLLexer.BOOL -> Type.bool
+        CGPLLexer.VOID -> Type.void
+        CGPLLexer.STRING -> Type.string
+        CGPLLexer.CHAR -> Type.char
         else -> Type.ERROR
     }
 }
