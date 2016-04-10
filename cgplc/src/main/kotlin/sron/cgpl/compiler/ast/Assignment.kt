@@ -16,4 +16,4 @@
 
 package sron.cgpl.compiler.ast
 
-open class ASTNode
+class Assignment(val lhs: Expr, val rhs: Expr) : Stmt(StmtType.ASSIGNMENT)

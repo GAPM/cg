@@ -16,4 +16,9 @@
 
 package sron.cgpl.compiler.ast
 
-open class ASTNode
+enum class AtomType {
+    LITERAL,
+    IDENTIFIER,
+    FUNC_CALL,
+    CAST
+}

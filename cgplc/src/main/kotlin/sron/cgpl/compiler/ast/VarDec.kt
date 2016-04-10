@@ -16,5 +16,6 @@
 
 package sron.cgpl.compiler.ast
 
-class VarDec(val name: String) : ASTNode() {
-}
+import sron.cgpl.type.Type
+
+class VarDec(val name: String, val type: Type) : Stmt(StmtType.VAR_DEC)

@@ -16,4 +16,4 @@
 
 package sron.cgpl.compiler.ast
 
-open class ASTNode
+class While(val cond: Expr, val stmt: List<Stmt>) : Stmt(StmtType.WHILE)

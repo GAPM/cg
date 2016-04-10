@@ -19,5 +19,4 @@ package sron.cgpl.compiler.ast
 import sron.cgpl.type.Type
 
 class FuncDef(val name: String, val type: Type, val args: List<Arg>,
-              val stmt: List<Stmt>) : ASTNode() {
-}
+              val stmt: List<Stmt>) : ASTNode()

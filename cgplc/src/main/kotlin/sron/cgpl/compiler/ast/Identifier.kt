@@ -16,4 +16,4 @@
 
 package sron.cgpl.compiler.ast
 
-open class ASTNode
+class Identifier(val name: String) : Atom(AtomType.IDENTIFIER)

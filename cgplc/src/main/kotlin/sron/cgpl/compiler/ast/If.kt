@@ -16,4 +16,5 @@
 
 package sron.cgpl.compiler.ast
 
-open class ASTNode
+class If(val cond: Expr, val stmt: List<Stmt>,
+         val elif: List<Elif>, val elsec: Else) : Stmt(StmtType.IF)

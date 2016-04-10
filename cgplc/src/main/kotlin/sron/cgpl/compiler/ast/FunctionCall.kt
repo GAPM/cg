@@ -16,4 +16,4 @@
 
 package sron.cgpl.compiler.ast
 
-open class ASTNode
+class FunctionCall(val name: String, val expr: List<Expr>) : Atom(AtomType.FUNC_CALL)

@@ -16,4 +16,6 @@
 
 package sron.cgpl.compiler.ast
 
-open class ASTNode
+import sron.cgpl.type.Type
+
+class Cast(val type: Type, val expr: Expr): Atom(AtomType.CAST)

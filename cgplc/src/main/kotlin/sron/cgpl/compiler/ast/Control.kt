@@ -16,4 +16,4 @@
 
 package sron.cgpl.compiler.ast
 
-open class ASTNode
+class Control(val type: StmtType): Stmt(type)

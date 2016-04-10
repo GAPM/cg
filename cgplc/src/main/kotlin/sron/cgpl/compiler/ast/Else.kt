@@ -16,4 +16,4 @@
 
 package sron.cgpl.compiler.ast
 
-open class ASTNode
+class Else(val stmt: List<Stmt>) : ASTNode()

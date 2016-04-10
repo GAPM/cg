@@ -16,4 +16,4 @@
 
 package sron.cgpl.compiler.ast
 
-open class ASTNode
+class Return(val expr: Expr?) : Stmt(StmtType.RETURN)

@@ -16,4 +16,4 @@
 
 package sron.cgpl.compiler.ast
 
-open class ASTNode
+class UnaryExpr(val operator: Operator, val expr: Expr) : Expr(ExprType.UNARY)

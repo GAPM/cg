@@ -16,4 +16,4 @@
 
 package sron.cgpl.compiler.ast
 
-open class ASTNode
+open class Atom(val atomType: AtomType) : Expr(ExprType.ATOM)

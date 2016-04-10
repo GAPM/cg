@@ -16,4 +16,25 @@
 
 package sron.cgpl.compiler.ast
 
-open class ASTNode
+enum class Operator {
+    ADD,
+    SUB,
+    MUL,
+    DIV,
+    MOD,
+
+    AND,
+    OR,
+
+    NOT,
+    MINUS,
+    PLUS,
+
+    LESS,
+    LESS_EQUAL,
+    HIGHER,
+    HIGHER_EQUAL,
+
+    EQUAL,
+    NOT_EQUAL
+}

@@ -16,4 +16,4 @@
 
 package sron.cgpl.compiler.ast
 
-open class ASTNode
+class Elif(val cond: Expr, val stmt: List<Stmt>) : ASTNode()

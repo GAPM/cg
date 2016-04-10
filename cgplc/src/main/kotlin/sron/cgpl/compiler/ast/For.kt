@@ -16,4 +16,5 @@
 
 package sron.cgpl.compiler.ast
 
-open class ASTNode
+class For(val initial: Assignment, val cond: Expr, val mod: Assignment,
+          val stmt: List<Stmt>) : Stmt(StmtType.FOR)

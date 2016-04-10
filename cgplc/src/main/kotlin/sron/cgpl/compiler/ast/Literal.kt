@@ -16,4 +16,6 @@
 
 package sron.cgpl.compiler.ast
 
-open class ASTNode
+import sron.cgpl.type.Type
+
+class Literal(val type: Type, val text: String) : Atom(AtomType.LITERAL)

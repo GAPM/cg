@@ -16,5 +16,4 @@
 
 package sron.cgpl.compiler.ast
 
-class Stmt : ASTNode() {
-}
+open class Stmt(val stmtType: StmtType) : ASTNode()

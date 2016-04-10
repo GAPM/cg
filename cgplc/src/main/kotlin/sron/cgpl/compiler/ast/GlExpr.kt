@@ -16,5 +16,6 @@
 
 package sron.cgpl.compiler.ast
 
-class GlExpr : ASTNode() {
-}
+import sron.cgpl.type.Type
+
+class GlExpr(val type: Type, val text: String) : ASTNode()

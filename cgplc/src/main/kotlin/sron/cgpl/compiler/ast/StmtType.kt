@@ -16,4 +16,16 @@
 
 package sron.cgpl.compiler.ast
 
-open class ASTNode
+enum class StmtType {
+    VAR_DEC,
+    ASSIGNMENT,
+    EXPR,
+    RETURN,
+
+    IF,
+    FOR,
+    WHILE,
+
+    CONTINUE,
+    BREAK
+}

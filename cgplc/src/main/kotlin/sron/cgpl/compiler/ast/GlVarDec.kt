@@ -18,5 +18,4 @@ package sron.cgpl.compiler.ast
 
 import sron.cgpl.type.Type
 
-class GlVarDec(val name: String, val type: Type, val exp: GlExpr) : ASTNode() {
-}
+class GlVarDec(val name: String, val type: Type, val exp: GlExpr) : ASTNode()

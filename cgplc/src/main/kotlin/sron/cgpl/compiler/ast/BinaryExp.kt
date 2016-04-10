@@ -16,4 +16,4 @@
 
 package sron.cgpl.compiler.ast
 
-open class ASTNode
+class BinaryExp(val operator: Operator, val lhs: Expr, val rhs: Expr) : Expr(ExprType.BINARY)

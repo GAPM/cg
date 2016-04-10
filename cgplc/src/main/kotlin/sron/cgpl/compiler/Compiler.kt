@@ -18,12 +18,11 @@ package sron.cgpl.compiler
 
 import org.antlr.v4.runtime.ANTLRInputStream
 import org.antlr.v4.runtime.CommonTokenStream
-import org.antlr.v4.runtime.tree.ParseTree
 import org.antlr.v4.runtime.tree.ParseTreeProperty
 import org.antlr.v4.runtime.tree.ParseTreeWalker
+import sron.cgpl.compiler.ast.Init
 import sron.cgpl.compiler.internal.CGPLLexer
 import sron.cgpl.compiler.internal.CGPLParser
-import sron.cgpl.exception.ErrorsInCodeException
 import sron.cgpl.exception.ParsingException
 import sron.cgpl.symbol.SymbolTable
 import sron.cgpl.util.Logger
@@ -32,40 +31,18 @@ import kotlin.system.measureTimeMillis
 
 class Compiler(fileName: String, val parameters: CompilerParameters) {
     private val file = File(fileName)
-    lateinit private var tree: ParseTree
 
     private val symTab = SymbolTable()
     private val annotations = ParseTreeProperty<Annotation>()
 
-    private var syntaxErrors = 0
-    private var totalErrors = 0
+    lateinit private var parser: CGPLParser
 
     init {
         file.inputStream().use {
             val input = ANTLRInputStream(it)
             val lexer = CGPLLexer(input)
             val tokens = CommonTokenStream(lexer)
-            val parser = CGPLParser(tokens).withFileName(file.name)
-            tree = parser.init()
-            syntaxErrors = parser.numberOfSyntaxErrors
-        }
-    }
-
-    /**
-     * Throws a [ParsingException] if the parser found syntax errors.
-     */
-    private fun checkParsing() {
-        if (syntaxErrors > 0) {
-            throw ParsingException()
-        }
-    }
-
-    /**
-     * Throws an [ErrorsInCodeException] if the total errors is higher than 0.
-     */
-    private fun checkForErrors() {
-        if (totalErrors > 0) {
-            throw ErrorsInCodeException()
+            parser = CGPLParser(tokens).withFileName(file.name)
         }
     }
 
@@ -73,10 +50,20 @@ class Compiler(fileName: String, val parameters: CompilerParameters) {
      * Handles the compilation process.
      */
     fun compile() {
+        val tree = parser.init()
+        if (parser.numberOfSyntaxErrors > 0) {
+            throw ParsingException()
+        }
+
         val walker = ParseTreeWalker()
         val converter = ToAST()
+        var ast: Init
 
-        val conversionTime = measureTimeMillis { walker.walk(converter, tree) }
-        Logger.debug("Conversion from parse tree to AST: $conversionTime")
+        val conversionTime = measureTimeMillis {
+            walker.walk(converter, tree)
+            ast = converter.getResult()
+        }
+
+        Logger.debug("Conversion from parse tree to AST: $conversionTime ms")
     }
 }

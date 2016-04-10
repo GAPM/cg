@@ -16,4 +16,8 @@
 
 package sron.cgpl.compiler.ast
 
-open class ASTNode
+enum class ExprType {
+    ATOM,
+    UNARY,
+    BINARY
+}
