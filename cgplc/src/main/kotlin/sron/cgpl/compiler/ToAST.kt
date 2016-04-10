@@ -451,15 +451,12 @@ class ToAST : CGPLBaseListener() {
         result.put(ctx, elsec)
     }
 
-    override fun exitContinue(ctx: ContinueContext) {
-        super.exitContinue(ctx)
-        val control = Control(StmtType.CONTINUE)
-        result.put(ctx, control)
-    }
+    override fun exitControlStmt(ctx: ControlStmtContext) {
+        super.exitControlStmt(ctx)
 
-    override fun exitBreak(ctx: BreakContext) {
-        super.exitBreak(ctx)
-        val control = Control(StmtType.BREAK)
+        val type = if (ctx.wr.text == "continue") StmtType.CONTINUE else StmtType.BREAK
+        val control = Control(type)
+
         result.put(ctx, control)
     }
 

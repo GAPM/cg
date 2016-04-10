@@ -128,7 +128,7 @@ funcDef: 'func' Identifier '(' argList ')' type? '{' stmt* '}' ;
 
 funcCall: Identifier '(' exprList ')' ;
 
-assignment: expr op=('='|'+='|'*='|'/='|'%='|'&&='|'||=') expr ;
+assignment: expr op=('='|'+='|'-='|'*='|'/='|'%='|'&&='|'||=') expr ;
 
 ifc: 'if' '(' expr ')' '{' stmt* '}' elifc* elsec? ;
 elifc: 'elif' '(' expr ')' '{' stmt* '}' ;
@@ -137,9 +137,7 @@ elsec: 'else' '{' stmt* '}' ;
 forc: 'for' '(' initial=assignment? ';' cond=expr? ';' mod=assignment? ')' '{' loopStmt* '}' ;
 whilec: 'while' '(' expr ')' '{' loopStmt* '}' ;
 
-controlStmt: 'continue' ';' #Continue
-           | 'break' ';'    #Break
-           ;
+controlStmt: wr=('continue'|'break') ';' ;
 
 returnStmt: 'return' expr? ;
 
@@ -158,6 +156,6 @@ stmt: simpleStmt ';'
     | compoundStmt
     ;
 
-loopStmt: (stmt | controlStmt) ';' ;
+loopStmt: (stmt | controlStmt) ;
 
 init: (funcDef | glVarDec ';')*;
