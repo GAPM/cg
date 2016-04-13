@@ -16,4 +16,6 @@
 
 package sron.cgpl.compiler.ast
 
-open class Stmt(val stmtType: StmtType) : ASTNode()
+import sron.cgpl.symbol.Location
+
+open class Stmt(location: Location) : ASTNode(location)

@@ -16,4 +16,6 @@
 
 package sron.cgpl.compiler.ast
 
-open class Atom(val atomType: AtomType) : Expr(ExprType.ATOM)
+import sron.cgpl.symbol.Location
+
+open class Atom(location: Location) : Expr(location)

@@ -16,6 +16,7 @@
 
 package sron.cgpl.compiler.ast
 
+import sron.cgpl.symbol.Location
 import sron.cgpl.type.Type
 
-class Arg(val name: String, val type: Type) : ASTNode()
+class Arg(val name: String, val type: Type, location: Location) : ASTNode(location)

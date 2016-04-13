@@ -16,4 +16,6 @@
 
 package sron.cgpl.compiler.ast
 
-class Elif(val cond: Expr, val stmt: List<Stmt>) : ASTNode()
+import sron.cgpl.symbol.Location
+
+class Elif(val cond: Expr, val stmt: List<Stmt>, location: Location) : ASTNode(location)

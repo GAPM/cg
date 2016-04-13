@@ -16,6 +16,7 @@
 
 package sron.cgpl.compiler.ast
 
+import sron.cgpl.symbol.Location
 import sron.cgpl.type.Type
 
-class Cast(val type: Type, val expr: Expr): Atom(AtomType.CAST)
+class Cast(val type: Type, val expr: Expr, location: Location) : Atom(location)

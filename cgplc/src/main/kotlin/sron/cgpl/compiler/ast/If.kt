@@ -16,5 +16,7 @@
 
 package sron.cgpl.compiler.ast
 
+import sron.cgpl.symbol.Location
+
 class If(val cond: Expr, val stmt: List<Stmt>,
-         val elif: List<Elif>, val elsec: Else) : Stmt(StmtType.IF)
+         val elif: List<Elif>, val elsec: Else, location: Location) : Stmt(location)

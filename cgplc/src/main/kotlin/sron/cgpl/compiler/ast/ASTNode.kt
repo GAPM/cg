@@ -16,4 +16,8 @@
 
 package sron.cgpl.compiler.ast
 
-open class ASTNode
+import sron.cgpl.symbol.Location
+
+abstract class ASTNode(val location: Location) {
+    lateinit var parent: ASTNode
+}

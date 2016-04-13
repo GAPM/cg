@@ -16,4 +16,6 @@
 
 package sron.cgpl.compiler.ast
 
-class Else(val stmt: List<Stmt>) : ASTNode()
+import sron.cgpl.symbol.Location
+
+class Else(val stmt: List<Stmt>, location: Location) : ASTNode(location)

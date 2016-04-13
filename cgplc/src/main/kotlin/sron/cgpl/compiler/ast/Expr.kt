@@ -16,4 +16,6 @@
 
 package sron.cgpl.compiler.ast
 
-open class Expr(val exprType: ExprType): Stmt(StmtType.EXPR)
+import sron.cgpl.symbol.Location
+
+open class Expr(location: Location) : Stmt(location)

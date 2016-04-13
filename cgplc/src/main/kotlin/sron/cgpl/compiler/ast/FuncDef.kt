@@ -16,7 +16,26 @@
 
 package sron.cgpl.compiler.ast
 
+import sron.cgpl.symbol.*
+import sron.cgpl.symbol.Function
 import sron.cgpl.type.Type
 
 class FuncDef(val name: String, val type: Type, val args: List<Arg>,
-              val stmt: List<Stmt>) : ASTNode()
+              val stmt: List<Stmt>, location: Location) : ASTNode(location) {
+
+    fun globals(symbolTable: SymbolTable) {
+        val qry = symbolTable.getSymbol(name, SymType.FUNC)
+
+        if (qry == null) {
+            for (arg in args) {
+                val v = Variable(arg.name, arg.type, "global.$name", arg.location)
+                symbolTable.addSymbol(v)
+            }
+
+            val func = Function(name, "global", type, location)
+            symbolTable.addSymbol(func)
+        } else {
+            //TODO error
+        }
+    }
+}

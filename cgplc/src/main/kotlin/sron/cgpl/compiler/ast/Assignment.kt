@@ -16,4 +16,6 @@
 
 package sron.cgpl.compiler.ast
 
-class Assignment(val lhs: Expr, val rhs: Expr) : Stmt(StmtType.ASSIGNMENT)
+import sron.cgpl.symbol.Location
+
+class Assignment(val lhs: Expr, val rhs: Expr, location: Location) : Stmt(location)

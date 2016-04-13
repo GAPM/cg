@@ -18,7 +18,6 @@ package sron.cgpl.compiler
 
 import org.antlr.v4.runtime.ANTLRInputStream
 import org.antlr.v4.runtime.CommonTokenStream
-import org.antlr.v4.runtime.tree.ParseTreeProperty
 import org.antlr.v4.runtime.tree.ParseTreeWalker
 import sron.cgpl.compiler.ast.Init
 import sron.cgpl.compiler.internal.CGPLLexer
@@ -33,7 +32,6 @@ class Compiler(fileName: String, val parameters: CompilerParameters) {
     private val file = File(fileName)
 
     private val symTab = SymbolTable()
-    private val annotations = ParseTreeProperty<Annotation>()
 
     lateinit private var parser: CGPLParser
 
@@ -57,13 +55,15 @@ class Compiler(fileName: String, val parameters: CompilerParameters) {
 
         val walker = ParseTreeWalker()
         val converter = ToAST()
-        var ast: Init
+        val ast: Init
 
         val conversionTime = measureTimeMillis {
             walker.walk(converter, tree)
-            ast = converter.getResult()
         }
+        ast = converter.getResult()
 
         Logger.debug("Conversion from parse tree to AST: $conversionTime ms")
+
+        ast.globals(symTab)
     }
 }

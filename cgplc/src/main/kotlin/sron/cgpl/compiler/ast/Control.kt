@@ -16,4 +16,6 @@
 
 package sron.cgpl.compiler.ast
 
-class Control(val type: StmtType): Stmt(type)
+import sron.cgpl.symbol.Location
+
+class Control(val type: ControlType, location: Location) : Stmt(location)

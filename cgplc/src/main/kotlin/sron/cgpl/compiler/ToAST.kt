@@ -20,6 +20,7 @@ import org.antlr.v4.runtime.tree.ParseTreeProperty
 import sron.cgpl.compiler.ast.*
 import sron.cgpl.compiler.internal.CGPLBaseListener
 import sron.cgpl.compiler.internal.CGPLParser.*
+import sron.cgpl.symbol.Location
 import sron.cgpl.type.Type
 import sron.cgpl.type.toCGPLType
 import java.util.*
@@ -37,11 +38,13 @@ class ToAST : CGPLBaseListener() {
         val init = Init()
 
         for (funcDef in ctx.funcDef()) {
-            init.funcDef.add(result.get(funcDef) as FuncDef)
+            val fd = result.get(funcDef) as FuncDef
+            init.funcDef.add(fd)
         }
 
         for (glVarDec in ctx.glVarDec()) {
-            init.glVarDec.add(result.get(glVarDec) as GlVarDec)
+            val gvd = result.get(glVarDec) as GlVarDec
+            init.glVarDec.add(gvd)
         }
 
         result.put(ctx, init)
@@ -52,9 +55,15 @@ class ToAST : CGPLBaseListener() {
 
         val name = ctx.Identifier().text
         val type = ctx.type().toCGPLType()
-        val expr = result.get(ctx.glExpr()) as GlExpr
+        var expr: GlExpr? = null
+        val location = Location(ctx.Identifier())
 
-        val glVarDec = GlVarDec(name, type, expr)
+        if (ctx.glExpr() != null) {
+            expr = result.get(ctx.glExpr()) as GlExpr
+        }
+
+        val glVarDec = GlVarDec(name, type, expr, location)
+
         result.put(ctx, glVarDec)
     }
 
@@ -63,6 +72,7 @@ class ToAST : CGPLBaseListener() {
 
         val text = ctx.text
         var type = Type.ERROR
+        val location = Location(ctx.start)
 
         if (ctx.BoolLit() != null) {
             type = Type.bool
@@ -84,7 +94,7 @@ class ToAST : CGPLBaseListener() {
             type = Type.string
         }
 
-        val glExpr = GlExpr(type, text)
+        val glExpr = GlExpr(type, text, location)
         result.put(ctx, glExpr)
     }
 
@@ -94,20 +104,21 @@ class ToAST : CGPLBaseListener() {
         val name = ctx.Identifier().text
         val type = ctx.type()?.toCGPLType() ?: Type.void
         val args = ArrayList<Arg>()
+        val stmts = ArrayList<Stmt>()
+        val location = Location(ctx.Identifier())
 
-        ctx.argList().arg().forEach {
-            val arg = result.get(it) as Arg
+        for (a in ctx.argList().arg()) {
+            val arg = result.get(a) as Arg
             args.add(arg)
         }
 
-        val stmts = ArrayList<Stmt>()
-
-        ctx.stmt().forEach {
-            val stmt = result.get(it) as Stmt
+        for (s in ctx.stmt()) {
+            val stmt = result.get(s) as Stmt
             stmts.add(stmt)
         }
 
-        val funcDef = FuncDef(name, type, args, stmts)
+        val funcDef = FuncDef(name, type, args, stmts, location)
+
         result.put(ctx, funcDef)
     }
 
@@ -116,8 +127,9 @@ class ToAST : CGPLBaseListener() {
 
         val name = ctx.Identifier().text
         val type = ctx.type().toCGPLType()
+        val location = Location(ctx.Identifier())
 
-        val arg = Arg(name, type)
+        val arg = Arg(name, type, location)
         result.put(ctx, arg)
     }
 
@@ -165,8 +177,15 @@ class ToAST : CGPLBaseListener() {
 
         val name = ctx.Identifier().text
         val type = ctx.type().toCGPLType()
+        var expr: Expr? = null
+        val location = Location(ctx.Identifier())
 
-        val varDec = VarDec(name, type)
+        if (ctx.expr() != null) {
+            expr = result.get(ctx.expr()) as Expr
+        }
+
+        val varDec = VarDec(name, type, expr, location)
+
         result.put(ctx, varDec)
     }
 
@@ -175,11 +194,12 @@ class ToAST : CGPLBaseListener() {
 
         val lhs = result.get(ctx.expr(0)) as Expr
         val rhs = result.get(ctx.expr(1)) as Expr
+        val location = Location(ctx.start)
 
         var assign: Assignment
 
         if (ctx.op.text == "=") {
-            assign = Assignment(lhs, rhs)
+            assign = Assignment(lhs, rhs, location)
         } else {
             val op = when (ctx.op.text) {
                 "+=" -> Operator.ADD
@@ -190,7 +210,7 @@ class ToAST : CGPLBaseListener() {
                 "&&=" -> Operator.AND
                 else -> Operator.OR
             }
-            assign = Assignment(lhs, BinaryExp(op, lhs, rhs))
+            assign = Assignment(lhs, BinaryExp(op, lhs, rhs, location), location)
         }
 
         result.put(ctx, assign)
@@ -206,7 +226,8 @@ class ToAST : CGPLBaseListener() {
         super.exitInteger(ctx)
 
         val text = ctx.IntLit().text
-        val literal = Literal(Type.int, text)
+        val location = Location(ctx.start)
+        val literal = Literal(Type.int, text, location)
 
         result.put(ctx, literal)
     }
@@ -215,7 +236,8 @@ class ToAST : CGPLBaseListener() {
         super.exitFloat(ctx)
 
         val text = ctx.FloatLit().text
-        val literal = Literal(Type.float, text)
+        val location = Location(ctx.start)
+        val literal = Literal(Type.float, text, location)
 
         result.put(ctx, literal)
     }
@@ -224,7 +246,8 @@ class ToAST : CGPLBaseListener() {
         super.exitBoolean(ctx)
 
         val text = ctx.BoolLit().text
-        val literal = Literal(Type.bool, text)
+        val location = Location(ctx.start)
+        val literal = Literal(Type.bool, text, location)
 
         result.put(ctx, literal)
     }
@@ -233,7 +256,8 @@ class ToAST : CGPLBaseListener() {
         super.exitCharacter(ctx)
 
         val text = ctx.CharLit().text
-        val literal = Literal(Type.char, text)
+        val location = Location(ctx.start)
+        val literal = Literal(Type.char, text, location)
 
         result.put(ctx, literal)
     }
@@ -242,7 +266,8 @@ class ToAST : CGPLBaseListener() {
         super.exitString(ctx)
 
         val text = ctx.StringLit().text
-        val literal = Literal(Type.string, text)
+        val location = Location(ctx.start)
+        val literal = Literal(Type.string, text, location)
 
         result.put(ctx, literal)
     }
@@ -251,7 +276,8 @@ class ToAST : CGPLBaseListener() {
         super.exitVarName(ctx)
 
         val name = ctx.Identifier().text
-        val identifier = Identifier(name)
+        val location = Location(ctx.Identifier())
+        val identifier = Identifier(name, location)
 
         result.put(ctx, identifier)
     }
@@ -261,13 +287,14 @@ class ToAST : CGPLBaseListener() {
 
         val name = ctx.funcCall().Identifier().text
         val expr = ArrayList<Expr>()
+        val location = Location(ctx.funcCall().Identifier())
 
-        ctx.funcCall().exprList().expr().forEach {
-            val exp = result.get(it) as Expr
+        for (e in ctx.funcCall().exprList().expr()) {
+            val exp = result.get(e) as Expr
             expr.add(exp)
         }
 
-        val funcCall = FunctionCall(name, expr)
+        val funcCall = FunctionCall(name, expr, location)
         result.put(ctx, funcCall)
     }
 
@@ -276,8 +303,9 @@ class ToAST : CGPLBaseListener() {
 
         val type = ctx.type().toCGPLType()
         val expr = result.get(ctx.expr()) as Expr
+        val location = Location(ctx.start)
 
-        val cast = Cast(type, expr)
+        val cast = Cast(type, expr, location)
         result.put(ctx, cast)
     }
 
@@ -293,7 +321,9 @@ class ToAST : CGPLBaseListener() {
             Operator.PLUS
         }
 
-        val unaryExpr = UnaryExpr(op, expr)
+        val location = Location(ctx.start)
+
+        val unaryExpr = UnaryExpr(op, expr, location)
         result.put(ctx, unaryExpr)
     }
 
@@ -308,6 +338,7 @@ class ToAST : CGPLBaseListener() {
 
         val lhs = result.get(ctx.expr(0)) as Expr
         val rhs = result.get(ctx.expr(1)) as Expr
+        val location = Location(ctx.start)
         val op = if (ctx.op.text == "*") {
             Operator.MUL
         } else if (ctx.op.text == "/") {
@@ -316,7 +347,7 @@ class ToAST : CGPLBaseListener() {
             Operator.MOD
         }
 
-        val binaryExpr = BinaryExp(op, lhs, rhs)
+        val binaryExpr = BinaryExp(op, lhs, rhs, location)
         result.put(ctx, binaryExpr)
     }
 
@@ -325,13 +356,15 @@ class ToAST : CGPLBaseListener() {
 
         val lhs = result.get(ctx.expr(0)) as Expr
         val rhs = result.get(ctx.expr(1)) as Expr
+        val location = Location(ctx.start)
+
         val op = if (ctx.op.text == "+") {
             Operator.ADD
         } else {
             Operator.SUB
         }
 
-        val binaryExpr = BinaryExp(op, lhs, rhs)
+        val binaryExpr = BinaryExp(op, lhs, rhs, location)
         result.put(ctx, binaryExpr)
     }
 
@@ -340,6 +373,8 @@ class ToAST : CGPLBaseListener() {
 
         val lhs = result.get(ctx.expr(0)) as Expr
         val rhs = result.get(ctx.expr(1)) as Expr
+        val location = Location(ctx.start)
+
         val op = if (ctx.op.text == "<") {
             Operator.LESS
         } else if (ctx.op.text == "<=") {
@@ -350,7 +385,7 @@ class ToAST : CGPLBaseListener() {
             Operator.HIGHER_EQUAL
         }
 
-        val binaryExpr = BinaryExp(op, lhs, rhs)
+        val binaryExpr = BinaryExp(op, lhs, rhs, location)
         result.put(ctx, binaryExpr)
     }
 
@@ -359,13 +394,15 @@ class ToAST : CGPLBaseListener() {
 
         val lhs = result.get(ctx.expr(0)) as Expr
         val rhs = result.get(ctx.expr(1)) as Expr
+        val location = Location(ctx.start)
+
         val op = if (ctx.op.text == "==") {
             Operator.EQUAL
         } else {
             Operator.NOT_EQUAL
         }
 
-        val binaryExpr = BinaryExp(op, lhs, rhs)
+        val binaryExpr = BinaryExp(op, lhs, rhs, location)
         result.put(ctx, binaryExpr)
     }
 
@@ -375,8 +412,9 @@ class ToAST : CGPLBaseListener() {
         val lhs = result.get(ctx.expr(0)) as Expr
         val rhs = result.get(ctx.expr(1)) as Expr
         val op = Operator.AND
+        val location = Location(ctx.start)
 
-        val binaryExpr = BinaryExp(op, lhs, rhs)
+        val binaryExpr = BinaryExp(op, lhs, rhs, location)
         result.put(ctx, binaryExpr)
     }
 
@@ -386,8 +424,9 @@ class ToAST : CGPLBaseListener() {
         val lhs = result.get(ctx.expr(0)) as Expr
         val rhs = result.get(ctx.expr(1)) as Expr
         val op = Operator.OR
+        val location = Location(ctx.start)
 
-        val binaryExpr = BinaryExp(op, lhs, rhs)
+        val binaryExpr = BinaryExp(op, lhs, rhs, location)
         result.put(ctx, binaryExpr)
     }
 
@@ -395,11 +434,10 @@ class ToAST : CGPLBaseListener() {
         super.exitReturnStmt(ctx)
 
         val expr = result.get(ctx.expr()) as Expr
-        val ret = Return(expr)
+        val location = Location(ctx.start)
+        val ret = Return(expr, location)
         result.put(ctx, ret)
     }
-
-    //TODO
 
     override fun exitIfc(ctx: IfcContext) {
         super.exitIfc(ctx)
@@ -408,6 +446,7 @@ class ToAST : CGPLBaseListener() {
         val stmts = ArrayList<Stmt>()
         val elifs = ArrayList<Elif>()
         val elsec = result.get(ctx.elsec()) as Else
+        val location = Location(ctx.start)
 
         ctx.stmt().forEach {
             val stmt = result.get(it) as Stmt
@@ -419,7 +458,7 @@ class ToAST : CGPLBaseListener() {
             elifs.add(elifc)
         }
 
-        val ifc = If(cond, stmts, elifs, elsec)
+        val ifc = If(cond, stmts, elifs, elsec, location)
         result.put(ctx, ifc)
     }
 
@@ -428,13 +467,14 @@ class ToAST : CGPLBaseListener() {
 
         val cond = result.get(ctx.expr()) as Expr
         val stmts = ArrayList<Stmt>()
+        val location = Location(ctx.start)
 
         ctx.stmt().forEach {
             val stmt = result.get(it) as Stmt
             stmts.add(stmt)
         }
 
-        val elif = Elif(cond, stmts)
+        val elif = Elif(cond, stmts, location)
         result.put(ctx, elif)
     }
 
@@ -446,16 +486,18 @@ class ToAST : CGPLBaseListener() {
             val stmt = result.get(it) as Stmt
             stmts.add(stmt)
         }
+        val location = Location(ctx.start)
 
-        val elsec = Else(stmts)
+        val elsec = Else(stmts, location)
         result.put(ctx, elsec)
     }
 
     override fun exitControlStmt(ctx: ControlStmtContext) {
         super.exitControlStmt(ctx)
+        val location = Location(ctx.start)
+        val type = if (ctx.wr.text == "continue") ControlType.CONTINUE else ControlType.BREAK
 
-        val type = if (ctx.wr.text == "continue") StmtType.CONTINUE else StmtType.BREAK
-        val control = Control(type)
+        val control = Control(type, location)
 
         result.put(ctx, control)
     }
@@ -467,6 +509,7 @@ class ToAST : CGPLBaseListener() {
         val cond = result.get(ctx.cond) as Expr
         val mod = result.get(ctx.mod) as Assignment
         val stmts = ArrayList<Stmt>()
+        val location = Location(ctx.start)
 
         ctx.loopStmt().forEach { ls ->
             ls.controlStmt()?.let {
@@ -480,7 +523,7 @@ class ToAST : CGPLBaseListener() {
             }
         }
 
-        val forc = For(initial, cond, mod, stmts)
+        val forc = For(initial, cond, mod, stmts, location)
         result.put(ctx, forc)
     }
 
@@ -489,6 +532,7 @@ class ToAST : CGPLBaseListener() {
 
         val cond = result.get(ctx.expr()) as Expr
         val stmts = ArrayList<Stmt>()
+        val location = Location(ctx.start)
 
         ctx.loopStmt().forEach { ls ->
             ls.controlStmt()?.let {
@@ -502,7 +546,7 @@ class ToAST : CGPLBaseListener() {
             }
         }
 
-        val whilec = While(cond, stmts)
+        val whilec = While(cond, stmts, location)
         result.put(ctx, whilec)
     }
 }

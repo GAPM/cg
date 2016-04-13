@@ -16,4 +16,6 @@
 
 package sron.cgpl.compiler.ast
 
-class Return(val expr: Expr?) : Stmt(StmtType.RETURN)
+import sron.cgpl.symbol.Location
+
+class Return(val expr: Expr?, location: Location) : Stmt(location)

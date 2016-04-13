@@ -16,4 +16,6 @@
 
 package sron.cgpl.compiler.ast
 
-class UnaryExpr(val operator: Operator, val expr: Expr) : Expr(ExprType.UNARY)
+import sron.cgpl.symbol.Location
+
+class UnaryExpr(val operator: Operator, val expr: Expr, location: Location) : Expr(location)

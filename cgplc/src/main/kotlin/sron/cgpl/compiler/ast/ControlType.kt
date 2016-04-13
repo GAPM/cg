@@ -16,8 +16,7 @@
 
 package sron.cgpl.compiler.ast
 
-enum class ExprType {
-    ATOM,
-    UNARY,
-    BINARY
+enum class ControlType {
+    CONTINUE,
+    BREAK
 }

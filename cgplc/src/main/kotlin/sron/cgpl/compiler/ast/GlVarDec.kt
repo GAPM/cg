@@ -16,6 +16,23 @@
 
 package sron.cgpl.compiler.ast
 
+import sron.cgpl.symbol.Location
+import sron.cgpl.symbol.SymType
+import sron.cgpl.symbol.SymbolTable
+import sron.cgpl.symbol.Variable
 import sron.cgpl.type.Type
 
-class GlVarDec(val name: String, val type: Type, val exp: GlExpr) : ASTNode()
+class GlVarDec(val name: String, val type: Type, val exp: GlExpr?,
+               location: Location) : ASTNode(location) {
+
+    fun globals(symbolTable: SymbolTable) {
+        val qry = symbolTable.getSymbol(name, SymType.FUNC)
+
+        if (qry == null) {
+            val glVar = Variable(name, type, "global", location)
+            symbolTable.addSymbol(glVar)
+        } else {
+            //TODO error
+        }
+    }
+}

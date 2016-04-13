@@ -16,4 +16,6 @@
 
 package sron.cgpl.compiler.ast
 
-class Identifier(val name: String) : Atom(AtomType.IDENTIFIER)
+import sron.cgpl.symbol.Location
+
+class Identifier(val name: String, location: Location) : Atom(location)

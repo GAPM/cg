@@ -16,4 +16,6 @@
 
 package sron.cgpl.compiler.ast
 
-class While(val cond: Expr, val stmt: List<Stmt>) : Stmt(StmtType.WHILE)
+import sron.cgpl.symbol.Location
+
+class While(val cond: Expr, val stmt: List<Stmt>, location: Location) : Stmt(location)

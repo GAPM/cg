@@ -16,6 +16,8 @@
 
 package sron.cgpl.compiler.ast
 
+import sron.cgpl.symbol.Location
 import sron.cgpl.type.Type
 
-class VarDec(val name: String, val type: Type) : Stmt(StmtType.VAR_DEC)
+class VarDec(val name: String, val type: Type, val expr: Expr?,
+             location: Location) : Stmt(location)

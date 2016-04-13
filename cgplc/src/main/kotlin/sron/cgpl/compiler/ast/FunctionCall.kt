@@ -16,4 +16,6 @@
 
 package sron.cgpl.compiler.ast
 
-class FunctionCall(val name: String, val expr: List<Expr>) : Atom(AtomType.FUNC_CALL)
+import sron.cgpl.symbol.Location
+
+class FunctionCall(val name: String, val expr: List<Expr>, location: Location) : Atom(location)
