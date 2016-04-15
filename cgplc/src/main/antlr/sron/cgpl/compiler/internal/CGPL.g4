@@ -158,4 +158,4 @@ stmt: simpleStmt ';'
 
 loopStmt: (stmt | controlStmt) ;
 
-init: (funcDef | glVarDec ';')*;
+init: (funcDef | glVarDec ';')+;
