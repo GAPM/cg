@@ -20,93 +20,83 @@ import sron.cgpl.symbol.Location
 import sron.cgpl.symbol.SymType
 import sron.cgpl.type.Type
 
-abstract class Error(private val last: Location) {
-    abstract val msg: String
+object Error {
+    private fun e(location: Location, msg: String): String {
+        return "$location: $msg"
+    }
 
-    fun message() = "$last: $msg"
-}
-
-class Redeclaration(last: Location, first: Location, name: String, symType: SymType) : Error(last) {
-    override val msg: String
-
-    init {
+    fun redeclaration(last: Location, first: Location, name: String, symType: SymType): String {
         val t = when (symType) {
             SymType.FUNC -> "function"
             SymType.VAR -> "variable"
         }
 
-        msg = "redeclaration of $t `$name`. Previously declared at $first"
+        return e(last, "redeclaration of $t `$name`. Previously declared at $first")
     }
-}
 
-class VoidVar(location: Location, name: String, t: String) : Error(location) {
-    override val msg = "$t `$name`g declared with type `void`"
-}
+    fun voidVar(location: Location, name: String, t: String): String {
+        return e(location, "$t `$name`g declared with type `void`")
+    }
 
-class NoEntryPoint(location: Location) : Error(location) {
-    override val msg = "No main method defined"
-}
+    fun noEntryPoint(location: Location): String {
+        return e(location, "No main method defined")
+    }
 
-class ControlNotInLoop(location: Location, word: String) : Error(location) {
-    override val msg = "`$word` not inside a loop"
-}
+    fun nonEmptyReturn(location: Location, fName: String): String {
+        return e(location, "non-empty return in void function `$fName`")
+    }
 
-class NonEmptyReturn(location: Location, fName: String) : Error(location) {
-    override val msg = "non-empty return in void function `$fName`"
-}
+    fun emptyReturn(location: Location, fName: String): String {
+        return e(location, "empty return in non-void function `$fName`")
+    }
 
-class EmptyReturn(location: Location, fName: String) : Error(location) {
-    override val msg = "empty return in non-void function `$fName`"
-}
+    fun notAllPathsReturn(location: Location, fName: String): String {
+        return e(location, "in function `$fName`: not all paths have a return")
+    }
 
-class NotAllPathsReturn(location: Location, fName: String) : Error(location) {
-    override val msg = "in function `$fName`: not all paths have a return"
-}
-
-class NotFound(location: Location, name: String, typ: SymType) : Error(location) {
-    override val msg: String
-
-    init {
+    fun notFound(location: Location, name: String, typ: SymType): String {
         val t = if (typ == SymType.FUNC) "function" else "variable"
-        msg = "$t `$name` not found in current scope"
+        return e(location, "$t `$name` not found in current scope")
     }
-}
 
-class BadUnaryOp(location: Location, op: String, typ: Type) : Error(location) {
-    override val msg = "invalid unary operation: $op $typ"
-}
-
-class BadBinaryOp(location: Location, op: String, typ1: Type, typ2: Type) : Error(location) {
-    override val msg = "invalid binary operation: $typ1 $op $typ2"
-}
-
-class Argument(location: Location, expr: String, etype: Type, atype: Type, fName: String) : Error(location) {
-    override val msg = "can not use $expr (type $etype) as type $atype in argument to `$fName`"
-}
-
-class ArgumentNumber(location: Location, type: Char, fName: String) : Error(location) {
-    override val msg = when (type) {
-        '+' -> "too many arguments in call to `$fName`"
-        else -> "not enough arguments in call to `$fName`"
+    fun badUnaryOp(location: Location, op: String, typ: Type): String {
+        return e(location, "invalid unary operation: $op $typ")
     }
-}
 
-class NonAssignable(location: Location, exp: String) : Error(location) {
-    override val msg = "can not assign to $exp"
-}
+    fun badBinaryOp(location: Location, op: String, typ1: Type, typ2: Type): String {
+        return e(location, "invalid binary operation: $typ1 $op $typ2")
+    }
 
-class BadAssignment(location: Location, exp: String, type1: Type, type2: Type) : Error(location) {
-    override val msg = "can not use $exp (type $type2) as type $type1 in assignment"
-}
+    fun argument(location: Location, expr: String, etype: Type, atype: Type, fName: String): String {
+        return e(location, "can not use $expr (type $etype) as type $atype in argument to `$fName`")
+    }
 
-class NonBoolCondition(location: Location, exp: String, type: Type) : Error(location) {
-    override val msg = "can not use $exp (type $type) as type bool in condition"
-}
+    fun argumentNumber(location: Location, type: Char, fName: String): String {
+        val msg = when (type) {
+            '+' -> "too many arguments in call to `$fName`"
+            else -> "not enough arguments in call to `$fName`"
+        }
 
-class OutOfRange(location: Location, exp: String) : Error(location) {
-    override val msg = "value $exp is out of range"
-}
+        return e(location, msg)
+    }
 
-class CastError(location: Location, target: Type, current: Type) : Error(location) {
-    override val msg = "invalid cast from `$current` to `$target`"
+    fun nonAssignable(location: Location, exp: String): String {
+        return e(location, "can not assign to $exp")
+    }
+
+    fun badAssignment(location: Location, exp: String, type1: Type, type2: Type): String {
+        return e(location, "can not use $exp (type $type2) as type $type1 in assignment")
+    }
+
+    fun nonBoolCondition(location: Location, exp: String, type: Type): String {
+        return e(location, "can not use $exp (type $type) as type bool in condition")
+    }
+
+    fun outOfRange(location: Location, exp: String): String {
+        return e(location, "value $exp is out of range")
+    }
+
+    fun castError(location: Location, target: Type, current: Type): String {
+        return e(location, "invalid cast from `$current` to `$target`")
+    }
 }
