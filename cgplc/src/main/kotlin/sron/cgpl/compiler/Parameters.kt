@@ -16,7 +16,7 @@
 
 package sron.cgpl.compiler
 
-class CompilerParameters() {
+class Parameters() {
     var justCheck = false
     var output = ""
 }

@@ -16,21 +16,27 @@
 
 package sron.cgpl.compiler.ast
 
+import sron.cgpl.compiler.State
 import sron.cgpl.symbol.Location
-import sron.cgpl.symbol.SymbolTable
 import java.util.*
 
 class Init : ASTNode(Location(0)) {
     val glVarDec = ArrayList<GlVarDec>()
     val funcDef = ArrayList<FuncDef>()
 
-    fun globals(symbolTable: SymbolTable) {
+    fun globals(s: State) {
         for (gvd in glVarDec) {
-            gvd.globals(symbolTable)
+            gvd.globals(s)
         }
 
         for (fd in funcDef) {
-            fd.globals(symbolTable)
+            fd.globals(s)
+        }
+    }
+
+    fun structure(s: State) {
+        for (fd in funcDef) {
+            fd.structure(s)
         }
     }
 }

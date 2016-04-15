@@ -22,16 +22,15 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker
 import sron.cgpl.compiler.ast.Init
 import sron.cgpl.compiler.internal.CGPLLexer
 import sron.cgpl.compiler.internal.CGPLParser
+import sron.cgpl.exception.ErrorsInCodeException
 import sron.cgpl.exception.ParsingException
-import sron.cgpl.symbol.SymbolTable
 import sron.cgpl.util.Logger
 import java.io.File
-import kotlin.system.measureTimeMillis
 
-class Compiler(fileName: String, val parameters: CompilerParameters) {
+class Compiler(fileName: String, val parameters: Parameters) {
     private val file = File(fileName)
 
-    private val symTab = SymbolTable()
+    private val state = State(parameters)
 
     lateinit private var parser: CGPLParser
 
@@ -57,13 +56,16 @@ class Compiler(fileName: String, val parameters: CompilerParameters) {
         val converter = ToAST()
         val ast: Init
 
-        val conversionTime = measureTimeMillis {
-            walker.walk(converter, tree)
-        }
+        measureTime("To AST", { walker.walk(converter, tree) })
+
         ast = converter.getResult()
 
-        Logger.debug("Conversion from parse tree to AST: $conversionTime ms")
+        measureTime("Globals", { ast.globals(state) })
+        measureTime("Structure", { ast.structure(state) })
 
-        ast.globals(symTab)
+        if (state.errors.size > 0) {
+            state.errors.forEach { Logger.error(it) }
+            throw ErrorsInCodeException()
+        }
     }
 }

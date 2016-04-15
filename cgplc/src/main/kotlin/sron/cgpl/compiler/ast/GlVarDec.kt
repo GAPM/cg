@@ -16,23 +16,24 @@
 
 package sron.cgpl.compiler.ast
 
+import sron.cgpl.compiler.Error
+import sron.cgpl.compiler.State
 import sron.cgpl.symbol.Location
 import sron.cgpl.symbol.SymType
-import sron.cgpl.symbol.SymbolTable
 import sron.cgpl.symbol.Variable
 import sron.cgpl.type.Type
 
 class GlVarDec(val name: String, val type: Type, val exp: GlExpr?,
                location: Location) : ASTNode(location) {
 
-    fun globals(symbolTable: SymbolTable) {
-        val qry = symbolTable.getSymbol(name, SymType.FUNC)
+    fun globals(s: State) {
+        val qry = s.symbolTable.getSymbol(name, SymType.FUNC)
 
         if (qry == null) {
             val glVar = Variable(name, type, "global", location)
-            symbolTable.addSymbol(glVar)
+            s.symbolTable.addSymbol(glVar)
         } else {
-            //TODO error
+            s.errors += Error.redeclaration(location, qry.location, name, SymType.VAR)
         }
     }
 }

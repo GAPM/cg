@@ -16,6 +16,23 @@
 
 package sron.cgpl.compiler.ast
 
+import sron.cgpl.compiler.Error
+import sron.cgpl.compiler.State
 import sron.cgpl.symbol.Location
+import sron.cgpl.type.Type
 
-class Return(val expr: Expr?, location: Location) : Stmt(location)
+class Return(val expr: Expr?, location: Location) : Stmt(location) {
+    init {
+        returns = true
+    }
+
+    override fun structure(s: State, func: FuncDef) {
+        if (func.type != Type.void && expr == null) {
+            s.errors += Error.emptyReturn(location, func.name)
+        }
+
+        if (func.type == Type.void && expr != null) {
+            s.errors += Error.nonEmptyReturn(location, func.name)
+        }
+    }
+}

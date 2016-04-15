@@ -16,12 +16,10 @@
 
 package sron.cgpl.compiler
 
-import sron.cgpl.type.Type
+import sron.cgpl.symbol.SymbolTable
+import java.util.*
 
-class Annotation {
-    var type: Type = Type.ERROR
-    var returns: Boolean = false
-    var assignable: Boolean = false
-    var name: String = ""
-    var varIndex = mutableMapOf<String, Int>()
+class State(val parameters: Parameters) {
+    val errors = ArrayList<String>()
+    val symbolTable = SymbolTable()
 }

@@ -18,6 +18,8 @@ package sron.cgpl.compiler
 
 import sron.cgpl.compiler.internal.CGPLParser
 import sron.cgpl.compiler.internal.GrpErrorListener
+import sron.cgpl.util.Logger
+import kotlin.system.measureTimeMillis
 
 private var id = 0
 
@@ -25,6 +27,11 @@ fun CGPLParser.withFileName(fileName: String): CGPLParser {
     this.removeErrorListeners()
     this.addErrorListener(GrpErrorListener(fileName))
     return this
+}
+
+inline fun measureTime(label: String, block: () -> Unit) {
+    val ms = measureTimeMillis(block)
+    Logger.debug("$label: $ms ms")
 }
 
 fun nextId(): Int = id++

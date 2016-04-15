@@ -16,6 +16,12 @@
 
 package sron.cgpl.compiler.ast
 
+import sron.cgpl.compiler.State
 import sron.cgpl.symbol.Location
 
-open class Stmt(location: Location) : ASTNode(location)
+open class Stmt(location: Location) : ASTNode(location) {
+    var returns = false
+
+    open fun structure(s: State, func: FuncDef) {
+    }
+}

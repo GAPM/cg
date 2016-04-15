@@ -432,8 +432,12 @@ class ToAST : CGPLBaseListener() {
 
     override fun exitReturnStmt(ctx: ReturnStmtContext) {
         super.exitReturnStmt(ctx)
+        var expr: Expr? = null
 
-        val expr = result.get(ctx.expr()) as Expr
+        if (ctx.expr() != null) {
+            expr = result.get(ctx.expr()) as Expr
+        }
+
         val location = Location(ctx.start)
         val ret = Return(expr, location)
         result.put(ctx, ret)

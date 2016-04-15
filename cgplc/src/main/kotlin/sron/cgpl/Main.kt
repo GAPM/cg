@@ -21,7 +21,7 @@ import org.apache.commons.cli.HelpFormatter
 import org.apache.commons.cli.Options
 import org.apache.commons.cli.UnrecognizedOptionException
 import sron.cgpl.compiler.Compiler
-import sron.cgpl.compiler.CompilerParameters
+import sron.cgpl.compiler.Parameters
 import sron.cgpl.exception.CompilerException
 import sron.cgpl.util.Logger
 import java.io.IOException
@@ -38,7 +38,7 @@ fun main(args: Array<String>) {
 
     try {
         val cmd = cmdParser.parse(options, args)
-        val parameters = CompilerParameters()
+        val parameters = Parameters()
 
         if (cmd.hasOption("h")) {
             val hf = HelpFormatter()

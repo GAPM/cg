@@ -16,6 +16,16 @@
 
 package sron.cgpl.compiler.ast
 
+import sron.cgpl.compiler.State
 import sron.cgpl.symbol.Location
 
-class Else(val stmt: List<Stmt>, location: Location) : ASTNode(location)
+class Else(val stmts: List<Stmt>, location: Location) : ASTNode(location) {
+    var returns = false
+
+    fun structure(s: State, func: FuncDef) {
+        for (stmt in stmts) {
+            stmt.structure(s, func)
+            returns = returns || stmt.returns
+        }
+    }
+}
