@@ -24,16 +24,6 @@ class Init : ASTNode(Location(0)) {
     val glVarDec = ArrayList<GlVarDec>()
     val funcDef = ArrayList<FuncDef>()
 
-    fun globals(s: State) {
-        for (gvd in glVarDec) {
-            gvd.globals(s)
-        }
-
-        for (fd in funcDef) {
-            fd.globals(s)
-        }
-    }
-
     fun structure(s: State) {
         for (fd in funcDef) {
             fd.structure(s)

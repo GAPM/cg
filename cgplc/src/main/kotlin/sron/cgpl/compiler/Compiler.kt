@@ -22,6 +22,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker
 import sron.cgpl.compiler.ast.Init
 import sron.cgpl.compiler.internal.CGPLLexer
 import sron.cgpl.compiler.internal.CGPLParser
+import sron.cgpl.compiler.phase.Globals
 import sron.cgpl.exception.ErrorsInCodeException
 import sron.cgpl.exception.ParsingException
 import sron.cgpl.util.Logger
@@ -60,7 +61,7 @@ class Compiler(fileName: String, val parameters: Parameters) {
 
         ast = converter.getResult()
 
-        measureTime("Globals", { ast.globals(state) })
+        measureTime("Globals", { Globals(state, ast) })
         measureTime("Structure", { ast.structure(state) })
 
         if (state.errors.size > 0) {
