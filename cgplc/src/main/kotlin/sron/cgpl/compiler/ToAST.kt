@@ -449,8 +449,12 @@ class ToAST : CGPLBaseListener() {
         val cond = result.get(ctx.expr()) as Expr
         val stmts = ArrayList<Stmt>()
         val elifs = ArrayList<Elif>()
-        val elsec = result.get(ctx.elsec()) as Else
+        var elsec: Else? = null
         val location = Location(ctx.start)
+
+        ctx.elsec()?.let {
+            elsec = result.get(ctx.elsec()) as Else
+        }
 
         ctx.stmt().forEach {
             val stmt = result.get(it) as Stmt

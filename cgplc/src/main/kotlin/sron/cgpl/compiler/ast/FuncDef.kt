@@ -16,24 +16,8 @@
 
 package sron.cgpl.compiler.ast
 
-import sron.cgpl.compiler.Error
-import sron.cgpl.compiler.State
 import sron.cgpl.symbol.Location
 import sron.cgpl.type.Type
 
 class FuncDef(val name: String, val type: Type, val args: List<Arg>,
-              val stmts: List<Stmt>, location: Location) : ASTNode(location) {
-
-    fun structure(s: State) {
-        var returns = false
-
-        for (stmt in stmts) {
-            stmt.structure(s, this)
-            returns = returns || stmt.returns
-        }
-
-        if (type != Type.void && !returns) {
-            s.errors += Error.notAllPathsReturn(location, name)
-        }
-    }
-}
+              val stmts: List<Stmt>, location: Location) : ASTNode(location)

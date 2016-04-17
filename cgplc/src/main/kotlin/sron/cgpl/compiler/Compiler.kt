@@ -23,6 +23,7 @@ import sron.cgpl.compiler.ast.Init
 import sron.cgpl.compiler.internal.CGPLLexer
 import sron.cgpl.compiler.internal.CGPLParser
 import sron.cgpl.compiler.phase.Globals
+import sron.cgpl.compiler.phase.Structure
 import sron.cgpl.exception.ErrorsInCodeException
 import sron.cgpl.exception.ParsingException
 import sron.cgpl.util.Logger
@@ -62,7 +63,7 @@ class Compiler(fileName: String, val parameters: Parameters) {
         ast = converter.getResult()
 
         measureTime("Globals", { Globals(state, ast) })
-        measureTime("Structure", { ast.structure(state) })
+        measureTime("Structure", { Structure(state, ast) })
 
         if (state.errors.size > 0) {
             state.errors.forEach { Logger.error(it) }
