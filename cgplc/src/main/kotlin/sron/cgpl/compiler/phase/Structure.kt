@@ -31,7 +31,7 @@ object Structure {
         }
     }
 
-    fun FuncDef.structure(s: State) {
+    private fun FuncDef.structure(s: State) {
         var returns = false
 
         for (stmt in stmts) {
@@ -51,7 +51,7 @@ object Structure {
         }
     }
 
-    fun If.structure(s: State, func: FuncDef) {
+    private fun If.structure(s: State, func: FuncDef) {
         var ifReturns = false
         var allElifsReturns = true
         var elseReturns: Boolean
@@ -72,21 +72,21 @@ object Structure {
         returns = ifReturns && allElifsReturns && elseReturns
     }
 
-    fun Elif.structure(s: State, func: FuncDef) {
+    private fun Elif.structure(s: State, func: FuncDef) {
         for (stmt in stmts) {
             stmt.structure(s, func)
             returns = returns || stmt.returns
         }
     }
 
-    fun Else.structure(s: State, func: FuncDef) {
+    private fun Else.structure(s: State, func: FuncDef) {
         for (stmt in stmts) {
             stmt.structure(s, func)
             returns = returns || stmt.returns
         }
     }
 
-    fun Return.structure(s: State, func: FuncDef) {
+    private fun Return.structure(s: State, func: FuncDef) {
         if (func.type != Type.void && expr == null) {
             s.errors += Error.emptyReturn(location, func.name)
         }

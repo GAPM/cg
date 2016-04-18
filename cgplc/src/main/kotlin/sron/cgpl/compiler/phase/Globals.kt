@@ -29,13 +29,13 @@ object Globals {
 
     operator fun invoke(state: State, init: Init) = init.globals(state)
 
-    private fun Init.globals(state: State) {
+    private fun Init.globals(s: State) {
         for (gvd in glVarDec) {
-            gvd.globals(state)
+            gvd.globals(s)
         }
 
         for (fd in funcDef) {
-            fd.globals(state)
+            fd.globals(s)
         }
     }
 
@@ -43,13 +43,13 @@ object Globals {
         val qry = s.symbolTable.getSymbol(name, SymType.FUNC)
 
         if (qry == null) {
-            for (arg in args) {
-                val v = Variable(arg.name, arg.type, "global.${this.name}", arg.location)
-                s.symbolTable.addSymbol(v)
+            val args = Array(args.size) { i ->
+                Variable(args[i].name, args[i].type, "global.$name", args[i].location)
             }
 
-            val func = Function(name, "global", type, location)
+            val func = Function(name, "global", type, location, *args)
             s.symbolTable.addSymbol(func)
+            args.map { s.symbolTable.addSymbol(it) }
         } else {
             s.errors += Error.redeclaration(location, qry.location, name, SymType.FUNC)
         }
