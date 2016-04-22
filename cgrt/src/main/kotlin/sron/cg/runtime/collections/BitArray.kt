@@ -30,4 +30,10 @@ class BitArray(val size: Int) {
             array[idx shr 5] = array[idx shr 5] and (1 shl (idx and 31)).inv()
         }
     }
+
+    fun reset() {
+        for (i in array.indices) {
+            array[i] = 0
+        }
+    }
 }

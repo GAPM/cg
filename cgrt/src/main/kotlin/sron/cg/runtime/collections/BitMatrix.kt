@@ -24,4 +24,6 @@ class BitMatrix(val rows: Int, val columns: Int) {
     operator fun set(r: Int, c: Int, value: Boolean) {
         array[r * rows + c] = value
     }
+
+    fun reset() = array.reset()
 }
