@@ -91,4 +91,43 @@ class Trie {
 
         return node.value != null
     }
+
+    private fun key(node: TrieNode, acc: String): List<String> {
+        val result = ArrayList<String>()
+
+        if (node.value != null) {
+            result.add(acc)
+        }
+
+        result += node.children.flatMap { key(it, "$acc${it.char}") }
+        return result
+    }
+
+    fun keys() = root.children.flatMap { key(it, "${it.char}") }
+
+    private fun value(node: TrieNode): List<Int> {
+        val result = ArrayList<Int>()
+
+        if (node.value != null) {
+            result.add(node.value!!)
+        }
+
+        result += node.children.flatMap { value(it) }
+        return result
+    }
+
+    fun values() = root.children.flatMap { value(it) }
+
+    private fun pair(node: TrieNode, acc: String): List<Pair<String, Int>> {
+        val result = ArrayList<Pair<String, Int>>()
+
+        if (node.value != null) {
+            result.add(acc to node.value!!)
+        }
+
+        result += node.children.flatMap { pair(it, "$acc${it.char}") }
+        return result
+    }
+
+    fun pairs() = root.children.flatMap { pair(it, "${it.char}") }
 }
