@@ -24,6 +24,7 @@ import sron.cgpl.compiler.internal.CGPLLexer
 import sron.cgpl.compiler.internal.CGPLParser
 import sron.cgpl.compiler.phase.Globals
 import sron.cgpl.compiler.phase.Structure
+import sron.cgpl.compiler.phase.Types
 import sron.cgpl.exception.ErrorsInCodeException
 import sron.cgpl.exception.ParsingException
 import sron.cgpl.util.Logger
@@ -64,6 +65,7 @@ class Compiler(fileName: String, val parameters: Parameters) {
 
         measureTime("Globals", { Globals(state, ast) })
         measureTime("Structure", { Structure(state, ast) })
+        measureTime("Types", { Types(state, ast) })
 
         if (state.errors.size > 0) {
             state.errors.forEach { Logger.error(it) }

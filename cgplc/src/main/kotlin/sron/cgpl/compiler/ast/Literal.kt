@@ -19,4 +19,4 @@ package sron.cgpl.compiler.ast
 import sron.cgpl.symbol.Location
 import sron.cgpl.type.Type
 
-class Literal(val type: Type, val text: String, location: Location) : Atom(location)
+class Literal(override var type: Type, val text: String, location: Location) : Atom(location)

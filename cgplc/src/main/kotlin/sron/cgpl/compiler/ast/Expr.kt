@@ -17,5 +17,9 @@
 package sron.cgpl.compiler.ast
 
 import sron.cgpl.symbol.Location
+import sron.cgpl.type.Type
 
-open class Expr(location: Location) : Stmt(location)
+open class Expr(location: Location) : Stmt(location) {
+    open var type = Type.ERROR
+    open var assignable = false
+}

@@ -19,4 +19,4 @@ package sron.cgpl.compiler.ast
 import sron.cgpl.symbol.Location
 
 class For(val initial: Assignment, val cond: Expr, val mod: Assignment,
-          val stmt: List<Stmt>, location: Location) : Stmt(location)
+          val stmts: List<Stmt>, location: Location) : Stmt(location)
