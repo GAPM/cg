@@ -134,7 +134,7 @@ ifc: 'if' '(' expr ')' '{' stmt* '}' elifc* elsec? ;
 elifc: 'elif' '(' expr ')' '{' stmt* '}' ;
 elsec: 'else' '{' stmt* '}' ;
 
-forc: 'for' '(' initial=assignment? ';' cond=expr? ';' mod=assignment? ')' '{' loopStmt* '}' ;
+forc: 'for' '(' initial=assignment ';' cond=expr ';' mod=assignment ')' '{' loopStmt* '}' ;
 whilec: 'while' '(' expr ')' '{' loopStmt* '}' ;
 
 controlStmt: wr=('continue'|'break') ';' ;
