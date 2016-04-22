@@ -38,3 +38,22 @@ enum class Operator {
     EQUAL,
     NOT_EQUAL
 }
+
+fun Operator.sign(): String = when (this) {
+    Operator.ADD -> "+"
+    Operator.SUB -> "-"
+    Operator.MUL -> "*"
+    Operator.DIV -> "/"
+    Operator.MOD -> "%"
+    Operator.AND -> "&&"
+    Operator.OR -> "||"
+    Operator.NOT -> "!"
+    Operator.MINUS -> "-"
+    Operator.PLUS -> "+"
+    Operator.LESS -> "<"
+    Operator.LESS_EQUAL -> "<="
+    Operator.HIGHER -> ">"
+    Operator.HIGHER_EQUAL -> ">="
+    Operator.EQUAL -> "=="
+    Operator.NOT_EQUAL -> "!="
+}

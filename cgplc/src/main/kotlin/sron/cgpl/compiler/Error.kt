@@ -16,6 +16,8 @@
 
 package sron.cgpl.compiler
 
+import sron.cgpl.compiler.ast.Operator
+import sron.cgpl.compiler.ast.sign
 import sron.cgpl.symbol.Location
 import sron.cgpl.symbol.SymType
 import sron.cgpl.type.Type
@@ -25,50 +27,8 @@ object Error {
         return "$location: $msg"
     }
 
-    fun redeclaration(last: Location, first: Location, name: String, symType: SymType): String {
-        val t = when (symType) {
-            SymType.FUNC -> "function"
-            SymType.VAR -> "variable"
-        }
-
-        return e(last, "redeclaration of $t `$name`. Previously declared at $first")
-    }
-
-    fun voidVar(location: Location, name: String, t: String): String {
-        return e(location, "$t `$name`g declared with type `void`")
-    }
-
-    fun noEntryPoint(location: Location): String {
-        return e(location, "No main method defined")
-    }
-
-    fun nonEmptyReturn(location: Location, fName: String): String {
-        return e(location, "non-empty return in void function `$fName`")
-    }
-
-    fun emptyReturn(location: Location, fName: String): String {
-        return e(location, "empty return in non-void function `$fName`")
-    }
-
-    fun notAllPathsReturn(location: Location, fName: String): String {
-        return e(location, "in function `$fName`: not all paths have a return")
-    }
-
-    fun notFound(location: Location, name: String, typ: SymType): String {
-        val t = if (typ == SymType.FUNC) "function" else "variable"
-        return e(location, "$t `$name` not found in current scope")
-    }
-
-    fun badUnaryOp(location: Location, op: String, typ: Type): String {
-        return e(location, "invalid unary operation: $op $typ")
-    }
-
-    fun badBinaryOp(location: Location, op: String, typ1: Type, typ2: Type): String {
-        return e(location, "invalid binary operation: $typ1 $op $typ2")
-    }
-
-    fun argument(location: Location, expr: String, etype: Type, atype: Type, fName: String): String {
-        return e(location, "can not use $expr (type $etype) as type $atype in argument to `$fName`")
+    fun argument(location: Location, etype: Type, atype: Type, fName: String): String {
+        return e(location, "can not use expression of type $etype as type $atype in argument to `$fName`")
     }
 
     fun argumentNumber(location: Location, type: Char, fName: String): String {
@@ -80,23 +40,69 @@ object Error {
         return e(location, msg)
     }
 
-    fun nonAssignable(location: Location, exp: String): String {
-        return e(location, "can not assign to $exp")
+    fun badAssignment(location: Location, lhs: Type, rhs: Type): String {
+        return e(location, "can't use expression of type $lhs as type $rhs in assignment")
     }
 
-    fun badAssignment(location: Location, exp: String, type1: Type, type2: Type): String {
-        return e(location, "can not use $exp (type $type2) as type $type1 in assignment")
+    fun badBinaryOp(location: Location, op: Operator, typ1: Type, typ2: Type): String {
+        return e(location, "invalid binary operation: $typ1 ${op.sign()} $typ2")
     }
 
-    fun nonBoolCondition(location: Location, exp: String, type: Type): String {
-        return e(location, "can not use $exp (type $type) as type bool in condition")
+    fun badUnaryOp(location: Location, op: Operator, typ: Type): String {
+        return e(location, "invalid unary operation: ${op.sign()} $typ")
+    }
+
+    fun badReturn(location: Location, type: Type, funcType: Type, fName: String): String {
+        return e(location, "can't use type $type as type $funcType in return at function $fName")
+    }
+
+    fun cast(location: Location, target: Type, current: Type): String {
+        return e(location, "invalid cast from `$current` to `$target`")
+    }
+
+    fun emptyReturn(location: Location, fName: String): String {
+        return e(location, "empty return in non-void function `$fName`")
+    }
+
+    fun noEntryPoint(location: Location): String {
+        return e(location, "No main method defined")
+    }
+
+    fun nonAssignable(location: Location): String {
+        return e(location, "non-assignable expression")
+    }
+
+    fun nonBoolCondition(location: Location, type: Type): String {
+        return e(location, "can not use type $type as type bool in condition")
+    }
+
+    fun nonEmptyReturn(location: Location, fName: String): String {
+        return e(location, "non-empty return in void function `$fName`")
+    }
+
+    fun notAllPathsReturn(location: Location, fName: String): String {
+        return e(location, "in function `$fName`: not all paths have a return")
+    }
+
+    fun notFound(location: Location, name: String, typ: SymType): String {
+        val t = if (typ == SymType.FUNC) "function" else "variable"
+        return e(location, "$t `$name` not found in current scope")
+    }
+
+    fun redeclaration(last: Location, first: Location, name: String, symType: SymType): String {
+        val t = when (symType) {
+            SymType.FUNC -> "function"
+            SymType.VAR -> "variable"
+        }
+
+        return e(last, "redeclaration of $t `$name`. Previously declared at $first")
     }
 
     fun outOfRange(location: Location, exp: String): String {
         return e(location, "value $exp is out of range")
     }
 
-    fun castError(location: Location, target: Type, current: Type): String {
-        return e(location, "invalid cast from `$current` to `$target`")
+    fun voidVar(location: Location, name: String): String {
+        return e(location, "variable `$name` declared with type `void`")
     }
 }

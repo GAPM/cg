@@ -16,19 +16,27 @@
 
 package sron.cgpl.type
 
+import sron.cgpl.compiler.ast.Operator
+
 object OpTable {
-    val arithmetic = listOf("+", "-", "*", "/", "%")
-    val comparison = listOf("==", "<=", ">=", "!=", ">", "<")
-    val sign = listOf("+", "-")
-    val logic = listOf("&&", "||")
+    val arithmetic = listOf(Operator.ADD, Operator.SUB, Operator.MUL,
+            Operator.DIV, Operator.MOD)
 
-    private data class BinOp(val ops: List<String>, val lhs: Type, val rhs: Type, val result: Type) {
+    val comparison = listOf(Operator.EQUAL, Operator.LESS_EQUAL,
+            Operator.HIGHER_EQUAL, Operator.NOT_EQUAL, Operator.HIGHER,
+            Operator.LESS)
 
-        constructor(ops: List<String>, type: Type) : this(ops, type, type, type)
+    val sign = listOf(Operator.PLUS, Operator.MINUS)
 
-        constructor(ops: List<String>, type: Type, ret: Type) : this(ops, type, type, ret)
+    val logic = listOf(Operator.AND, Operator.OR)
 
-        fun match(operation: Triple<String, Type, Type>): Boolean {
+    private data class BinOp(val ops: List<Operator>, val lhs: Type, val rhs: Type, val result: Type) {
+
+        constructor(ops: List<Operator>, type: Type) : this(ops, type, type, type)
+
+        constructor(ops: List<Operator>, type: Type, ret: Type) : this(ops, type, type, ret)
+
+        fun match(operation: Triple<Operator, Type, Type>): Boolean {
             val (op, lhs, rhs) = operation
 
             var opMatches = ops.contains(op)
@@ -38,11 +46,11 @@ object OpTable {
         }
     }
 
-    private data class UnaryOp(val ops: List<String>, val exp: Type, val result: Type) {
+    private data class UnaryOp(val ops: List<Operator>, val exp: Type, val result: Type) {
 
-        constructor(ops: List<String>, type: Type) : this(ops, type, type)
+        constructor(ops: List<Operator>, type: Type) : this(ops, type, type)
 
-        fun match(operation: Pair<String, Type>): Boolean {
+        fun match(operation: Pair<Operator, Type>): Boolean {
             val (op, exp) = operation
             var result = true
 
@@ -64,8 +72,8 @@ object OpTable {
             BinOp(comparison, Type.string, Type.bool),
             BinOp(comparison, Type.bool),
 
-            BinOp(listOf("+"), Type.char, Type.string, Type.string),
-            BinOp(listOf("+"), Type.char, Type.char, Type.string),
+            BinOp(listOf(Operator.ADD), Type.char, Type.string, Type.string),
+            BinOp(listOf(Operator.ADD), Type.char, Type.char, Type.string),
 
             BinOp(logic, Type.bool)
     )
@@ -74,16 +82,16 @@ object OpTable {
             UnaryOp(sign, Type.int),
             UnaryOp(sign, Type.float),
 
-            UnaryOp(listOf("!"), Type.bool)
+            UnaryOp(listOf(Operator.NOT), Type.bool)
     )
 
-    fun checkBinaryOp(op: String, lhs: Type, rhs: Type): Type {
+    fun checkBinaryOp(op: Operator, lhs: Type, rhs: Type): Type {
         val operations = binOps.filter { it.match(Triple(op, lhs, rhs)) }
         val operation = operations.firstOrNull()
         return operation?.result ?: Type.ERROR
     }
 
-    fun checkUnaryOp(op: String, x: Type): Type {
+    fun checkUnaryOp(op: Operator, x: Type): Type {
         val operation = unaryOps.filter { it.match(Pair(op, x)) }.firstOrNull()
         return operation?.result ?: Type.ERROR
     }
