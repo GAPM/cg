@@ -17,28 +17,30 @@
 package sron.cg.runtime.graph
 
 import org.junit.Test
-import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class GraphTest {
     @Test
     fun test() {
-        assertFailsWith(IllegalArgumentException::class) {
-            Graph(3, "Uno", "Dos")
-        }
+        val g = Graph("uno", "dos", "tres", "cuatro", "cinco")
 
-        val nonLabeledGraph = Graph(5)
-        val labeledGraph = Graph(5, "uno", "dos", "tres", "cuatro", "cinco")
+        assertTrue(g.containsVertex("dos"))
+        assertFalse(g.containsVertex("seis"))
 
-        assertTrue(nonLabeledGraph.hasNode(4))
-        assertFailsWith(UnsupportedOperationException::class) {
-            nonLabeledGraph.hasNode("uno")
-        }
+        g.addEdge("uno", "cuatro")
+        g.addEdge("tres", "cinco")
+        g.addEdge("cinco", "uno")
 
-        assertTrue(labeledGraph.hasNode("dos"))
-        assertFalse(labeledGraph.hasNode("seis"))
-        assertTrue(labeledGraph.hasNode(4))
-        assertFalse(labeledGraph.hasNode(6))
+        g.removeEdge("uno", "cuatro")
+
+        assertFalse(g.containsEdge("uno", "cuatro"))
+        assertTrue(g.containsEdge("tres", "cinco"))
+        assertTrue(g.containsEdge("cinco", "uno"))
+
+        g.removeAllEdges()
+
+        assertFalse(g.containsEdge("tres", "cinco"))
+        assertFalse(g.containsEdge("cinco", "uno"))
     }
 }

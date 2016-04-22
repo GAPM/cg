@@ -17,39 +17,53 @@
 package sron.cg.runtime.graph
 
 import sron.cg.runtime.collections.BitMatrix
+import sron.cg.runtime.collections.Trie
 
-class Graph(val nodes: Int, vararg labels: String) {
-    val adj: BitMatrix
-    val labelsMap = mutableMapOf<Int, String>()
-    private var labelled = false
+class Graph(vararg labels: String) {
+    private val adj: BitMatrix
+    private var id = 0
+    private val labelsMap = Trie()
 
     init {
-        adj = BitMatrix(nodes, nodes)
+        adj = BitMatrix(labels.size, labels.size)
 
-        if (labels.size != 0) {
-            if (labels.size != nodes) {
-                throw IllegalArgumentException("Not enough labels for $nodes node(s)")
-            }
-
-            labelled = true
-            var id = 0
-
-            for (label in labels) {
-                labelsMap[id++] = label
-            }
+        for (label in labels) {
+            labelsMap[label] = id++
         }
     }
 
-    fun hasNode(label: String): Boolean {
-        if (!labelled) {
-            throw UnsupportedOperationException("Can't find label in unlabelled graph")
+    fun containsVertex(label: String) = labelsMap.hasKey(label)
+
+    fun containsEdge(source: String, target: String): Boolean {
+        val sourceId = labelsMap[source] ?: -1
+        val targetId = labelsMap[target] ?: -1
+
+        if (sourceId != -1 && targetId != -1) {
+            return adj[sourceId, targetId]
         }
 
-        val v = labelsMap.values.find { it == label }
-        return v != null
+        return false
     }
 
-    fun hasNode(id: Int): Boolean {
-        return id < nodes
+    fun addEdge(source: String, target: String) {
+        val sourceId = labelsMap[source] ?: -1
+        val targetId = labelsMap[target] ?: -1
+
+        if (sourceId != -1 && targetId != -1) {
+            adj[sourceId, targetId] = true
+            adj[targetId, sourceId] = true
+        }
     }
+
+    fun removeEdge(source: String, target: String) {
+        val sourceId = labelsMap[source] ?: -1
+        val targetId = labelsMap[target] ?: -1
+
+        if (sourceId != -1 && targetId != -1) {
+            adj[sourceId, targetId] = false
+            adj[targetId, sourceId] = false
+        }
+    }
+
+    fun removeAllEdges() = adj.reset()
 }
