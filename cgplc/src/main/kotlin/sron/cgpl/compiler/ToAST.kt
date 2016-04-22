@@ -210,7 +210,7 @@ class ToAST : CGPLBaseListener() {
                 "&&=" -> Operator.AND
                 else -> Operator.OR
             }
-            assign = Assignment(lhs, BinaryExp(op, lhs, rhs, location), location)
+            assign = Assignment(lhs, BinaryExpr(op, lhs, rhs, location), location)
         }
 
         result.put(ctx, assign)
@@ -347,7 +347,7 @@ class ToAST : CGPLBaseListener() {
             Operator.MOD
         }
 
-        val binaryExpr = BinaryExp(op, lhs, rhs, location)
+        val binaryExpr = BinaryExpr(op, lhs, rhs, location)
         result.put(ctx, binaryExpr)
     }
 
@@ -364,7 +364,7 @@ class ToAST : CGPLBaseListener() {
             Operator.SUB
         }
 
-        val binaryExpr = BinaryExp(op, lhs, rhs, location)
+        val binaryExpr = BinaryExpr(op, lhs, rhs, location)
         result.put(ctx, binaryExpr)
     }
 
@@ -385,7 +385,7 @@ class ToAST : CGPLBaseListener() {
             Operator.HIGHER_EQUAL
         }
 
-        val binaryExpr = BinaryExp(op, lhs, rhs, location)
+        val binaryExpr = BinaryExpr(op, lhs, rhs, location)
         result.put(ctx, binaryExpr)
     }
 
@@ -402,7 +402,7 @@ class ToAST : CGPLBaseListener() {
             Operator.NOT_EQUAL
         }
 
-        val binaryExpr = BinaryExp(op, lhs, rhs, location)
+        val binaryExpr = BinaryExpr(op, lhs, rhs, location)
         result.put(ctx, binaryExpr)
     }
 
@@ -414,7 +414,7 @@ class ToAST : CGPLBaseListener() {
         val op = Operator.AND
         val location = Location(ctx.start)
 
-        val binaryExpr = BinaryExp(op, lhs, rhs, location)
+        val binaryExpr = BinaryExpr(op, lhs, rhs, location)
         result.put(ctx, binaryExpr)
     }
 
@@ -426,7 +426,7 @@ class ToAST : CGPLBaseListener() {
         val op = Operator.OR
         val location = Location(ctx.start)
 
-        val binaryExpr = BinaryExp(op, lhs, rhs, location)
+        val binaryExpr = BinaryExpr(op, lhs, rhs, location)
         result.put(ctx, binaryExpr)
     }
 

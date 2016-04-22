@@ -18,5 +18,5 @@ package sron.cgpl.compiler.ast
 
 import sron.cgpl.symbol.Location
 
-class BinaryExp(val operator: Operator, val lhs: Expr, val rhs: Expr,
-                location: Location) : Expr(location)
+class BinaryExpr(val operator: Operator, val lhs: Expr, val rhs: Expr,
+                 location: Location) : Expr(location)
