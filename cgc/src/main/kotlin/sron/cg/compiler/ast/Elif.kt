@@ -14,4 +14,10 @@
  * limitations under the License.
  */
 
-include ':cgrt', ':cgc'
+package sron.cg.compiler.ast
+
+import sron.cg.symbol.Location
+
+class Elif(val cond: Expr, val stmts: List<Stmt>, location: Location) : ASTNode(location) {
+    var returns = false
+}

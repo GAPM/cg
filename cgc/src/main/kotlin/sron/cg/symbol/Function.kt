@@ -14,4 +14,11 @@
  * limitations under the License.
  */
 
-include ':cgrt', ':cgc'
+package sron.cg.symbol
+
+import sron.cg.type.Type
+
+class Function(name: String, scope: String, val type: Type, location: Location,
+               vararg val args: Variable) : Symbol(name, scope, location) {
+    override val symType: SymType = SymType.FUNC
+}

@@ -14,4 +14,24 @@
  * limitations under the License.
  */
 
-include ':cgrt', ':cgc'
+package sron.cg.compiler
+
+import sron.cg.compiler.internal.CGPLParser
+import sron.cg.compiler.internal.GrpErrorListener
+import sron.cg.util.Logger
+import kotlin.system.measureTimeMillis
+
+private var id = 0
+
+fun CGPLParser.withFileName(fileName: String): CGPLParser {
+    this.removeErrorListeners()
+    this.addErrorListener(GrpErrorListener(fileName))
+    return this
+}
+
+inline fun measureTime(label: String, block: () -> Unit) {
+    val ms = measureTimeMillis(block)
+    Logger.debug("$label: $ms ms")
+}
+
+fun nextId(): Int = id++

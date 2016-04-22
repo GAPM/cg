@@ -14,4 +14,10 @@
  * limitations under the License.
  */
 
-include ':cgrt', ':cgc'
+package sron.cg.compiler.ast
+
+import sron.cg.symbol.Location
+import sron.cg.type.Type
+
+class VarDec(val name: String, val type: Type, val expr: Expr?,
+             location: Location) : Stmt(location)

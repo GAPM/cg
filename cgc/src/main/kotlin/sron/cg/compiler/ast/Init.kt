@@ -14,4 +14,12 @@
  * limitations under the License.
  */
 
-include ':cgrt', ':cgc'
+package sron.cg.compiler.ast
+
+import sron.cg.symbol.Location
+import java.util.*
+
+class Init : ASTNode(Location(0)) {
+    val glVarDec = ArrayList<GlVarDec>()
+    val funcDef = ArrayList<FuncDef>()
+}

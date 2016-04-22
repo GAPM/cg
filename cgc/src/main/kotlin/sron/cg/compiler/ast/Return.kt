@@ -14,4 +14,12 @@
  * limitations under the License.
  */
 
-include ':cgrt', ':cgc'
+package sron.cg.compiler.ast
+
+import sron.cg.symbol.Location
+
+class Return(val expr: Expr?, location: Location) : Stmt(location) {
+    init {
+        returns = true
+    }
+}

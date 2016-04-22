@@ -14,4 +14,9 @@
  * limitations under the License.
  */
 
-include ':cgrt', ':cgc'
+package sron.cg.compiler.ast
+
+import sron.cg.symbol.Location
+import sron.cg.type.Type
+
+class Arg(val name: String, val type: Type, location: Location) : ASTNode(location)

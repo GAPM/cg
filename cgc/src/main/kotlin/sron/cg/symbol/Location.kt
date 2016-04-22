@@ -14,4 +14,15 @@
  * limitations under the License.
  */
 
-include ':cgrt', ':cgc'
+package sron.cg.symbol
+
+import org.antlr.v4.runtime.Token
+import org.antlr.v4.runtime.tree.TerminalNode
+
+class Location(val line: Int) {
+    constructor(token: Token) : this(token.line)
+
+    constructor(tn: TerminalNode) : this(tn.symbol)
+
+    override fun toString(): String = "$line"
+}

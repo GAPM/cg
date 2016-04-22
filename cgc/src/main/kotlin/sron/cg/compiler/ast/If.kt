@@ -14,4 +14,9 @@
  * limitations under the License.
  */
 
-include ':cgrt', ':cgc'
+package sron.cg.compiler.ast
+
+import sron.cg.symbol.Location
+
+class If(val cond: Expr, val stmts: List<Stmt>,
+         val elifs: List<Elif>, val elsec: Else?, location: Location) : Stmt(location)

@@ -14,4 +14,10 @@
  * limitations under the License.
  */
 
-include ':cgrt', ':cgc'
+package sron.cg.compiler.ast
+
+import sron.cg.symbol.Location
+
+abstract class Stmt(location: Location) : ASTNode(location) {
+    var returns = false
+}

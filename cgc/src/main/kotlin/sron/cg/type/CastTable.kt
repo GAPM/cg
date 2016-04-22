@@ -14,4 +14,19 @@
  * limitations under the License.
  */
 
-include ':cgrt', ':cgc'
+package sron.cg.type
+
+object CastTable {
+    private val numeric =
+            listOf(Type.int, Type.float)
+
+    private val tab = mapOf(
+            Type.int to numeric,
+            Type.float to numeric,
+            Type.bool to numeric,
+            Type.char to listOf(Type.string),
+            Type.string to listOf()
+    )
+
+    fun check(type1: Type, type2: Type) = tab[type1]?.contains(type2) ?: false
+}

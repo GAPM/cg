@@ -14,4 +14,9 @@
  * limitations under the License.
  */
 
-include ':cgrt', ':cgc'
+package sron.cg.symbol
+
+enum class SymType {
+    VAR,
+    FUNC
+}

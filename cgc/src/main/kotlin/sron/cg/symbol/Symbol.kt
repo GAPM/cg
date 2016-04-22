@@ -14,4 +14,9 @@
  * limitations under the License.
  */
 
-include ':cgrt', ':cgc'
+package sron.cg.symbol
+
+abstract class Symbol(val name: String, val scope: String,
+                      val location: Location) {
+    abstract val symType: SymType
+}

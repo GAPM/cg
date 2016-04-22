@@ -14,4 +14,9 @@
  * limitations under the License.
  */
 
-include ':cgrt', ':cgc'
+package sron.cg.compiler
+
+class Parameters() {
+    var justCheck = false
+    var output = ""
+}

@@ -14,4 +14,8 @@
  * limitations under the License.
  */
 
-include ':cgrt', ':cgc'
+package sron.cg.compiler.ast
+
+import sron.cg.symbol.Location
+
+class UnaryExpr(val operator: Operator, val expr: Expr, location: Location) : Expr(location)

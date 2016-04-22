@@ -14,4 +14,9 @@
  * limitations under the License.
  */
 
-include ':cgrt', ':cgc'
+package sron.cg.compiler.ast
+
+import sron.cg.symbol.Location
+import sron.cg.type.Type
+
+class Cast(override var type: Type, val expr: Expr, location: Location) : Atom(location)

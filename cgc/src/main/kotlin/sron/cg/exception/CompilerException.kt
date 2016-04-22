@@ -14,4 +14,6 @@
  * limitations under the License.
  */
 
-include ':cgrt', ':cgc'
+package sron.cg.exception
+
+open class CompilerException(msg: String) : Exception(msg)

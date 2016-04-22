@@ -14,4 +14,10 @@
  * limitations under the License.
  */
 
-include ':cgrt', ':cgc'
+package sron.cg.compiler.ast
+
+import sron.cg.symbol.Location
+import sron.cg.type.Type
+
+class GlVarDec(val name: String, val type: Type, val exp: GlExpr?,
+               location: Location) : ASTNode(location)

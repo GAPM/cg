@@ -14,4 +14,9 @@
  * limitations under the License.
  */
 
-include ':cgrt', ':cgc'
+package sron.cg.compiler.ast
+
+import sron.cg.symbol.Location
+
+class For(val initial: Assignment, val cond: Expr, val mod: Assignment,
+          val stmts: List<Stmt>, location: Location) : Stmt(location)

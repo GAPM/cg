@@ -14,4 +14,8 @@
  * limitations under the License.
  */
 
-include ':cgrt', ':cgc'
+package sron.cg.compiler.ast
+
+import sron.cg.symbol.Location
+
+open class Atom(location: Location) : Expr(location)

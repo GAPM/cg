@@ -14,4 +14,7 @@
  * limitations under the License.
  */
 
-include ':cgrt', ':cgc'
+package sron.cg.exception
+
+class ParsingException :
+        CompilerException("there were errors during parsing. Won't continue.")

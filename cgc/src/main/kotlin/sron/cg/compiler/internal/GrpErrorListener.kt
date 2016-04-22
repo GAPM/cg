@@ -14,4 +14,17 @@
  * limitations under the License.
  */
 
-include ':cgrt', ':cgc'
+package sron.cg.compiler.internal
+
+import org.antlr.v4.runtime.BaseErrorListener
+import org.antlr.v4.runtime.RecognitionException
+import org.antlr.v4.runtime.Recognizer
+import sron.cg.util.Logger
+
+class GrpErrorListener(val fileName: String) : BaseErrorListener() {
+    override fun syntaxError(recognizer: Recognizer<*, *>, offendingSymbol: Any,
+                             line: Int, charPositionInLine: Int, msg: String,
+                             e: RecognitionException?) {
+        Logger.error("$fileName:$line: $msg")
+    }
+}

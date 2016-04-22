@@ -14,4 +14,7 @@
  * limitations under the License.
  */
 
-include ':cgrt', ':cgc'
+package sron.cg.exception
+
+class ErrorsInCodeException :
+        CompilerException("Error(s) found in code. Won't continue")

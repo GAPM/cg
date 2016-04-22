@@ -14,4 +14,12 @@
  * limitations under the License.
  */
 
-include ':cgrt', ':cgc'
+package sron.cg.compiler.ast
+
+import sron.cg.symbol.Location
+import sron.cg.type.Type
+
+open class Expr(location: Location) : Stmt(location) {
+    open var type = Type.ERROR
+    open var assignable = false
+}

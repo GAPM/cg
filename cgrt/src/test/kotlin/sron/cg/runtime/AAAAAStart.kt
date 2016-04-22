@@ -14,4 +14,25 @@
  * limitations under the License.
  */
 
-include ':cgrt', ':cgc'
+package sron.cg.runtime
+
+import org.junit.Test
+import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
+
+/**
+ * Dummy test created to be executed before any other test in order to "heat up"
+ * the JVM.
+ */
+class AAAAAStart {
+    @Test
+    fun test() {
+        assertTrue(true)
+        assertFalse(false)
+        assertFailsWith(NotImplementedError::class) {
+            throw NotImplementedError("Error")
+        }
+        Thread.sleep(1000)
+    }
+}

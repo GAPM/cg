@@ -14,4 +14,14 @@
  * limitations under the License.
  */
 
-include ':cgrt', ':cgc'
+package sron.cg.runtime.collections
+
+class BitMatrix(val rows: Int, val columns: Int) {
+    private val array = BitArray(rows * columns)
+
+    operator fun get(r: Int, c: Int) = array[r * rows + c]
+
+    operator fun set(r: Int, c: Int, value: Boolean) {
+        array[r * rows + c] = value
+    }
+}

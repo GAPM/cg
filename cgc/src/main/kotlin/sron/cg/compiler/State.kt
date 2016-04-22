@@ -14,4 +14,12 @@
  * limitations under the License.
  */
 
-include ':cgrt', ':cgc'
+package sron.cg.compiler
+
+import sron.cg.symbol.SymbolTable
+import java.util.*
+
+class State(val parameters: Parameters) {
+    val errors = ArrayList<String>()
+    val symbolTable = SymbolTable()
+}

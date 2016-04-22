@@ -14,4 +14,8 @@
  * limitations under the License.
  */
 
-include ':cgrt', ':cgc'
+package sron.cg.compiler.ast
+
+import sron.cg.symbol.Location
+
+class FunctionCall(val name: String, val expr: List<Expr>, location: Location) : Atom(location)
