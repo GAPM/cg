@@ -68,12 +68,8 @@ object OpTable {
             BinOp(comparison, Type.int, Type.bool),
             BinOp(comparison, Type.float, Type.bool),
 
-            BinOp(comparison, Type.char, Type.bool),
             BinOp(comparison, Type.string, Type.bool),
             BinOp(comparison, Type.bool),
-
-            BinOp(listOf(Operator.ADD), Type.char, Type.string, Type.string),
-            BinOp(listOf(Operator.ADD), Type.char, Type.char, Type.string),
 
             BinOp(logic, Type.bool)
     )

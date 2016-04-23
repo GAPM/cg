@@ -24,7 +24,6 @@ object CastTable {
             Type.int to numeric,
             Type.float to numeric,
             Type.bool to numeric,
-            Type.char to listOf(Type.string),
             Type.string to listOf()
     )
 

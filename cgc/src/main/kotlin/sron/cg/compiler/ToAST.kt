@@ -78,10 +78,6 @@ class ToAST : CGPLBaseListener() {
             type = Type.bool
         }
 
-        if (ctx.CharLit() != null) {
-            type = Type.char
-        }
-
         if (ctx.IntLit() != null) {
             type = Type.int
         }
@@ -248,16 +244,6 @@ class ToAST : CGPLBaseListener() {
         val text = ctx.BoolLit().text
         val location = Location(ctx.start)
         val literal = Literal(Type.bool, text, location)
-
-        result.put(ctx, literal)
-    }
-
-    override fun exitCharacter(ctx: CharacterContext) {
-        super.exitCharacter(ctx)
-
-        val text = ctx.CharLit().text
-        val location = Location(ctx.start)
-        val literal = Literal(Type.char, text, location)
 
         result.put(ctx, literal)
     }

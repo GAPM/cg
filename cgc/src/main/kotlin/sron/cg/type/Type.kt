@@ -26,7 +26,6 @@ enum class Type {
     bool,
     void,
     string,
-    char,
 
     ERROR
 }
@@ -41,7 +40,6 @@ fun CGPLParser.TypeContext.toCGPLType(): Type {
         CGPLLexer.BOOL -> Type.bool
         CGPLLexer.VOID -> Type.void
         CGPLLexer.STRING -> Type.string
-        CGPLLexer.CHAR -> Type.char
         else -> Type.ERROR
     }
 }
@@ -52,7 +50,6 @@ fun Type.toJVMDescriptor() = when (this) {
     Type.bool -> "Z"
     Type.void -> "V"
     Type.string -> "Ljava/lang/String"
-    Type.char -> "C"
 
     else -> ""
 }

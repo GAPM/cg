@@ -23,7 +23,6 @@ AND_ASSIGN : '&&=' ;
 BANG : '!' ;
 BOOL : 'bool' ;
 BREAK : 'break' ;
-CHAR : 'char' ;
 COMMA : ',' ;
 CONTINUE : 'continue' ;
 DIV : '/' ;
@@ -57,6 +56,7 @@ RPAREN : ')' ;
 SEMI : ';' ;
 STRING : 'string' ;
 SUB : '-' ;
+SUB_ASSIGN : '-=' ;
 VAR : 'var' ;
 VOID : 'void' ;
 WHILE : 'while' ;
@@ -83,13 +83,11 @@ FloatLit: Decimals '.' Decimals Exponent?
 
 fragment Escape: '\\' [tbnr"'\\];
 fragment Char: ~[\\'"];
-CharLit: '\'' (Escape | Char) '\'';
 
 StringLit: '"' (Escape | Char)* '"';
 
 type: 'int'
     | 'float'
-    | 'char'
     | 'string'
     | 'void'
     | 'bool'
@@ -101,7 +99,6 @@ argList: (arg (',' arg)*)?;
 atom: IntLit            #Integer
     | FloatLit          #Float
     | BoolLit           #Boolean
-    | CharLit           #Character
     | StringLit         #String
     | Identifier        #VarName
     | funcCall          #FunctionCall
@@ -120,7 +117,7 @@ expr: atom                                #Atomic
     ;
 exprList: (expr (',' expr)*)? ;
 
-glExpr: IntLit | FloatLit | BoolLit | CharLit | StringLit ;
+glExpr: IntLit | FloatLit | BoolLit | StringLit ;
 glVarDec: 'var' Identifier type ('=' glExpr)? ;
 varDec: 'var' Identifier type ('=' expr)? ;
 
