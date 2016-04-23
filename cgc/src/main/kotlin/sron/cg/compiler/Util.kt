@@ -16,14 +16,14 @@
 
 package sron.cg.compiler
 
-import sron.cg.compiler.internal.CGPLParser
+import sron.cg.compiler.internal.CGParser
 import sron.cg.compiler.internal.GrpErrorListener
 import sron.cg.util.Logger
 import kotlin.system.measureTimeMillis
 
 private var id = 0
 
-fun CGPLParser.withFileName(fileName: String): CGPLParser {
+fun CGParser.withFileName(fileName: String): CGParser {
     this.removeErrorListeners()
     this.addErrorListener(GrpErrorListener(fileName))
     return this

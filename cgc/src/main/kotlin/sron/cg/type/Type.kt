@@ -17,8 +17,8 @@
 package sron.cg.type
 
 import org.antlr.v4.runtime.tree.TerminalNode
-import sron.cg.compiler.internal.CGPLLexer
-import sron.cg.compiler.internal.CGPLParser
+import sron.cg.compiler.internal.CGLexer
+import sron.cg.compiler.internal.CGParser
 
 enum class Type {
     int,
@@ -30,16 +30,16 @@ enum class Type {
     ERROR
 }
 
-fun CGPLParser.TypeContext.toCGPLType(): Type {
+fun CGParser.TypeContext.toCGType(): Type {
     val tn = this.getChild(0) as TerminalNode
     val t = tn.symbol.type
 
     return when (t) {
-        CGPLLexer.INT -> Type.int
-        CGPLLexer.FLOAT -> Type.float
-        CGPLLexer.BOOL -> Type.bool
-        CGPLLexer.VOID -> Type.void
-        CGPLLexer.STRING -> Type.string
+        CGLexer.INT -> Type.int
+        CGLexer.FLOAT -> Type.float
+        CGLexer.BOOL -> Type.bool
+        CGLexer.VOID -> Type.void
+        CGLexer.STRING -> Type.string
         else -> Type.ERROR
     }
 }

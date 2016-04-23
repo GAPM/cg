@@ -18,14 +18,14 @@ package sron.cg.compiler
 
 import org.antlr.v4.runtime.tree.ParseTreeProperty
 import sron.cg.compiler.ast.*
-import sron.cg.compiler.internal.CGPLBaseListener
-import sron.cg.compiler.internal.CGPLParser.*
+import sron.cg.compiler.internal.CGBaseListener
+import sron.cg.compiler.internal.CGParser.*
 import sron.cg.symbol.Location
 import sron.cg.type.Type
-import sron.cg.type.toCGPLType
+import sron.cg.type.toCGType
 import java.util.*
 
-class ToAST : CGPLBaseListener() {
+class ToAST : CGBaseListener() {
     private val result = ParseTreeProperty<ASTNode>()
     private var initCtx: InitContext? = null
 
@@ -54,7 +54,7 @@ class ToAST : CGPLBaseListener() {
         super.exitGlVarDec(ctx)
 
         val name = ctx.Identifier().text
-        val type = ctx.type().toCGPLType()
+        val type = ctx.type().toCGType()
         var expr: GlExpr? = null
         val location = Location(ctx.Identifier())
 
@@ -98,7 +98,7 @@ class ToAST : CGPLBaseListener() {
         super.exitFuncDef(ctx)
 
         val name = ctx.Identifier().text
-        val type = ctx.type()?.toCGPLType() ?: Type.void
+        val type = ctx.type()?.toCGType() ?: Type.void
         val args = ArrayList<Arg>()
         val stmts = ArrayList<Stmt>()
         val location = Location(ctx.Identifier())
@@ -122,7 +122,7 @@ class ToAST : CGPLBaseListener() {
         super.exitArg(ctx)
 
         val name = ctx.Identifier().text
-        val type = ctx.type().toCGPLType()
+        val type = ctx.type().toCGType()
         val location = Location(ctx.Identifier())
 
         val arg = Arg(name, type, location)
@@ -172,7 +172,7 @@ class ToAST : CGPLBaseListener() {
         super.exitVarDec(ctx)
 
         val name = ctx.Identifier().text
-        val type = ctx.type().toCGPLType()
+        val type = ctx.type().toCGType()
         var expr: Expr? = null
         val location = Location(ctx.Identifier())
 
@@ -287,7 +287,7 @@ class ToAST : CGPLBaseListener() {
     override fun exitCast(ctx: CastContext) {
         super.exitCast(ctx)
 
-        val type = ctx.type().toCGPLType()
+        val type = ctx.type().toCGType()
         val expr = result.get(ctx.expr()) as Expr
         val location = Location(ctx.start)
 

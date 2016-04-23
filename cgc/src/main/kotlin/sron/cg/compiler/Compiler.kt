@@ -20,8 +20,8 @@ import org.antlr.v4.runtime.ANTLRInputStream
 import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.tree.ParseTreeWalker
 import sron.cg.compiler.ast.Init
-import sron.cg.compiler.internal.CGPLLexer
-import sron.cg.compiler.internal.CGPLParser
+import sron.cg.compiler.internal.CGLexer
+import sron.cg.compiler.internal.CGParser
 import sron.cg.compiler.phase.Globals
 import sron.cg.compiler.phase.Structure
 import sron.cg.compiler.phase.Types
@@ -35,14 +35,14 @@ class Compiler(fileName: String, val parameters: Parameters) {
 
     private val state = State(parameters)
 
-    lateinit private var parser: CGPLParser
+    lateinit private var parser: CGParser
 
     init {
         file.inputStream().use {
             val input = ANTLRInputStream(it)
-            val lexer = CGPLLexer(input)
+            val lexer = CGLexer(input)
             val tokens = CommonTokenStream(lexer)
-            parser = CGPLParser(tokens).withFileName(file.name)
+            parser = CGParser(tokens).withFileName(file.name)
         }
     }
 
