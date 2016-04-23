@@ -59,13 +59,13 @@ class Compiler(fileName: String, val parameters: Parameters) {
         val converter = ToAST()
         val ast: Init
 
-        measureTime("To AST", { walker.walk(converter, tree) })
+        measureTime("To AST") { walker.walk(converter, tree) }
 
         ast = converter.getResult()
 
-        measureTime("Globals", { Globals(state, ast) })
-        measureTime("Structure", { Structure(state, ast) })
-        measureTime("Types", { Types(state, ast) })
+        measureTime("Globals") { Globals(state, ast) }
+        measureTime("Structure") { Structure(state, ast) }
+        measureTime("Types") { Types(state, ast) }
 
         if (state.errors.size > 0) {
             state.errors.forEach { Logger.error(it) }

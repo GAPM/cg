@@ -21,7 +21,7 @@ import org.antlr.v4.runtime.RecognitionException
 import org.antlr.v4.runtime.Recognizer
 import sron.cg.util.Logger
 
-class GrpErrorListener(val fileName: String) : BaseErrorListener() {
+class CGErrorListener(val fileName: String) : BaseErrorListener() {
     override fun syntaxError(recognizer: Recognizer<*, *>, offendingSymbol: Any,
                              line: Int, charPositionInLine: Int, msg: String,
                              e: RecognitionException?) {

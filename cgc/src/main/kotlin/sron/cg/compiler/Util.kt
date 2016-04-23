@@ -17,7 +17,7 @@
 package sron.cg.compiler
 
 import sron.cg.compiler.internal.CGParser
-import sron.cg.compiler.internal.GrpErrorListener
+import sron.cg.compiler.internal.CGErrorListener
 import sron.cg.util.Logger
 import kotlin.system.measureTimeMillis
 
@@ -25,7 +25,7 @@ private var id = 0
 
 fun CGParser.withFileName(fileName: String): CGParser {
     this.removeErrorListeners()
-    this.addErrorListener(GrpErrorListener(fileName))
+    this.addErrorListener(CGErrorListener(fileName))
     return this
 }
 
