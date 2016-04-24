@@ -20,10 +20,10 @@ import org.junit.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class GraphTest {
+class DiGraphTest {
     @Test
     fun test() {
-        val g = Graph("1", "2", "3", "4", "5")
+        val g = DiGraph("1", "2", "3", "4", "5")
 
         assertTrue(g.containsVertex("2"))
         assertFalse(g.containsVertex("6"))
@@ -36,7 +36,7 @@ class GraphTest {
 
         assertFalse(g.containsEdge("1", "4"))
         assertTrue(g.containsEdge("3", "5"))
-        assertTrue(g.containsEdge("5", "3"))
+        assertFalse(g.containsEdge("5", "3"))
         assertTrue(g.containsEdge("5", "1"))
 
         g.removeAllEdges()

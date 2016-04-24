@@ -19,7 +19,7 @@ package sron.cg.runtime.graph
 import sron.cg.runtime.collections.BitMatrix
 import sron.cg.runtime.collections.Trie
 
-class Graph(private vararg val labels: String) : IGraph {
+class DiGraph(private vararg val labels: String) : IGraph {
     private val adj: BitMatrix
     private val labelsMap = Trie()
 
@@ -45,8 +45,8 @@ class Graph(private vararg val labels: String) : IGraph {
         return false
     }
 
-    override fun addVertex(label: String): Graph {
-        val new = Graph(*labels, label)
+    override fun addVertex(label: String): DiGraph {
+        val new = DiGraph(*labels, label)
 
         for (i in 0..this.labels.size) {
             for (j in 0..this.labels.size) {
@@ -65,7 +65,6 @@ class Graph(private vararg val labels: String) : IGraph {
 
         if (sourceId != -1 && targetId != -1) {
             adj[sourceId, targetId] = true
-            adj[targetId, sourceId] = true
         }
     }
 
@@ -75,7 +74,6 @@ class Graph(private vararg val labels: String) : IGraph {
 
         if (sourceId != -1 && targetId != -1) {
             adj[sourceId, targetId] = false
-            adj[targetId, sourceId] = false
         }
     }
 
