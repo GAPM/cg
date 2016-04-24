@@ -24,6 +24,7 @@ import sron.cg.compiler.ast.Init
 import sron.cg.symbol.Function
 import sron.cg.symbol.SymType
 import sron.cg.symbol.Variable
+import sron.cg.type.Type
 
 object Globals {
 
@@ -36,6 +37,21 @@ object Globals {
 
         for (fd in funcDef) {
             fd.globals(s)
+        }
+
+        var noEntry = false
+        val qry = s.symbolTable.getSymbol("main", SymType.FUNC)
+        when (qry) {
+            null -> noEntry = true
+            is Function -> {
+                if (qry.type != Type.void) {
+                    noEntry = true
+                }
+            }
+        }
+
+        if (noEntry) {
+            s.errors += Error.noEntryPoint(location)
         }
     }
 

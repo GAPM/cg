@@ -47,9 +47,23 @@ object Types {
             return
         }
 
-        exp?.let {
-            if (it.type != type) {
-                s.errors += Error.badAssignment(location, it.type, type)
+        if (exp != null) {
+            if (exp.type != type) {
+                s.errors += Error.badAssignment(location, exp.type, type)
+            }
+
+            if (exp.type == Type.int) {
+                try {
+                    exp.text.toInt()
+                } catch (e: NumberFormatException) {
+                    s.errors += Error.outOfRange(exp.location, exp.text)
+                }
+            } else if (exp.type == Type.float) {
+                try {
+                    exp.text.toFloat()
+                } catch (e: NumberFormatException) {
+                    s.errors += Error.outOfRange(exp.location, exp.text)
+                }
             }
         }
     }

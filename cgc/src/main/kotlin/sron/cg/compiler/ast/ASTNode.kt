@@ -18,6 +18,4 @@ package sron.cg.compiler.ast
 
 import sron.cg.symbol.Location
 
-abstract class ASTNode(val location: Location) {
-    lateinit var parent: ASTNode
-}
+abstract class ASTNode(val location: Location)
