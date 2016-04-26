@@ -30,13 +30,13 @@ class BitArrayTest {
         assertTrue(s == 100)
 
         for (i in 0..s - 1) {
-            if (i >= 50) {
+            if (i % 2 == 0) {
                 ba[i] = true
             }
         }
 
         for (i in 0..s - 1) {
-            if (i >= 50) {
+            if (i % 2 == 0) {
                 assertTrue(ba[i])
             } else {
                 assertFalse(ba[i])
@@ -48,7 +48,7 @@ class BitArrayTest {
             assertFalse(ba[i])
         }
 
-        assertFailsWith(IndexOutOfBoundsException::class) {
+        assertFailsWith<IndexOutOfBoundsException> {
             ba[128]
         }
     }

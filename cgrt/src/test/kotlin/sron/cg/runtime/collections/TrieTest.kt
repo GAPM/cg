@@ -58,8 +58,7 @@ class TrieTest {
         assertTrue(values.contains(7))
 
         val pairs = trie.pairs()
-        for (pair in pairs) {
-            val (key, value) = pair
+        for ((key, value) in pairs) {
             assertTrue(trie[key] == value)
         }
     }

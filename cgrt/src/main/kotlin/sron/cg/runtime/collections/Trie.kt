@@ -22,7 +22,7 @@ class Trie {
     private data class TrieNode(val char: Char, var value: Int? = null) {
         val children = ArrayList<TrieNode>()
 
-        fun getChild(char: Char): TrieNode? {
+        operator fun get(char: Char): TrieNode? {
             children.forEach {
                 if (char == it.char) {
                     return it
@@ -37,18 +37,19 @@ class Trie {
     operator fun set(key: String, value: Int) {
         require(key.length != 0, { "The empty string is not a valid key" })
 
-        var k = key;
+        var l = key.length
         var node: TrieNode = root
         var child: TrieNode?
+        var i = 0
 
-        while (k.length > 0) {
-            child = node.getChild(k[0])
+        while (i < l) {
+            child = node[key[i]]
             if (child == null) {
-                child = TrieNode(k[0])
+                child = TrieNode(key[i])
                 node.children.add(child)
             }
             node = child
-            k = k.drop(1)
+            i++
         }
 
         node.value = value
@@ -57,17 +58,18 @@ class Trie {
     operator fun get(key: String): Int? {
         require(key.length != 0, { "The empty string is not a valid key" })
 
-        var k = key
-        var node = root;
+        var l = key.length
+        var node = root
         var child: TrieNode?
+        var i = 0
 
-        while (k.length > 0) {
-            child = node.getChild(k[0])
+        while (i < l) {
+            child = node[key[i]]
             if (child == null) {
                 return null
             }
             node = child
-            k = k.drop(1)
+            i++
         }
 
         return node.value
@@ -76,17 +78,18 @@ class Trie {
     fun hasKey(key: String): Boolean {
         require(key.length != 0, { "The empty string is not a valid key" })
 
-        var k = key
+        var l = key.length
         var node = root
         var child: TrieNode?
+        var i = 0
 
-        while (k.length > 0) {
-            child = node.getChild(k[0])
+        while (i < l) {
+            child = node[key[i]]
             if (child == null) {
                 return false
             }
             node = child
-            k = k.drop(1)
+            i++
         }
 
         return node.value != null
