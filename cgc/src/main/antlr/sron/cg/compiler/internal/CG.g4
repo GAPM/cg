@@ -20,7 +20,6 @@ ADD : '+' ;
 ADD_ASSIGN : '+=' ;
 AND : '&&' ;
 AND_ASSIGN : '&&=' ;
-BANG : '!' ;
 BOOL : 'bool' ;
 BREAK : 'break' ;
 COMMA : ',' ;
@@ -47,6 +46,7 @@ MOD : '%' ;
 MOD_ASSIGN : '%=' ;
 MUL : '*' ;
 MUL_ASSIGN : '*=' ;
+NOT : '!' ;
 NOT_EQUAL : '!=' ;
 OR : '||' ;
 OR_ASSIGN : '||=' ;
@@ -66,19 +66,16 @@ BoolLit: 'true' | 'false';
 
 fragment Letter: [a-zA-Z_];
 fragment DecimalDigit: [0-9];
-fragment OctalDigit: [0-7];
-fragment HexDigit: [0-9a-fA-F];
 
 Identifier: Letter (Letter | DecimalDigit)*;
 
-fragment DecimalLit: [0-9] DecimalDigit*;
+fragment DecimalLit: DecimalDigit+;
 IntLit: DecimalLit;
 
-fragment Decimals: DecimalDigit DecimalDigit*;
-fragment Exponent: [eE] [+-]? Decimals;
-FloatLit: Decimals '.' Decimals Exponent?
-                 | Decimals Exponent
-                 | '.' Decimals Exponent?
+fragment Exponent: [eE] [+-]? DecimalLit;
+FloatLit: DecimalLit '.' DecimalLit Exponent?
+                 | DecimalLit Exponent
+                 | '.' DecimalLit Exponent?
                  ;
 
 fragment Escape: '\\' [tbnr"'\\];

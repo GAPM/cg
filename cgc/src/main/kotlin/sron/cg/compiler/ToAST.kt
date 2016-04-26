@@ -19,6 +19,7 @@ package sron.cg.compiler
 import org.antlr.v4.runtime.tree.ParseTreeProperty
 import sron.cg.compiler.ast.*
 import sron.cg.compiler.internal.CGBaseListener
+import sron.cg.compiler.internal.CGLexer
 import sron.cg.compiler.internal.CGParser.*
 import sron.cg.symbol.Location
 import sron.cg.type.Type
@@ -194,16 +195,16 @@ class ToAST : CGBaseListener() {
 
         var assign: Assignment
 
-        if (ctx.op.text == "=") {
+        if (ctx.op.type == CGLexer.EQUAL) {
             assign = Assignment(lhs, rhs, location)
         } else {
-            val op = when (ctx.op.text) {
-                "+=" -> Operator.ADD
-                "-=" -> Operator.SUB
-                "*=" -> Operator.MUL
-                "/=" -> Operator.DIV
-                "%=" -> Operator.MOD
-                "&&=" -> Operator.AND
+            val op = when (ctx.op.type) {
+                CGLexer.ADD_ASSIGN -> Operator.ADD
+                CGLexer.SUB_ASSIGN -> Operator.SUB
+                CGLexer.MUL_ASSIGN -> Operator.MUL
+                CGLexer.DIV_ASSIGN -> Operator.DIV
+                CGLexer.MOD_ASSIGN -> Operator.MOD
+                CGLexer.AND_ASSIGN -> Operator.AND
                 else -> Operator.OR
             }
             assign = Assignment(lhs, BinaryExpr(op, lhs, rhs, location), location)
@@ -299,9 +300,9 @@ class ToAST : CGBaseListener() {
         super.exitUnary(ctx)
 
         val expr = result.get(ctx.expr()) as Expr
-        val op = if (ctx.op.text == "!") {
+        val op = if (ctx.op.type == CGLexer.NOT) {
             Operator.NOT
-        } else if (ctx.op.text == "-") {
+        } else if (ctx.op.type == CGLexer.SUB) {
             Operator.MINUS
         } else {
             Operator.PLUS
@@ -325,9 +326,9 @@ class ToAST : CGBaseListener() {
         val lhs = result.get(ctx.expr(0)) as Expr
         val rhs = result.get(ctx.expr(1)) as Expr
         val location = Location(ctx.start)
-        val op = if (ctx.op.text == "*") {
+        val op = if (ctx.op.type == CGLexer.MUL) {
             Operator.MUL
-        } else if (ctx.op.text == "/") {
+        } else if (ctx.op.type == CGLexer.DIV) {
             Operator.DIV
         } else {
             Operator.MOD
@@ -344,7 +345,7 @@ class ToAST : CGBaseListener() {
         val rhs = result.get(ctx.expr(1)) as Expr
         val location = Location(ctx.start)
 
-        val op = if (ctx.op.text == "+") {
+        val op = if (ctx.op.type == CGLexer.ADD) {
             Operator.ADD
         } else {
             Operator.SUB
@@ -361,14 +362,14 @@ class ToAST : CGBaseListener() {
         val rhs = result.get(ctx.expr(1)) as Expr
         val location = Location(ctx.start)
 
-        val op = if (ctx.op.text == "<") {
+        val op = if (ctx.op.type == CGLexer.LT) {
             Operator.LESS
-        } else if (ctx.op.text == "<=") {
+        } else if (ctx.op.type == CGLexer.LE) {
             Operator.LESS_EQUAL
-        } else if (ctx.op.text == ">") {
-            Operator.HIGHER
+        } else if (ctx.op.type == CGLexer.GT) {
+            Operator.GREATER
         } else {
-            Operator.HIGHER_EQUAL
+            Operator.GREATER_EQUAL
         }
 
         val binaryExpr = BinaryExpr(op, lhs, rhs, location)
@@ -382,7 +383,7 @@ class ToAST : CGBaseListener() {
         val rhs = result.get(ctx.expr(1)) as Expr
         val location = Location(ctx.start)
 
-        val op = if (ctx.op.text == "==") {
+        val op = if (ctx.op.type == CGLexer.EQUAL_EQUAL) {
             Operator.EQUAL
         } else {
             Operator.NOT_EQUAL
@@ -489,7 +490,11 @@ class ToAST : CGBaseListener() {
     override fun exitControlStmt(ctx: ControlStmtContext) {
         super.exitControlStmt(ctx)
         val location = Location(ctx.start)
-        val type = if (ctx.wr.text == "continue") ControlType.CONTINUE else ControlType.BREAK
+        val type = if (ctx.wr.type == CGLexer.CONTINUE) {
+            ControlType.CONTINUE
+        } else {
+            ControlType.BREAK
+        }
 
         val control = Control(type, location)
 

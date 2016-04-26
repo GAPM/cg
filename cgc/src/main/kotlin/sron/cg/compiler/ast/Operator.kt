@@ -32,8 +32,8 @@ enum class Operator {
 
     LESS,
     LESS_EQUAL,
-    HIGHER,
-    HIGHER_EQUAL,
+    GREATER,
+    GREATER_EQUAL,
 
     EQUAL,
     NOT_EQUAL
@@ -52,8 +52,8 @@ fun Operator.sign(): String = when (this) {
     Operator.PLUS -> "+"
     Operator.LESS -> "<"
     Operator.LESS_EQUAL -> "<="
-    Operator.HIGHER -> ">"
-    Operator.HIGHER_EQUAL -> ">="
+    Operator.GREATER -> ">"
+    Operator.GREATER_EQUAL -> ">="
     Operator.EQUAL -> "=="
     Operator.NOT_EQUAL -> "!="
 }

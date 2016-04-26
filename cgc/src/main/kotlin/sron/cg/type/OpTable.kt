@@ -23,7 +23,7 @@ object OpTable {
             Operator.DIV, Operator.MOD)
 
     val comparison = listOf(Operator.EQUAL, Operator.LESS_EQUAL,
-            Operator.HIGHER_EQUAL, Operator.NOT_EQUAL, Operator.HIGHER,
+            Operator.GREATER_EQUAL, Operator.NOT_EQUAL, Operator.GREATER,
             Operator.LESS)
 
     val sign = listOf(Operator.PLUS, Operator.MINUS)
