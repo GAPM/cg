@@ -18,8 +18,6 @@ package sron.cg.compiler
 
 import org.antlr.v4.runtime.ANTLRInputStream
 import org.antlr.v4.runtime.CommonTokenStream
-import org.antlr.v4.runtime.tree.ParseTreeWalker
-import sron.cg.compiler.ast.Init
 import sron.cg.compiler.internal.CGLexer
 import sron.cg.compiler.internal.CGParser
 import sron.cg.compiler.phase.Globals
@@ -55,13 +53,7 @@ class Compiler(fileName: String, val parameters: Parameters) {
             throw ParsingException()
         }
 
-        val walker = ParseTreeWalker()
-        val converter = ToAST()
-        val ast: Init
-
-        measureTime("To AST") { walker.walk(converter, tree) }
-
-        ast = converter.getResult()
+        val ast = measureTime("To AST") { AST(tree) }
 
         measureTime("Globals") { Globals(state, ast) }
         measureTime("Structure") { Structure(state, ast) }

@@ -16,7 +16,9 @@
 
 package sron.cg.compiler
 
+import org.antlr.v4.runtime.tree.ParseTree
 import org.antlr.v4.runtime.tree.ParseTreeProperty
+import org.antlr.v4.runtime.tree.ParseTreeWalker
 import sron.cg.compiler.ast.*
 import sron.cg.compiler.internal.CGBaseListener
 import sron.cg.compiler.internal.CGLexer
@@ -26,11 +28,15 @@ import sron.cg.type.Type
 import sron.cg.type.toCGType
 import java.util.*
 
-class ToAST : CGBaseListener() {
+object AST : CGBaseListener() {
     private val result = ParseTreeProperty<ASTNode>()
     private var initCtx: InitContext? = null
 
-    fun getResult() = result.get(initCtx) as Init
+    operator fun invoke(tree: ParseTree): Init {
+        val walker = ParseTreeWalker()
+        walker.walk(this, tree)
+        return result.get(initCtx) as Init
+    }
 
     override fun exitInit(ctx: InitContext) {
         super.exitInit(ctx)
@@ -276,7 +282,7 @@ class ToAST : CGBaseListener() {
         val gEdges = graphLit.edge()
         val location = Location(ctx.start)
 
-        val type = when(graphLit.gtype.type) {
+        val type = when (graphLit.gtype.type) {
             CGLexer.GRAPH -> GraphType.GRAPH
             else -> GraphType.DIGRAPH
         }
