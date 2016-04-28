@@ -24,6 +24,7 @@ BOOL : 'bool' ;
 BREAK : 'break' ;
 COMMA : ',' ;
 CONTINUE : 'continue' ;
+DIGRAPH : 'digraph' ;
 DIV : '/' ;
 DIV_ASSIGN : '/=' ;
 ELIF : 'elif' ;
@@ -34,6 +35,7 @@ FLOAT : 'float' ;
 FOR : 'for' ;
 FUNC : 'func' ;
 GE : '>=' ;
+GRAPH : 'graph' ;
 GT : '>' ;
 IF : 'if' ;
 INT : 'int' ;
@@ -60,6 +62,8 @@ SUB_ASSIGN : '-=' ;
 VAR : 'var' ;
 VOID : 'void' ;
 WHILE : 'while' ;
+LBRACK : '[' ;
+RBRACK : ']' ;
 WS: [ \t\r\n] -> skip;
 
 BoolLit: 'true' | 'false';
@@ -88,7 +92,12 @@ type: 'int'
     | 'string'
     | 'void'
     | 'bool'
+    | 'graph'
+    | 'digraph'
     ;
+
+edge: '[' source=StringLit ',' target=StringLit ']';
+graphLit: gtype=('graph'|'digraph') '{' (edge (',' edge)*)? '}';
 
 arg: Identifier type;
 argList: (arg (',' arg)*)?;
@@ -98,6 +107,7 @@ atom: IntLit            #Integer
     | BoolLit           #Boolean
     | StringLit         #String
     | Identifier        #VarName
+    | graphLit          #Graph
     | funcCall          #FunctionCall
     | type '(' expr ')' #Cast
     ;

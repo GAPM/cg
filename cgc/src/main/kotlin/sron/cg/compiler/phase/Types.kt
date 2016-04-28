@@ -94,6 +94,7 @@ object Types {
             is Identifier -> this.types(s, scope)
             is FunctionCall -> this.types(s, scope)
             is Cast -> this.types(s, scope)
+            is Graph -> this.types()
         }
     }
 
@@ -199,6 +200,13 @@ object Types {
             s.errors += Error.cast(location, type, expr.type)
             type = Type.ERROR
             return
+        }
+    }
+
+    private fun Graph.types() {
+        type = when(gtype) {
+            GraphType.GRAPH -> Type.graph
+            GraphType.DIGRAPH -> Type.digraph
         }
     }
 

@@ -26,6 +26,8 @@ enum class Type {
     bool,
     void,
     string,
+    graph,
+    digraph,
 
     ERROR
 }
@@ -40,6 +42,8 @@ fun CGParser.TypeContext.toCGType(): Type {
         CGLexer.BOOL -> Type.bool
         CGLexer.VOID -> Type.void
         CGLexer.STRING -> Type.string
+        CGLexer.GRAPH -> Type.graph
+        CGLexer.DIGRAPH -> Type.digraph
         else -> Type.ERROR
     }
 }

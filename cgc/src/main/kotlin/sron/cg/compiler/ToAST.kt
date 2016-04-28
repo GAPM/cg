@@ -269,6 +269,26 @@ class ToAST : CGBaseListener() {
         result.put(ctx, identifier)
     }
 
+    override fun exitGraph(ctx: GraphContext) {
+        super.exitGraph(ctx)
+
+        val graphLit = ctx.graphLit()
+        val gEdges = graphLit.edge()
+        val location = Location(ctx.start)
+
+        val type = when(graphLit.gtype.type) {
+            CGLexer.GRAPH -> GraphType.GRAPH
+            else -> GraphType.DIGRAPH
+        }
+
+        val edges = Array(gEdges.size) { i ->
+            Edge(gEdges[i].source.text, gEdges[i].target.text)
+        }
+
+        val graph = Graph(type, edges, location)
+        result.put(ctx, graph)
+    }
+
     override fun exitFunctionCall(ctx: FunctionCallContext) {
         super.exitFunctionCall(ctx)
 
