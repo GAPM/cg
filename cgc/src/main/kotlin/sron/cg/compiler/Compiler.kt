@@ -21,6 +21,7 @@ import org.antlr.v4.runtime.CommonTokenStream
 import sron.cg.compiler.internal.CGLexer
 import sron.cg.compiler.internal.CGParser
 import sron.cg.compiler.phase.Globals
+import sron.cg.compiler.phase.Preparation
 import sron.cg.compiler.phase.Structure
 import sron.cg.compiler.phase.Types
 import sron.cg.exception.ErrorsInCodeException
@@ -63,5 +64,7 @@ class Compiler(fileName: String, val parameters: Parameters) {
             state.errors.forEach { Logger.error(it) }
             throw ErrorsInCodeException()
         }
+
+        measureTime("Preparation") { Preparation(state, ast) }
     }
 }
