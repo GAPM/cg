@@ -17,39 +17,24 @@
 package sron.cg.runtime.graph
 
 import sron.cg.runtime.collections.BitMatrix
-import sron.cg.runtime.collections.Trie
 
-class Graph(private vararg val labels: String) : IGraph {
-    private val adj: BitMatrix
-    private val labelsMap = Trie()
+class Graph(val size: Int) : IGraph {
+    private val adj = BitMatrix(size, size)
 
-    init {
-        var id = 0;
-        adj = BitMatrix(labels.size, labels.size)
+    override fun containsVertex(idx: Int) = idx < size
 
-        for (label in labels) {
-            labelsMap[label] = id++
+    override fun containsEdge(source: Int, target: Int): Boolean {
+        if (source < size && target < size) {
+            return adj[source, target]
         }
-    }
-
-    override fun containsVertex(label: String) = labelsMap.hasKey(label)
-
-    override fun containsEdge(source: String, target: String): Boolean {
-        val sourceId = labelsMap[source] ?: -1
-        val targetId = labelsMap[target] ?: -1
-
-        if (sourceId != -1 && targetId != -1) {
-            return adj[sourceId, targetId]
-        }
-
         return false
     }
 
-    override fun addVertex(label: String): Graph {
-        val new = Graph(*labels, label)
+    override fun addVertex(n: Int): Graph {
+        val new = Graph(size + n)
 
-        for (i in 0..this.labels.size) {
-            for (j in 0..this.labels.size) {
+        for (i in 0..this.size) {
+            for (j in 0..this.size) {
                 if (adj[i, j]) {
                     new.adj[i, j] = true
                 }
@@ -59,23 +44,17 @@ class Graph(private vararg val labels: String) : IGraph {
         return new
     }
 
-    override fun addEdge(source: String, target: String) {
-        val sourceId = labelsMap[source] ?: -1
-        val targetId = labelsMap[target] ?: -1
-
-        if (sourceId != -1 && targetId != -1) {
-            adj[sourceId, targetId] = true
-            adj[targetId, sourceId] = true
+    override fun addEdge(source: Int, target: Int) {
+        if (source < size && target < size) {
+            adj[source, target] = true
+            adj[target, source] = true
         }
     }
 
-    override fun removeEdge(source: String, target: String) {
-        val sourceId = labelsMap[source] ?: -1
-        val targetId = labelsMap[target] ?: -1
-
-        if (sourceId != -1 && targetId != -1) {
-            adj[sourceId, targetId] = false
-            adj[targetId, sourceId] = false
+    override fun removeEdge(source: Int, target: Int) {
+        if (source < size && target < size) {
+            adj[source, target] = false
+            adj[target, source] = false
         }
     }
 

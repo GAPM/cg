@@ -17,12 +17,12 @@
 package sron.cg.runtime.graph
 
 interface IGraph {
-    fun containsVertex(label: String): Boolean
-    fun containsEdge(source: String, target: String): Boolean
+    fun containsVertex(idx: Int): Boolean
+    fun containsEdge(source: Int, target: Int): Boolean
 
-    fun addVertex(label: String): IGraph
-    fun addEdge(source: String, target: String)
+    fun addVertex(n: Int): IGraph
+    fun addEdge(source: Int, target: Int)
 
-    fun removeEdge(source: String, target: String)
+    fun removeEdge(source: Int, target: Int)
     fun removeAllEdges()
 }

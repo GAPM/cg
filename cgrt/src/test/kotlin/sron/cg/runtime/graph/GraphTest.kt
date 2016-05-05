@@ -23,25 +23,25 @@ import kotlin.test.assertTrue
 class GraphTest {
     @Test
     fun test() {
-        val g = Graph("1", "2", "3", "4", "5")
+        val g = Graph(5)
 
-        assertTrue(g.containsVertex("2"))
-        assertFalse(g.containsVertex("6"))
+        assertTrue(g.containsVertex(1))
+        assertFalse(g.containsVertex(5))
 
-        g.addEdge("1", "4")
-        g.addEdge("3", "5")
-        g.addEdge("5", "1")
+        g.addEdge(0, 3)
+        g.addEdge(2, 4)
+        g.addEdge(4, 0)
 
-        g.removeEdge("1", "4")
+        g.removeEdge(0, 3)
 
-        assertFalse(g.containsEdge("1", "4"))
-        assertTrue(g.containsEdge("3", "5"))
-        assertTrue(g.containsEdge("5", "3"))
-        assertTrue(g.containsEdge("5", "1"))
+        assertFalse(g.containsEdge(0, 3))
+        assertTrue(g.containsEdge(2, 4))
+        assertTrue(g.containsEdge(4, 2))
+        assertTrue(g.containsEdge(4, 0))
 
         g.removeAllEdges()
 
-        assertFalse(g.containsEdge("3", "5"))
-        assertFalse(g.containsEdge("5", "1"))
+        assertFalse(g.containsEdge(2, 4))
+        assertFalse(g.containsEdge(4, 0))
     }
 }
