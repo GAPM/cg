@@ -20,4 +20,5 @@ import sron.cg.symbol.Location
 
 class Else(val stmts: List<Stmt>, location: Location) : ASTNode(location) {
     var returns = false
+    var scope = ""
 }

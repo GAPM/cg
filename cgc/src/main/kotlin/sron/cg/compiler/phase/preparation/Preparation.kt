@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sron.cg.compiler.phase
+package sron.cg.compiler.phase.preparation
 
 import sron.cg.compiler.State
 import sron.cg.compiler.ast.*

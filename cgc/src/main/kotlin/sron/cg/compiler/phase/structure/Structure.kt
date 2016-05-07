@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sron.cg.compiler.phase
+package sron.cg.compiler.phase.structure
 
 import sron.cg.compiler.Error
 import sron.cg.compiler.State
@@ -22,7 +22,6 @@ import sron.cg.compiler.ast.*
 import sron.cg.type.Type
 
 object Structure {
-
     operator fun invoke(state: State, init: Init) = init.structure(state)
 
     private fun Init.structure(state: State) {

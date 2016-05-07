@@ -20,4 +20,5 @@ import sron.cg.symbol.Location
 
 abstract class Stmt(location: Location) : ASTNode(location) {
     var returns = false
+    var scope = ""
 }

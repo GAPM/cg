@@ -20,4 +20,6 @@ import sron.cg.symbol.Location
 import sron.cg.type.Type
 
 class FuncDef(val name: String, val type: Type, val args: List<Arg>,
-              val stmts: List<Stmt>, location: Location) : ASTNode(location)
+              val stmts: List<Stmt>, location: Location) : ASTNode(location) {
+    var scope: String = ""
+}

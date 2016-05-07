@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sron.cg.compiler.phase
+package sron.cg.compiler.phase.globals
 
 import sron.cg.compiler.Error
 import sron.cg.compiler.State
@@ -27,7 +27,6 @@ import sron.cg.symbol.Variable
 import sron.cg.type.Type
 
 object Globals {
-
     operator fun invoke(state: State, init: Init) = init.globals(state)
 
     private fun Init.globals(s: State) {

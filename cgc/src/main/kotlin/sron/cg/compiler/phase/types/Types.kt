@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sron.cg.compiler.phase
+package sron.cg.compiler.phase.types
 
 import sron.cg.compiler.Error
 import sron.cg.compiler.State
@@ -28,7 +28,6 @@ import sron.cg.type.OpTable
 import sron.cg.type.Type
 
 object Types {
-
     operator fun invoke(state: State, init: Init) = init.types(state)
 
     private fun Init.types(s: State) {
@@ -47,6 +46,7 @@ object Types {
             return
         }
 
+        // Initial value handling
         if (exp != null) {
             if (exp.type != type) {
                 s.errors += Error.badAssignment(location, exp.type, type)
@@ -69,8 +69,9 @@ object Types {
     }
 
     private fun FuncDef.types(s: State) {
+        scope = "global.$name"
         for (stmt in stmts) {
-            stmt.types(s, this, "global.$name")
+            stmt.types(s, this, scope)
         }
     }
 
@@ -94,7 +95,7 @@ object Types {
             is Identifier -> this.types(s, scope)
             is FunctionCall -> this.types(s, scope)
             is Cast -> this.types(s, scope)
-            is Graph -> this.types()
+            is Graph -> this.types(s, scope)
         }
     }
 
@@ -203,10 +204,28 @@ object Types {
         }
     }
 
-    private fun Graph.types() {
-        type = when(gtype) {
+    private fun Graph.types(s: State, scope: String) {
+        type = when (gtype) {
             GraphType.GRAPH -> Type.graph
             GraphType.DIGRAPH -> Type.digraph
+        }
+
+        num.types(s, scope)
+        if (num.type != Type.int) {
+            //TODO: throw error
+        }
+
+        for (edge in edges) {
+            edge.source.types(s, scope)
+            edge.target.types(s, scope)
+
+            if (edge.source.type != Type.int) {
+                //TODO: throw error
+            }
+
+            if (edge.target.type != Type.int) {
+                //TODO: throw error
+            }
         }
     }
 
@@ -262,10 +281,10 @@ object Types {
             s.errors += Error.nonBoolCondition(cond.location, cond.type)
         }
 
-        val ifScope = "$scope.if${nextId()}"
+        this.scope = "$scope.if${nextId()}"
 
         for (stmt in stmts) {
-            stmt.types(s, funcDef, ifScope)
+            stmt.types(s, funcDef, this.scope)
         }
 
         for (elif in elifs) {
@@ -282,18 +301,18 @@ object Types {
             s.errors += Error.nonBoolCondition(cond.location, cond.type)
         }
 
-        val elifScope = "$scope.elif${nextId()}"
+        this.scope = "$scope.elif${nextId()}"
 
         for (stmt in stmts) {
-            stmt.types(s, funcDef, elifScope)
+            stmt.types(s, funcDef, this.scope)
         }
     }
 
     private fun Else.types(s: State, funcDef: FuncDef, scope: String) {
-        val elseScope = "$scope.else${nextId()}"
+        this.scope = "$scope.else${nextId()}"
 
         for (stmt in stmts) {
-            stmt.types(s, funcDef, elseScope)
+            stmt.types(s, funcDef, this.scope)
         }
     }
 
@@ -306,10 +325,10 @@ object Types {
             s.errors += Error.nonBoolCondition(cond.location, cond.type)
         }
 
-        val forScope = "$scope.for${nextId()}"
+        this.scope = "$scope.for${nextId()}"
 
         for (stmt in stmts) {
-            stmt.types(s, funcDef, forScope)
+            stmt.types(s, funcDef, this.scope)
         }
     }
 
@@ -320,10 +339,10 @@ object Types {
             s.errors += Error.nonBoolCondition(cond.location, cond.type)
         }
 
-        val whileScope = "$scope.while${nextId()}"
+        this.scope = "$scope.while${nextId()}"
 
         for (stmt in stmts) {
-            stmt.types(s, funcDef, whileScope)
+            stmt.types(s, funcDef, this.scope)
         }
     }
 }

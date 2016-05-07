@@ -20,4 +20,5 @@ import sron.cg.symbol.Location
 
 class Elif(val cond: Expr, val stmts: List<Stmt>, location: Location) : ASTNode(location) {
     var returns = false
+    var scope = ""
 }
