@@ -281,17 +281,24 @@ object AST : CGBaseListener() {
         val graphLit = ctx.graphLit()
         val gEdges = graphLit.edge()
         val location = Location(ctx.start)
+        val num = graphLit.num
 
         val type = when (graphLit.gtype.type) {
             CGLexer.GRAPH -> GraphType.GRAPH
             else -> GraphType.DIGRAPH
         }
 
+        val numExp = result.get(num) as Expr
+
         val edges = Array(gEdges.size) { i ->
-            Edge(gEdges[i].source.text, gEdges[i].target.text)
+            val edge = gEdges[i]
+            val edgeLocation = Location(edge.start)
+            val sourceExp = result.get(edge.source) as Expr
+            val targetExp = result.get(edge.target) as Expr
+            Edge(sourceExp, targetExp, edgeLocation)
         }
 
-        val graph = Graph(type, edges, location)
+        val graph = Graph(type, numExp, edges, location)
         result.put(ctx, graph)
     }
 

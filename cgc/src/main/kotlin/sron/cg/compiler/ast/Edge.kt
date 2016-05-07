@@ -16,4 +16,6 @@
 
 package sron.cg.compiler.ast
 
-class Edge(val source: String, val target: String)
+import sron.cg.symbol.Location
+
+class Edge(val source: Expr, val target: Expr, val location: Location)
