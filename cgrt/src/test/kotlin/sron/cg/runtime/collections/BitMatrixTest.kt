@@ -26,6 +26,9 @@ class BitMatrixTest {
         val max = 10
         val bm = BitMatrix(max, max)
 
+        assertTrue(bm.rows == max)
+        assertTrue(bm.columns == max)
+
         for (i in 0..max - 1) {
             for (j in 0..max - 1) {
                 if (i > j) {

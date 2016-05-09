@@ -14,26 +14,36 @@
  * limitations under the License.
  */
 
-package sron.cg.runtime.collections
+package sron.cg.runtime.collections;
 
-class BitArray(val size: Int) {
-    private val array = IntArray((size + 32 - 1) / 32)
+public class BitArray {
+    private int[] array;
+    private int size;
 
-    operator fun get(idx: Int): Boolean {
-        return (array[idx / 32] and (1 shl (idx % 32))) != 0
+    public BitArray(int size) {
+        this.size = size;
+        array = new int[(size + 32 - 1) / 32];
     }
 
-    operator fun set(idx: Int, value: Boolean) {
+    public boolean get(int idx) {
+        return (array[idx / 32] & (1 << (idx % 32))) != 0;
+    }
+
+    public void set(int idx, boolean value) {
         if (value) {
-            array[idx / 32] = array[idx / 32] or (1 shl (idx % 32))
+            array[idx / 32] |= (1 << (idx % 32));
         } else {
-            array[idx / 32] = array[idx / 32] and (1 shl (idx % 32)).inv()
+            array[idx / 32] &= ~(1 << (idx % 32));
         }
     }
 
-    fun reset() {
-        for (i in array.indices) {
-            array[i] = 0
+    public void reset() {
+        for (int i = 0; i < array.length; i++) {
+            array[i] = 0;
         }
+    }
+
+    public int getSize() {
+        return size;
     }
 }

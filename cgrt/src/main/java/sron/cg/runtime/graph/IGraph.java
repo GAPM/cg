@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-package sron.cg.runtime.graph
+package sron.cg.runtime.graph;
 
-interface IGraph {
-    fun containsVertex(idx: Int): Boolean
-    fun containsEdge(source: Int, target: Int): Boolean
+public interface IGraph {
+    boolean containsVertex(int idx);
 
-    fun addVertex(n: Int): IGraph
-    fun addEdge(source: Int, target: Int)
+    boolean containsEdge(int source, int target);
 
-    fun removeEdge(source: Int, target: Int)
-    fun removeAllEdges()
+    IGraph addVertex(int n);
+
+    void addEdge(int source, int target);
+
+    void removeEdge(int source, int target);
+
+    void removeAllEdges();
 }

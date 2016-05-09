@@ -30,9 +30,6 @@ class AAAAAStart {
     fun test() {
         assertTrue(true)
         assertFalse(false)
-        assertFailsWith(NotImplementedError::class) {
-            throw NotImplementedError("Error")
-        }
         Thread.sleep(1000)
     }
 }
