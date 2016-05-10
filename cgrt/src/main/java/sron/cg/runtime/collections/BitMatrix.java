@@ -27,6 +27,12 @@ public class BitMatrix {
         array = new BitArray(rows * columns);
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof BitMatrix &&
+                array.equals(((BitMatrix) obj).array);
+    }
+
     public boolean get(int r, int c) {
         return array.get(r * rows + c);
     }

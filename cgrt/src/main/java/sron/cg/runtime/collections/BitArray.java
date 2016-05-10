@@ -25,6 +25,25 @@ public class BitArray {
         array = new int[(size + 32 - 1) / 32];
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof BitArray) {
+            if (size != ((BitArray) obj).size) {
+                return false;
+            }
+
+            for (int i = 0; i < array.length; i++) {
+                if (array[i] != ((BitArray) obj).array[i]) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
     public boolean get(int idx) {
         return (array[idx / 32] & (1 << (idx % 32))) != 0;
     }
