@@ -20,10 +20,11 @@ import org.antlr.v4.runtime.ANTLRInputStream
 import org.antlr.v4.runtime.CommonTokenStream
 import sron.cg.compiler.internal.CGLexer
 import sron.cg.compiler.internal.CGParser
-import sron.cg.compiler.phase.Globals
-import sron.cg.compiler.phase.Preparation
-import sron.cg.compiler.phase.Structure
-import sron.cg.compiler.phase.Types
+import sron.cg.compiler.phase.generation.Generation
+import sron.cg.compiler.phase.globals.Globals
+import sron.cg.compiler.phase.preparation.Preparation
+import sron.cg.compiler.phase.structure.Structure
+import sron.cg.compiler.phase.types.Types
 import sron.cg.exception.ErrorsInCodeException
 import sron.cg.exception.ParsingException
 import sron.cg.util.Logger
@@ -66,5 +67,6 @@ class Compiler(fileName: String, val parameters: Parameters) {
         }
 
         measureTime("Preparation") { Preparation(state, ast) }
+        measureTime("Generation") { Generation(state, ast) }
     }
 }

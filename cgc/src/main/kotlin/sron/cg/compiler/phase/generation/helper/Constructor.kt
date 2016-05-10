@@ -14,8 +14,23 @@
  * limitations under the License.
  */
 
-package sron.cg.compiler.ast
+package sron.cg.compiler.phase.generation.helper
 
-import sron.cg.symbol.Location
+import org.objectweb.asm.ClassWriter
+import org.objectweb.asm.Label
+import org.objectweb.asm.Opcodes.*
 
-class Graph(val gtype: GraphType, val num: Expr, val edges: Array<Edge>, location: Location) : Atom(location)
+fun constructor(cw: ClassWriter) {
+    val mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null)
+    mv.visitCode()
+    val ls = Label()
+    mv.visitLabel(ls)
+    mv.visitVarInsn(ALOAD, 0)
+    mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false)
+    mv.visitInsn(RETURN)
+    val le = Label()
+    mv.visitLabel(le)
+    mv.visitLocalVariable("this", "EntryPoint", null, ls, le, 0)
+    mv.visitMaxs(0, 0)
+    mv.visitEnd()
+}

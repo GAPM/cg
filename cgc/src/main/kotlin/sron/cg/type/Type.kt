@@ -48,12 +48,33 @@ fun CGParser.TypeContext.toCGType(): Type {
     }
 }
 
-fun Type.toJVMDescriptor() = when (this) {
-    Type.int -> "J"
-    Type.float -> "D"
+fun Type.JVMDescriptor() = when (this) {
+    Type.int -> "I"
+    Type.float -> "F"
     Type.bool -> "Z"
     Type.void -> "V"
-    Type.string -> "Ljava/lang/String"
+    Type.string -> "Ljava/lang/String;"
+    Type.graph -> "Lsron/cg/runtime/graph/Graph;"
+    Type.digraph -> "Lsron/cg/runtime/graph/DiGraph;"
 
     else -> ""
+}
+
+fun Type.JVMName() = when (this) {
+    Type.graph -> "sron/cg/runtime/graph/Graph"
+    Type.digraph -> "sron/cg/runtime/graph/DiGraph"
+    else -> ""
+}
+
+fun Type.defaultValue(): Any? {
+    return when (this) {
+        Type.int -> 0
+        Type.float -> 0.0f
+        Type.bool -> false
+        Type.string -> ""
+        Type.graph -> null
+        Type.digraph -> null
+        Type.void -> null
+        Type.ERROR -> null
+    }
 }

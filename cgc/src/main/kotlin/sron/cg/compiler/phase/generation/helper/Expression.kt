@@ -14,8 +14,5 @@
  * limitations under the License.
  */
 
-package sron.cg.compiler.ast
+package sron.cg.compiler.phase.generation.helper
 
-import sron.cg.symbol.Location
-
-class Graph(val gtype: GraphType, val num: Expr, val edges: Array<Edge>, location: Location) : Atom(location)
