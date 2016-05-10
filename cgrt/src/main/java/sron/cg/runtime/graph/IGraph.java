@@ -16,7 +16,9 @@
 
 package sron.cg.runtime.graph;
 
-public interface IGraph {
+interface IGraph {
+    int getSize();
+
     boolean containsVertex(int idx);
 
     boolean containsEdge(int source, int target);

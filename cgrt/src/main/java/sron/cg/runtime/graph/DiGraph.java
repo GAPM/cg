@@ -28,6 +28,18 @@ public class DiGraph implements IGraph {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        return obj instanceof DiGraph
+                && size == ((DiGraph) obj).size
+                && adj.equals(((DiGraph) obj).adj);
+    }
+
+    @Override
+    public int getSize() {
+        return size;
+    }
+
+    @Override
     public boolean containsVertex(int idx) {
         return idx < size;
     }

@@ -28,6 +28,18 @@ public class Graph implements IGraph {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Graph
+                && size == ((Graph) obj).size
+                && adj.equals(((Graph) obj).adj);
+    }
+
+    @Override
+    public int getSize() {
+        return size;
+    }
+
+    @Override
     public boolean containsVertex(int idx) {
         return idx < size;
     }
