@@ -21,6 +21,20 @@ import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes.*
 import sron.cg.type.Type
 
+/**
+ * Generates code for boolean not
+ *
+ * !i gets translated to (assuming that i is on top of the stack):
+ *
+ * IFNE isTrue
+ * ICONST_1
+ * GOTO end
+ * isTrue:
+ * ICONST_0
+ * end:
+ *
+ * @param mv The method visitor
+ */
 fun not(mv: MethodVisitor) {
     val start = Label()
     val isTrue = Label()
@@ -28,16 +42,19 @@ fun not(mv: MethodVisitor) {
 
     mv.visitLabel(start)
     mv.visitJumpInsn(IFNE, isTrue)
-
     mv.visitInsn(ICONST_1)
     mv.visitJumpInsn(GOTO, end)
-
     mv.visitLabel(isTrue)
     mv.visitInsn(ICONST_0)
-
     mv.visitLabel(end)
 }
 
+/**
+ * Generates code for unary minus operation
+ *
+ * @param mv The method visitor
+ * @param type The type of the operand
+ */
 fun minus(mv: MethodVisitor, type: Type) {
     if (type == Type.int) {
         mv.visitInsn(INEG)
