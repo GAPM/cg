@@ -253,10 +253,10 @@ object Types {
             var variable = Variable(name, type, scope, location)
             s.symbolTable.addSymbol(variable)
 
-            expr?.let {
-                expr.types(s, scope)
-                if (expr.type != Type.ERROR && type != expr.type) {
-                    s.errors += Error.badAssignment(location, type, expr.type)
+            exp?.let {
+                exp.types(s, scope)
+                if (exp.type != Type.ERROR && type != exp.type) {
+                    s.errors += Error.badAssignment(location, type, exp.type)
                 }
             }
         } else {
