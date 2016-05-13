@@ -17,7 +17,6 @@
 package sron.cg.runtime
 
 import org.junit.Test
-import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
