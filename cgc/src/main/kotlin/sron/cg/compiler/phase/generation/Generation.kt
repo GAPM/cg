@@ -89,8 +89,9 @@ object Generation {
             if (stmt is VarDec) {
                 val v = s.symbolTable.getSymbol(stmt.name, scope, SymType.VAR) as Variable
                 varQueue.add(v)
+                stmt.generate(s, mv, this)
             } else {
-                stmt.generate(s, mv)
+                stmt.generate(s, mv, this)
             }
         }
 
@@ -112,14 +113,19 @@ object Generation {
             mv.visitLocalVariable(arg.name, argDesc, null, ls, le, idx)
         }
 
+        if (type == Type.void) {
+            mv.visitInsn(RETURN)
+        }
+
         mv.visitMaxs(0, 0)
         mv.visitEnd()
     }
 
-    private fun Stmt.generate(s: State, mv: MethodVisitor) {
+    private fun Stmt.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
         when (this) {
-            is Expr -> this.generate(s, mv)
-        //is Assignment -> this.generate(s, mv)
+            is Expr -> this.generate(s, mv, fd)
+            is VarDec -> this.generate(s, mv, fd)
+            //is Assignment -> this.generate(s, mv)
         //is Return -> this.generate(s, mv)
         //is If -> this.generate(s, mv)
         //is For -> this.generate(s, mv)
@@ -127,11 +133,12 @@ object Generation {
         }
     }
 
-    private fun Expr.generate(s: State, mv: MethodVisitor) {
+    private fun Expr.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
         when (this) {
             is Literal -> this.generate(mv)
-            is UnaryExpr -> this.generate(s, mv)
-            is BinaryExpr -> this.generate(s, mv)
+            is UnaryExpr -> this.generate(s, mv, fd)
+            is BinaryExpr -> this.generate(s, mv, fd)
+            is Identifier -> this.generate(s, mv, fd)
         }
     }
 
@@ -147,8 +154,8 @@ object Generation {
         }
     }
 
-    private fun UnaryExpr.generate(s: State, mv: MethodVisitor) {
-        expr.generate(s, mv)
+    private fun UnaryExpr.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
+        expr.generate(s, mv, fd)
         when (operator) {
             Operator.NOT -> not(mv)
             Operator.MINUS -> minus(mv, type)
@@ -157,10 +164,32 @@ object Generation {
         }
     }
 
-    private fun BinaryExpr.generate(s: State, mv: MethodVisitor) {
-        lhs.generate(s, mv)
-        rhs.generate(s, mv)
+    private fun BinaryExpr.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
+        lhs.generate(s, mv, fd)
+        rhs.generate(s, mv, fd)
 
-        binaryOp(mv, operator, type, lhs, rhs)
+        binaryOp(mv, operator, type, lhs.type)
+    }
+
+    private fun Identifier.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
+        identifier(mv, this, s, fd)
+    }
+
+    private fun VarDec.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
+        exp?.generate(s, mv, fd)
+        val idx = getVarIndex(s, fd.name, name)
+
+        if (exp == null) {
+            generateDefault(mv, type)
+        }
+
+        when (type) {
+            Type.int -> mv.visitVarInsn(ISTORE, idx)
+            Type.float -> mv.visitVarInsn(FSTORE, idx)
+            Type.bool -> mv.visitVarInsn(ISTORE, idx)
+            Type.string, Type.graph, Type.digraph -> mv.visitVarInsn(ASTORE, idx)
+            else -> {
+            }
+        }
     }
 }

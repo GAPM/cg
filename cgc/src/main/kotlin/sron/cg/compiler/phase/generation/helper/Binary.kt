@@ -19,23 +19,31 @@ package sron.cg.compiler.phase.generation.helper
 import org.objectweb.asm.Label
 import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes.*
-import sron.cg.compiler.ast.Expr
 import sron.cg.compiler.ast.Operator
 import sron.cg.type.Type
 
 /**
+ * Generates code for string concatenation (operator + with operands of type
+ * string)
+ */
+private fun addString(mv: MethodVisitor) {
+    mv.visitMethodInsn(INVOKESTATIC, "sron/cg/runtime/std/Str", "concat",
+            "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", false);
+}
+
+/**
  * Generates code for binary AND and OR operations.
  *
- * For example, the operation i && j gets translated to:
+ * i && j gets translated to (assuming i and j are both on top of the stack):
  *
- * temp = i & j // Bitwise and
- * if (temp == 0) goto FALSE
- * 1
- * goto END
- * FALSE:
- * 0
- * goto END
- * END:
+ * IAND
+ * IFEQ false
+ * ICONST_1
+ * goto end:
+ * false:
+ * ICONST_0
+ * GOTO end
+ * end:
  *
  * This assumes that the two operands in the stack are either a 0 or a 1
  *
@@ -66,7 +74,26 @@ private fun binaryAndOr(mv: MethodVisitor, op: Operator) {
     mv.visitLabel(end)
 }
 
-private fun intEqual(mv: MethodVisitor) {
+/**
+ * Generates code for integer equality
+ *
+ * i (==|!=) j gets translated to (assuming i and j are both on top of the
+ * stack):
+ *
+ * IF_ICMPEQ equal // If both integers are equal, go to `equal`
+ * ICONST_0 // ICONST_1 if op is NOT_EQUAL
+ * GOTO end
+ *
+ * equal:
+ * ICONST_1 // ICONST_0 if op is NOT_EQUAL
+ * GOTO end
+ *
+ * end:
+ *
+ * @param mv The method visitor
+ * @param op The operation performed
+ */
+private fun intEquality(mv: MethodVisitor, op: Operator) {
     val start = Label()
     val equal = Label()
     val end = Label()
@@ -74,16 +101,45 @@ private fun intEqual(mv: MethodVisitor) {
     mv.visitLabel(start)
     mv.visitJumpInsn(IF_ICMPEQ, equal)
 
-    mv.visitInsn(ICONST_0)
+    if (op == Operator.EQUAL) {
+        mv.visitInsn(ICONST_0)
+    } else {
+        mv.visitInsn(ICONST_1)
+    }
+
     mv.visitJumpInsn(GOTO, end)
 
     mv.visitLabel(equal)
-    mv.visitInsn(ICONST_1)
+    if (op == Operator.EQUAL) {
+        mv.visitInsn(ICONST_1)
+    } else {
+        mv.visitInsn(ICONST_0)
+    }
 
     mv.visitLabel(end)
 }
 
-private fun floatEqual(mv: MethodVisitor) {
+/**
+ * Generates code for float equality
+ *
+ * i (==|!=) j gets translated to (assuming i and j are both on top of the
+ * stack):
+ *
+ * FCMPG // Pushes the result to the stack
+ * IFEQ equal // If result if 0, both floats were equal, so go to `equal`
+ * ICONST_0 // ICONST_1 if op is NOT_EQUAL
+ * GOTO end
+ *
+ * equal:
+ * ICONST_1 // ICONST_0 if op is NOT_EQUAL
+ * GOTO end
+ *
+ * end:
+ *
+ * @param mv The method visitor
+ * @param op The operation performed
+ */
+private fun floatEquality(mv: MethodVisitor, op: Operator) {
     val start = Label()
     val equal = Label()
     val end = Label()
@@ -91,37 +147,199 @@ private fun floatEqual(mv: MethodVisitor) {
     mv.visitLabel(start)
     mv.visitInsn(FCMPG)
     mv.visitJumpInsn(IFEQ, equal)
-
-    mv.visitInsn(ICONST_0)
+    if (op == Operator.EQUAL) {
+        mv.visitInsn(ICONST_0)
+    } else {
+        mv.visitInsn(ICONST_1)
+    }
     mv.visitJumpInsn(GOTO, end)
 
     mv.visitLabel(equal)
-    mv.visitInsn(ICONST_1)
+    if (op == Operator.EQUAL) {
+        mv.visitInsn(ICONST_1)
+    } else {
+        mv.visitInsn(ICONST_0)
+    }
 
     mv.visitLabel(end)
 }
 
-private fun equal(mv: MethodVisitor, lhs: Expr, rhs: Expr) {
-    if (lhs.type == Type.int && rhs.type == Type.int) {
-        intEqual(mv)
-    } else if (lhs.type == Type.float && rhs.type == Type.float) {
-        floatEqual(mv)
-    } else if (lhs.type == Type.bool && rhs.type == Type.bool) {
-        intEqual(mv)
-    } else if (lhs.type == Type.string && rhs.type == Type.string) {
-
+/**
+ * Generates code for string equality
+ *
+ * Assuming that both string references to be compared are on top of the stack,
+ * then the static method from the runtime `Str.equal` gets called and its
+ * result is pushed to the stack. If operator is NOT_EQUAL the the result gets
+ * inverted.
+ *
+ * @param mv The method visitor
+ * @param op The operator
+ */
+private fun stringEquality(mv: MethodVisitor, op: Operator) {
+    mv.visitMethodInsn(INVOKESTATIC, "sron/cg/runtime/std/Str", "equal",
+            "(Ljava/lang/String;Ljava/lang/String;)Z", false)
+    if (op == Operator.NOT_EQUAL) {
+        not(mv)
     }
 }
 
-fun binaryOp(mv: MethodVisitor, op: Operator, type: Type, lhs: Expr, rhs: Expr) {
+/**
+ * Generates equality check code for expressions
+ *
+ * @param mv The method visitor
+ * @param type The type of the expression
+ */
+private fun equal(mv: MethodVisitor, type: Type) {
+    if (type == Type.int) {
+        intEquality(mv, Operator.EQUAL)
+    } else if (type == Type.float) {
+        floatEquality(mv, Operator.EQUAL)
+    } else if (type == Type.bool) {
+        intEquality(mv, Operator.EQUAL)
+    } else if (type == Type.string) {
+        stringEquality(mv, Operator.EQUAL)
+    }
+}
+
+/**
+ * Generates inequality check code for expressions
+ *
+ * @param mv The method visitor
+ * @param type The type of the expression
+ */
+private fun notEqual(mv: MethodVisitor, type: Type) {
+    if (type == Type.int) {
+        intEquality(mv, Operator.NOT_EQUAL)
+    } else if (type == Type.float) {
+        floatEquality(mv, Operator.NOT_EQUAL)
+    } else if (type == Type.bool) {
+        intEquality(mv, Operator.NOT_EQUAL)
+    } else if (type == Type.string) {
+        stringEquality(mv, Operator.NOT_EQUAL)
+    }
+}
+
+/**
+ * Receives an operator and returns the bytecode needed for that operation
+ * applied to integers
+ *
+ * @param op The operator
+ * @return The opcode needed
+ */
+private fun fromOpToIntCompBytecode(op: Operator) = if (op == Operator.LESS) {
+    IF_ICMPLT
+} else if (op == Operator.LESS_EQUAL) {
+    IF_ICMPLE
+} else if (op == Operator.GREATER) {
+    IF_ICMPGT
+} else {
+    IF_ICMPGE
+}
+
+/**
+ * Generates code for comparison operations (>, <, >=, <=) between integers.
+ *
+ * i (>|<|<=|>=) j gets translated to (assuming i and j are both on top of the
+ * stack):
+ *
+ * OPCODE isTrue // Replaced by the corresponding opcode of the operator
+ * ICONST_0
+ * GOTO end
+ * isTrue:
+ * ICONST_1
+ * end:
+ *
+ * @param mv The method visitor
+ * @param op The operation
+ */
+private fun intComparison(mv: MethodVisitor, op: Operator) {
+    val start = Label()
+    val isTrue = Label()
+    val end = Label()
+    val opcode = fromOpToIntCompBytecode(op)
+
+    mv.visitLabel(start)
+    mv.visitJumpInsn(opcode, isTrue)
+    mv.visitInsn(ICONST_0)
+    mv.visitJumpInsn(GOTO, end)
+    mv.visitLabel(isTrue)
+    mv.visitInsn(ICONST_1)
+    mv.visitLabel(end)
+}
+
+/**
+ * Receives an operator and returns the bytecodes needed for that operation
+ * applied to floats
+ *
+ * @param op The operator
+ * @return A pair with both opcodes needed
+ */
+private fun fromOpToFloatCompBytecodes(op: Operator) = if (op == Operator.LESS) {
+    FCMPG to IFLT
+} else if (op == Operator.LESS_EQUAL) {
+    FCMPG to IFLE
+} else if (op == Operator.GREATER) {
+    FCMPL to IFGT
+} else {
+    FCMPL to IFGE
+}
+
+/**
+ * Generates code for comparison operations (>, <, >=, <=) between floats.
+ *
+ * i (>|<|<=|>=) j gets translated to (assuming i and j are both on top of the
+ * stack):
+ *
+ * OPCODE // Replaced by the corresponding opcode of the comparison operator
+ * CHECKOP // Replaced by the corresponding opcode of the checking operation
+ *
+ * ICONST_0
+ * GOTO end
+ * isTrue:
+ * ICONST_1
+ * end:
+ *
+ * @param mv The method visitor
+ * @param op The operation
+ */
+private fun floatComparison(mv: MethodVisitor, op: Operator) {
+    val start = Label()
+    val isTrue = Label()
+    val end = Label()
+    val (compOp, checkOp) = fromOpToFloatCompBytecodes(op)
+
+    mv.visitLabel(start)
+    mv.visitInsn(compOp)
+    mv.visitJumpInsn(checkOp, isTrue)
+    mv.visitInsn(ICONST_0)
+    mv.visitJumpInsn(GOTO, end)
+    mv.visitLabel(isTrue)
+    mv.visitInsn(ICONST_1)
+    mv.visitLabel(end)
+}
+
+/**
+ * Generates code for binary operation between expressions
+ *
+ * @param mv The method visitor
+ * @param op The operator
+ * @param type The resulting type
+ * @param operandType The type of the operands
+ */
+fun binaryOp(mv: MethodVisitor, op: Operator, type: Type, operandType: Type) {
     when (op) {
         Operator.ADD -> {
             if (type == Type.int) {
                 mv.visitInsn(IADD)
-            } else {
+            }
+            if (type == Type.float) {
                 mv.visitInsn(FADD)
             }
+            if (type == Type.string) {
+                addString(mv)
+            }
         }
+
         Operator.SUB -> {
             if (type == Type.int) {
                 mv.visitInsn(ISUB)
@@ -129,6 +347,7 @@ fun binaryOp(mv: MethodVisitor, op: Operator, type: Type, lhs: Expr, rhs: Expr) 
                 return mv.visitInsn(FSUB)
             }
         }
+
         Operator.MUL -> {
             if (type == Type.int) {
                 mv.visitInsn(IMUL)
@@ -136,6 +355,7 @@ fun binaryOp(mv: MethodVisitor, op: Operator, type: Type, lhs: Expr, rhs: Expr) 
                 mv.visitInsn(FMUL)
             }
         }
+
         Operator.DIV -> {
             if (type == Type.int) {
                 mv.visitInsn(IDIV)
@@ -143,6 +363,7 @@ fun binaryOp(mv: MethodVisitor, op: Operator, type: Type, lhs: Expr, rhs: Expr) 
                 mv.visitInsn(FDIV)
             }
         }
+
         Operator.MOD -> {
             if (type == Type.int) {
                 mv.visitInsn(IREM)
@@ -154,13 +375,55 @@ fun binaryOp(mv: MethodVisitor, op: Operator, type: Type, lhs: Expr, rhs: Expr) 
         Operator.AND -> {
             binaryAndOr(mv, Operator.AND)
         }
+
         Operator.OR -> {
             binaryAndOr(mv, Operator.OR)
         }
 
         Operator.EQUAL -> {
-            equal(mv, lhs, rhs)
+            equal(mv, operandType)
         }
+
+        Operator.NOT_EQUAL -> {
+            notEqual(mv, operandType)
+        }
+
+        Operator.GREATER -> {
+            if (operandType == Type.int) {
+                intComparison(mv, Operator.GREATER)
+            }
+            if (operandType == Type.float) {
+                floatComparison(mv, Operator.GREATER)
+            }
+        }
+
+        Operator.LESS -> {
+            if (operandType == Type.int) {
+                intComparison(mv, Operator.LESS)
+            }
+            if (operandType == Type.float) {
+                floatComparison(mv, Operator.LESS)
+            }
+        }
+
+        Operator.GREATER_EQUAL -> {
+            if (operandType == Type.int) {
+                intComparison(mv, Operator.GREATER_EQUAL)
+            }
+            if (operandType == Type.float) {
+                floatComparison(mv, Operator.GREATER_EQUAL)
+            }
+        }
+
+        Operator.LESS_EQUAL -> {
+            if (operandType == Type.int) {
+                intComparison(mv, Operator.LESS_EQUAL)
+            }
+            if (operandType == Type.float) {
+                floatComparison(mv, Operator.LESS_EQUAL)
+            }
+        }
+
         else -> {
         }
     }

@@ -16,3 +16,22 @@
 
 package sron.cg.compiler.phase.generation.helper
 
+import org.objectweb.asm.MethodVisitor
+import org.objectweb.asm.Opcodes.*
+import sron.cg.compiler.State
+import sron.cg.compiler.ast.FuncDef
+import sron.cg.compiler.ast.Identifier
+import sron.cg.type.Type
+
+fun identifier(mv: MethodVisitor, id: Identifier, s: State, fd: FuncDef) {
+    val idx = getVarIndex(s, fd.name, id.name)
+
+    when (id.type) {
+        Type.int -> mv.visitVarInsn(ILOAD, idx)
+        Type.float -> mv.visitVarInsn(FLOAD, idx)
+        Type.bool -> mv.visitVarInsn(ILOAD, idx)
+        Type.string -> mv.visitVarInsn(ALOAD, idx)
+        else -> {
+        }
+    }
+}
