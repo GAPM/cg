@@ -176,11 +176,12 @@ object Generation {
     }
 
     private fun VarDec.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
-        exp?.generate(s, mv, fd)
         val idx = getVarIndex(s, fd.name, name)
 
         if (exp == null) {
             generateDefault(mv, type)
+        } else {
+            exp.generate(s, mv, fd)
         }
 
         when (type) {
