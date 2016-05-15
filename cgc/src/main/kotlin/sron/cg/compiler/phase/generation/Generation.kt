@@ -24,6 +24,7 @@ import org.objectweb.asm.Opcodes.*
 import sron.cg.compiler.State
 import sron.cg.compiler.ast.*
 import sron.cg.compiler.phase.generation.helper.*
+import sron.cg.symbol.Function
 import sron.cg.symbol.SymType
 import sron.cg.symbol.Variable
 import sron.cg.type.JVMDescriptor
@@ -76,7 +77,8 @@ object Generation {
     }
 
     private fun FuncDef.generate(s: State) {
-        val desc = signatureString(this)
+        val func = s.symbolTable.getSymbol(name, SymType.FUNC) as Function
+        val desc = signatureString(func)
         val mv = cw.visitMethod(ACC_PUBLIC + ACC_STATIC, name, desc, null, null)
         val varQueue = LinkedList<Variable>()
 
@@ -139,6 +141,7 @@ object Generation {
             is UnaryExpr -> this.generate(s, mv, fd)
             is BinaryExpr -> this.generate(s, mv, fd)
             is Identifier -> this.generate(s, mv, fd)
+            is FunctionCall -> this.generate(s, mv, fd)
         }
     }
 
@@ -173,6 +176,17 @@ object Generation {
 
     private fun Identifier.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
         identifier(mv, this, s, fd)
+    }
+
+    private fun FunctionCall.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
+        for (e in expr) {
+            e.generate(s, mv, fd)
+        }
+
+        val function = s.symbolTable.getSymbol(name, SymType.FUNC) as Function
+        val desc = signatureString(function)
+
+        mv.visitMethodInsn(INVOKESTATIC, "EntryPoint", name, desc, false)
     }
 
     private fun VarDec.generate(s: State, mv: MethodVisitor, fd: FuncDef) {

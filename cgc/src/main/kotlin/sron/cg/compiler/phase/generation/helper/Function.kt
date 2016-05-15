@@ -16,11 +16,12 @@
 
 package sron.cg.compiler.phase.generation.helper
 
+import org.objectweb.asm.MethodVisitor
 import sron.cg.compiler.State
-import sron.cg.compiler.ast.FuncDef
+import sron.cg.symbol.Function
 import sron.cg.type.JVMDescriptor
 
-fun signatureString(fd: FuncDef): String {
+fun signatureString(fd: Function): String {
     var result = "("
     for (arg in fd.args) {
         result += arg.type.JVMDescriptor()
@@ -34,4 +35,8 @@ fun signatureString(fd: FuncDef): String {
 fun getVarIndex(s: State, fName: String, vName: String): Int {
     val idx = s.varIndex[fName]!![vName]!!
     return idx
+}
+
+fun handleSpecial(mv: MethodVisitor, fd: Function) {
+
 }
