@@ -56,6 +56,10 @@ object Error {
         return e(location, "can't use type $type as type $funcType in return at function $fName")
     }
 
+    fun callingEntryPoint(location: Location): String {
+        return e(location, "the entry point is not callable")
+    }
+
     fun cast(location: Location, target: Type, current: Type): String {
         return e(location, "invalid cast from `$current` to `$target`")
     }

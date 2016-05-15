@@ -166,6 +166,10 @@ object Types {
         if (qry != null) {
             val function = qry as Function
 
+            if (function.name == "main" && function.args.size == 0) {
+                s.errors += Error.callingEntryPoint(location)
+            }
+
             if (function.args.size > expr.size) {
                 type = Type.ERROR
                 s.errors += Error.argumentNumber(location, '-', name)
