@@ -14,20 +14,12 @@
  * limitations under the License.
  */
 
-package sron.cg.compiler
+package sron.cg.symbol
 
-import sron.cg.symbol.SymbolTable
-import sron.cg.symbol.Runtime
-import java.util.*
-
-class State(val parameters: Parameters) {
-    val errors = ArrayList<String>()
-    val symbolTable = SymbolTable()
-    val varIndex = mutableMapOf<String, MutableMap<String, Int>>()
+object Runtime {
+    val functions = listOf<Function>()
 
     init {
-        for (f in Runtime.functions) {
-            symbolTable.addSymbol(f)
-        }
+
     }
 }
