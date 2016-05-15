@@ -128,7 +128,7 @@ object Generation {
             is Expr -> this.generate(s, mv, fd)
             is VarDec -> this.generate(s, mv, fd)
             is Assignment -> this.generate(s, mv, fd)
-        //is Return -> this.generate(s, mv)
+            is Return -> this.generate(s, mv, fd)
         //is If -> this.generate(s, mv)
         //is For -> this.generate(s, mv)
         //is While -> this.generate(s, mv)
@@ -177,7 +177,14 @@ object Generation {
     }
 
     private fun Identifier.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
-        identifier(mv, this, s, fd)
+        val idx = getVarIndex(s, fd.name, name)
+
+        when (type) {
+            Type.int -> mv.visitVarInsn(ILOAD, idx)
+            Type.float -> mv.visitVarInsn(FLOAD, idx)
+            Type.bool -> mv.visitVarInsn(ILOAD, idx)
+            else -> mv.visitVarInsn(ALOAD, idx)
+        }
     }
 
     private fun FunctionCall.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
@@ -267,6 +274,21 @@ object Generation {
             Type.float -> mv.visitVarInsn(FSTORE, idx)
             Type.bool -> mv.visitVarInsn(ISTORE, idx)
             else -> mv.visitVarInsn(ASTORE, idx)
+        }
+    }
+
+    private fun Return.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
+        if (fd.type != Type.void) {
+            expr?.generate(s, mv, fd)
+
+            when (fd.type) {
+                Type.int -> mv.visitInsn(IRETURN)
+                Type.float -> mv.visitInsn(FRETURN)
+                Type.bool -> mv.visitInsn(IRETURN)
+                else -> mv.visitInsn(ARETURN)
+            }
+        } else {
+            mv.visitInsn(RETURN)
         }
     }
 }
