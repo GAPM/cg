@@ -143,6 +143,7 @@ object Generation {
             is Identifier -> this.generate(s, mv, fd)
             is FunctionCall -> this.generate(s, mv, fd)
             is Cast -> this.generate(s, mv, fd)
+            is Graph -> this.generate(s, mv, fd)
         }
     }
 
@@ -206,6 +207,35 @@ object Generation {
         } else if (expr.type == Type.bool && type == Type.string) {
             mv.visitMethodInsn(INVOKESTATIC, "java/lang/Boolean", "toString",
                     "(Z)Ljava/lang/String;", false);
+        }
+    }
+
+    private fun Graph.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
+        if (gtype == GraphType.GRAPH) {
+            mv.visitTypeInsn(NEW, "sron/cg/runtime/graph/Graph")
+        } else {
+            mv.visitTypeInsn(NEW, "sron/cg/runtime/graph/DiGraph");
+        }
+
+        mv.visitInsn(DUP)
+        num.generate(s, mv, fd)
+
+        if (gtype == GraphType.GRAPH) {
+            mv.visitMethodInsn(INVOKESPECIAL, "sron/cg/runtime/graph/Graph", "<init>", "(I)V", false);
+        } else {
+            mv.visitMethodInsn(INVOKESPECIAL, "sron/cg/runtime/graph/DiGraph", "<init>", "(I)V", false);
+        }
+
+        for (edge in edges) {
+            mv.visitInsn(DUP)
+            edge.source.generate(s, mv, fd)
+            edge.target.generate(s, mv, fd)
+
+            if (gtype == GraphType.GRAPH) {
+                mv.visitMethodInsn(INVOKEVIRTUAL, "sron/cg/runtime/graph/Graph", "addEdge", "(II)V", false);
+            } else {
+                mv.visitMethodInsn(INVOKEVIRTUAL, "sron/cg/runtime/graph/DiGraph", "addEdge", "(II)V", false);
+            }
         }
     }
 
