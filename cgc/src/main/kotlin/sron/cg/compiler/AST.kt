@@ -199,7 +199,7 @@ object AST : CGBaseListener() {
         val rhs = result.get(ctx.expr(1)) as Expr
         val location = Location(ctx.start)
 
-        var assign: Assignment
+        val assign: Assignment
 
         if (ctx.op.type == CGLexer.EQUAL) {
             assign = Assignment(lhs, rhs, location)

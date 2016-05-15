@@ -255,7 +255,7 @@ object Types {
         val qry = s.symbolTable.getSymbol(name, scope, SymType.VAR)
 
         if (qry == null) {
-            var variable = Variable(name, type, scope, location)
+            val variable = Variable(name, type, scope, location)
             s.symbolTable.addSymbol(variable)
 
             exp?.let {

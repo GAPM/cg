@@ -39,8 +39,8 @@ object OpTable {
         fun match(operation: Triple<Operator, Type, Type>): Boolean {
             val (op, lhs, rhs) = operation
 
-            var opMatches = ops.contains(op)
-            var typesMatch = (lhs == this.lhs && rhs == this.rhs) || (lhs == this.rhs && rhs == this.lhs)
+            val opMatches = ops.contains(op)
+            val typesMatch = (lhs == this.lhs && rhs == this.rhs) || (lhs == this.rhs && rhs == this.lhs)
 
             return opMatches && typesMatch
         }

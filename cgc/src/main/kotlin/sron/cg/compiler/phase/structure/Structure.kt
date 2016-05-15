@@ -53,7 +53,7 @@ object Structure {
     private fun If.structure(s: State, func: FuncDef) {
         var ifReturns = false
         var allElifsReturns = true
-        var elseReturns: Boolean
+        val elseReturns: Boolean
 
         for (stmt in stmts) {
             stmt.structure(s, func)
