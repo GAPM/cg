@@ -17,9 +17,11 @@
 package sron.cg.compiler.ast
 
 import sron.cg.symbol.Location
+import sron.cg.symbol.Variable
 import sron.cg.type.Type
 
 open class Expr(location: Location) : Stmt(location) {
     open var type = Type.ERROR
     open var assignable = false
+    open var referencedVar: Variable? = null
 }

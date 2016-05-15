@@ -153,6 +153,7 @@ object Types {
             val variable = qry as Variable
             type = variable.type
             assignable = true
+            referencedVar = variable
         } else {
             type = Type.ERROR
             s.errors += Error.notFound(location, name, SymType.VAR)
