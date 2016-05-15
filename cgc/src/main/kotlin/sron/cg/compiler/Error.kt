@@ -84,6 +84,14 @@ object Error {
         return e(location, "non-empty return in void function `$fName`")
     }
 
+    fun nonIntegerNode(location: Location): String {
+        return e(location, "node indexes must be integers")
+    }
+
+    fun nonIntegerSize(location: Location): String {
+        return e(location, "graph size must be an integer")
+    }
+
     fun notAllPathsReturn(location: Location, fName: String): String {
         return e(location, "in function `$fName`: not all paths have a return")
     }

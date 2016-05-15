@@ -217,7 +217,7 @@ object Types {
 
         num.types(s, scope)
         if (num.type != Type.int) {
-            //TODO: throw error
+            s.errors += Error.nonIntegerSize(location)
         }
 
         for (edge in edges) {
@@ -225,11 +225,11 @@ object Types {
             edge.target.types(s, scope)
 
             if (edge.source.type != Type.int) {
-                //TODO: throw error
+                s.errors += Error.nonIntegerNode(edge.location)
             }
 
             if (edge.target.type != Type.int) {
-                //TODO: throw error
+                s.errors += Error.nonIntegerNode(edge.location)
             }
         }
     }
