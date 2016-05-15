@@ -17,21 +17,38 @@
 package sron.cg.compiler.phase.generation.helper
 
 import org.objectweb.asm.MethodVisitor
-import org.objectweb.asm.Opcodes.FCONST_0
-import org.objectweb.asm.Opcodes.ICONST_0
+import org.objectweb.asm.Opcodes.*
+import sron.cg.compiler.State
 import sron.cg.type.Type
 
-fun generateDefault(mv: MethodVisitor, type: Type) {
+fun getVarIndex(s: State, fName: String, vName: String): Int {
+    val idx = s.varIndex[fName]!![vName]!!
+    return idx
+}
+
+fun withoutQuotes(s: String) = try {
+    s.substring(1, s.length - 1)
+} catch (e: IndexOutOfBoundsException) {
+    ""
+}
+
+fun pushDefaultToStack(mv: MethodVisitor, type: Type) {
     when (type) {
         Type.int -> mv.visitInsn(ICONST_0)
         Type.float -> mv.visitInsn(FCONST_0)
         Type.bool -> mv.visitInsn(ICONST_0)
         Type.string -> mv.visitLdcInsn("")
         Type.graph -> {
-
+            mv.visitTypeInsn(NEW, "sron/cg/runtime/graph/Graph")
+            mv.visitInsn(DUP)
+            mv.visitInsn(ICONST_0)
+            mv.visitMethodInsn(INVOKESPECIAL, "sron/cg/runtime/graph/Graph", "<init>", "(I)V", false)
         }
         Type.digraph -> {
-
+            mv.visitTypeInsn(NEW, "sron/cg/runtime/graph/DiGraph")
+            mv.visitInsn(DUP)
+            mv.visitInsn(ICONST_0)
+            mv.visitMethodInsn(INVOKESPECIAL, "sron/cg/runtime/graph/DiGraph", "<init>", "(I)V", false)
         }
         else -> {
         }

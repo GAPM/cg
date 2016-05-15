@@ -17,8 +17,19 @@
 package sron.cg.symbol
 
 import sron.cg.type.Type
+import sron.cg.type.descriptor
 
 class Function(name: String, scope: String, val type: Type, location: Location,
                vararg val args: Variable) : Symbol(name, scope, location) {
     override val symType: SymType = SymType.FUNC
+
+    fun signatureString(): String {
+        var result = "("
+        for (arg in args) {
+            result += arg.type.descriptor()
+        }
+        result += ")"
+        result += type.descriptor()
+        return result
+    }
 }

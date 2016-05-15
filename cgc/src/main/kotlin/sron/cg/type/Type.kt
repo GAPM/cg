@@ -48,7 +48,7 @@ fun CGParser.TypeContext.toCGType(): Type {
     }
 }
 
-fun Type.JVMDescriptor() = when (this) {
+fun Type.descriptor() = when (this) {
     Type.int -> "I"
     Type.float -> "F"
     Type.bool -> "Z"
@@ -60,21 +60,16 @@ fun Type.JVMDescriptor() = when (this) {
     else -> ""
 }
 
-fun Type.JVMName() = when (this) {
+fun Type.name() = when (this) {
     Type.graph -> "sron/cg/runtime/graph/Graph"
     Type.digraph -> "sron/cg/runtime/graph/DiGraph"
     else -> ""
 }
 
-fun Type.defaultValue(): Any? {
-    return when (this) {
-        Type.int -> 0
-        Type.float -> 0.0f
-        Type.bool -> false
-        Type.string -> ""
-        Type.graph -> null
-        Type.digraph -> null
-        Type.void -> null
-        Type.ERROR -> null
-    }
+fun Type.defaultValue(): Any? = when (this) {
+    Type.int -> 0
+    Type.float -> 0.0f
+    Type.bool -> false
+    Type.string -> ""
+    else -> null
 }
