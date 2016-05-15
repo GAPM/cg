@@ -17,13 +17,11 @@
 package sron.cg.type
 
 object CastTable {
-    private val numeric =
-            listOf(Type.int, Type.float)
 
     private val tab = mapOf(
-            Type.int to numeric,
-            Type.float to numeric,
-            Type.bool to numeric,
+            Type.int to listOf(Type.float, Type.string),
+            Type.float to listOf(Type.int, Type.string),
+            Type.bool to listOf(Type.string),
             Type.string to listOf()
     )
 

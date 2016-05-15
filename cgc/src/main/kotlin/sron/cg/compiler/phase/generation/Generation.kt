@@ -142,6 +142,7 @@ object Generation {
             is BinaryExpr -> this.generate(s, mv, fd)
             is Identifier -> this.generate(s, mv, fd)
             is FunctionCall -> this.generate(s, mv, fd)
+            is Cast -> this.generate(s, mv, fd)
         }
     }
 
@@ -187,6 +188,25 @@ object Generation {
         val desc = signatureString(function)
 
         mv.visitMethodInsn(INVOKESTATIC, "EntryPoint", name, desc, false)
+    }
+
+    private fun Cast.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
+        expr.generate(s, mv, fd)
+
+        if (expr.type == Type.int && type == Type.float) {
+            mv.visitInsn(I2F)
+        } else if (expr.type == Type.float && type == Type.int) {
+            mv.visitInsn(F2I)
+        } else if (expr.type == Type.int && type == Type.string) {
+            mv.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "toString",
+                    "(I)Ljava/lang/String;", false);
+        } else if (expr.type == Type.float && type == Type.float) {
+            mv.visitMethodInsn(INVOKESTATIC, "java/lang/Float", "toString",
+                    "(F)Ljava/lang/String;", false);
+        } else if (expr.type == Type.bool && type == Type.string) {
+            mv.visitMethodInsn(INVOKESTATIC, "java/lang/Boolean", "toString",
+                    "(Z)Ljava/lang/String;", false);
+        }
     }
 
     private fun VarDec.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
