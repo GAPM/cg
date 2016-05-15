@@ -202,7 +202,7 @@ object Types {
     private fun Cast.types(s: State, scope: String) {
         expr.types(s, scope)
 
-        if (!CastTable.check(type, expr.type)) {
+        if (!CastTable.check(expr.type, type)) {
             s.errors += Error.cast(location, type, expr.type)
             type = Type.ERROR
             return

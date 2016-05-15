@@ -127,7 +127,7 @@ object Generation {
         when (this) {
             is Expr -> this.generate(s, mv, fd)
             is VarDec -> this.generate(s, mv, fd)
-            //is Assignment -> this.generate(s, mv)
+            is Assignment -> this.generate(s, mv, fd)
         //is Return -> this.generate(s, mv)
         //is If -> this.generate(s, mv)
         //is For -> this.generate(s, mv)
@@ -222,9 +222,21 @@ object Generation {
             Type.int -> mv.visitVarInsn(ISTORE, idx)
             Type.float -> mv.visitVarInsn(FSTORE, idx)
             Type.bool -> mv.visitVarInsn(ISTORE, idx)
-            Type.string, Type.graph, Type.digraph -> mv.visitVarInsn(ASTORE, idx)
-            else -> {
-            }
+            else -> mv.visitVarInsn(ASTORE, idx)
+        }
+    }
+
+    private fun Assignment.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
+        val variable = lhs.referencedVar!!
+        val idx = getVarIndex(s, fd.name, variable.name)
+
+        rhs.generate(s, mv, fd)
+
+        when (lhs.type) {
+            Type.int -> mv.visitVarInsn(ISTORE, idx)
+            Type.float -> mv.visitVarInsn(FSTORE, idx)
+            Type.bool -> mv.visitVarInsn(ISTORE, idx)
+            else -> mv.visitVarInsn(ASTORE, idx)
         }
     }
 }
