@@ -27,9 +27,9 @@ import sron.cg.compiler.phase.generation.helper.*
 import sron.cg.symbol.Function
 import sron.cg.symbol.SymType
 import sron.cg.symbol.Variable
-import sron.cg.type.JVMDescriptor
 import sron.cg.type.Type
 import sron.cg.type.defaultValue
+import sron.cg.type.descriptor
 import java.io.File
 import java.util.*
 
@@ -64,7 +64,7 @@ object Generation {
             when (exp.type) {
                 Type.int -> exp.text.toInt()
                 Type.float -> exp.text.toFloat()
-                Type.string -> exp.text.subSequence(1, exp.text.length - 1)
+                Type.string -> withoutQuotes(exp.text)
                 Type.bool -> exp.text.toBoolean()
                 else -> null
             }
@@ -72,13 +72,13 @@ object Generation {
             type.defaultValue()
         }
 
-        val fv = cw.visitField(ACC_PUBLIC + ACC_STATIC, name, type.JVMDescriptor(), null, initial)
+        val fv = cw.visitField(ACC_PUBLIC + ACC_STATIC, name, type.descriptor(), null, initial)
         fv.visitEnd()
     }
 
     private fun FuncDef.generate(s: State) {
-        val func = s.symbolTable.getSymbol(name, SymType.FUNC) as Function
-        val desc = signatureString(func)
+        val function = s.symbolTable.getSymbol(name, SymType.FUNC) as Function
+        val desc = function.signatureString()
         val mv = cw.visitMethod(ACC_PUBLIC + ACC_STATIC, name, desc, null, null)
         val varQueue = LinkedList<Variable>()
 
@@ -91,6 +91,7 @@ object Generation {
             if (stmt is VarDec) {
                 val v = s.symbolTable.getSymbol(stmt.name, scope, SymType.VAR) as Variable
                 varQueue.add(v)
+
                 stmt.generate(s, mv, this)
             } else {
                 stmt.generate(s, mv, this)
@@ -103,14 +104,14 @@ object Generation {
 
         while (varQueue.size > 0) {
             val variable = varQueue.remove()
-            val varDesc = variable.type.JVMDescriptor()
+            val varDesc = variable.type.descriptor()
             val idx = getVarIndex(s, name, variable.name)
             mv.visitLocalVariable(variable.name, varDesc, null, ls, le, idx)
         }
 
         args.map {
             val arg = s.symbolTable.getSymbol(it.name, scope, SymType.VAR)!!
-            val argDesc = it.type.JVMDescriptor()
+            val argDesc = it.type.descriptor()
             val idx = getVarIndex(s, name, arg.name)
             mv.visitLocalVariable(arg.name, argDesc, null, ls, le, idx)
         }
@@ -161,11 +162,11 @@ object Generation {
 
     private fun UnaryExpr.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
         expr.generate(s, mv, fd)
-        when (operator) {
-            Operator.NOT -> not(mv)
-            Operator.MINUS -> minus(mv, type)
-            else -> {
-            }
+
+        if (operator == Operator.NOT) {
+            not(mv)
+        } else if (operator == Operator.MINUS) {
+            minus(mv, type)
         }
     }
 
@@ -173,7 +174,7 @@ object Generation {
         lhs.generate(s, mv, fd)
         rhs.generate(s, mv, fd)
 
-        binaryOp(mv, operator, type, lhs.type)
+        binaryOp(mv, operator, lhs.type)
     }
 
     private fun Identifier.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
@@ -193,7 +194,7 @@ object Generation {
         }
 
         val function = s.symbolTable.getSymbol(name, SymType.FUNC) as Function
-        val desc = signatureString(function)
+        val desc = function.signatureString()
 
         mv.visitMethodInsn(INVOKESTATIC, "EntryPoint", name, desc, false)
     }
@@ -250,7 +251,7 @@ object Generation {
         val idx = getVarIndex(s, fd.name, name)
 
         if (exp == null) {
-            generateDefault(mv, type)
+            pushDefaultToStack(mv, type)
         } else {
             exp.generate(s, mv, fd)
         }

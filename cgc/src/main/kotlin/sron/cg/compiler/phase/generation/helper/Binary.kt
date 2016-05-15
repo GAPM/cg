@@ -32,6 +32,62 @@ private fun addString(mv: MethodVisitor) {
 }
 
 /**
+ * Generates code for addition (operator +)
+ *
+ * @param mv The method visitor
+ * @param type The type of the operands
+ */
+private fun add(mv: MethodVisitor, type: Type) = when (type) {
+    Type.int -> mv.visitInsn(IADD)
+    Type.float -> mv.visitInsn(FADD)
+    else -> addString(mv)
+}
+
+/**
+ * Generates code for substraction (operator -)
+ *
+ * @param mv The method visitor
+ * @param type The type of the operands
+ */
+private fun sub(mv: MethodVisitor, type: Type) = when (type) {
+    Type.int -> mv.visitInsn(ISUB)
+    else -> mv.visitInsn(FSUB)
+}
+
+/**
+ * Generates code for division (operator /)
+ *
+ * @param mv The method visitor
+ * @param type The type of the operands
+ */
+private fun div(mv: MethodVisitor, type: Type) = when (type) {
+    Type.int -> mv.visitInsn(IDIV)
+    else -> mv.visitInsn(FDIV)
+}
+
+/**
+ * Generates code for module (operator %)
+ *
+ * @param mv The method visitor
+ * @param type The type of the operands
+ */
+private fun mod(mv: MethodVisitor, type: Type) = when (type) {
+    Type.int -> mv.visitInsn(IREM)
+    else -> mv.visitInsn(FREM)
+}
+
+/**
+ * Generates code for multiplication (operator *)
+ *
+ * @param mv The method visitor
+ * @param type The type of the operands
+ */
+private fun mul(mv: MethodVisitor, type: Type) = when (type) {
+    Type.int -> mv.visitInsn(IMUL)
+    else -> mv.visitInsn(FMUL)
+}
+
+/**
  * Generates code for binary AND and OR operations.
  *
  * i && j gets translated to (assuming i and j are both on top of the stack):
@@ -319,112 +375,40 @@ private fun floatComparison(mv: MethodVisitor, op: Operator) {
 }
 
 /**
+ * Generates code for comparison (>, <, >=, <=)
+ *
+ * @param mv The method visitor
+ * @param op The operator
+ * @param type The operand type
+ */
+private fun comparison(mv: MethodVisitor, op: Operator, type: Type) {
+    when (type) {
+        Type.int -> intComparison(mv, op)
+        else -> floatComparison(mv, op)
+    }
+}
+
+/**
  * Generates code for binary operation between expressions
  *
  * @param mv The method visitor
  * @param op The operator
- * @param type The resulting type
  * @param operandType The type of the operands
  */
-fun binaryOp(mv: MethodVisitor, op: Operator, type: Type, operandType: Type) {
+fun binaryOp(mv: MethodVisitor, op: Operator, operandType: Type) {
     when (op) {
-        Operator.ADD -> {
-            if (type == Type.int) {
-                mv.visitInsn(IADD)
-            }
-            if (type == Type.float) {
-                mv.visitInsn(FADD)
-            }
-            if (type == Type.string) {
-                addString(mv)
-            }
+        Operator.ADD -> add(mv, operandType)
+        Operator.SUB -> sub(mv, operandType)
+        Operator.MUL -> mul(mv, operandType)
+        Operator.DIV -> div(mv, operandType)
+        Operator.MOD -> mod(mv, operandType)
+        Operator.AND, Operator.OR -> binaryAndOr(mv, op)
+        Operator.EQUAL -> equal(mv, operandType)
+        Operator.NOT_EQUAL -> notEqual(mv, operandType)
+        Operator.GREATER, Operator.LESS, Operator.GREATER_EQUAL, Operator.LESS_EQUAL -> {
+            comparison(mv, op, operandType)
         }
-
-        Operator.SUB -> {
-            if (type == Type.int) {
-                mv.visitInsn(ISUB)
-            } else {
-                return mv.visitInsn(FSUB)
-            }
-        }
-
-        Operator.MUL -> {
-            if (type == Type.int) {
-                mv.visitInsn(IMUL)
-            } else {
-                mv.visitInsn(FMUL)
-            }
-        }
-
-        Operator.DIV -> {
-            if (type == Type.int) {
-                mv.visitInsn(IDIV)
-            } else {
-                mv.visitInsn(FDIV)
-            }
-        }
-
-        Operator.MOD -> {
-            if (type == Type.int) {
-                mv.visitInsn(IREM)
-            } else {
-                mv.visitInsn(FREM)
-            }
-        }
-
-        Operator.AND -> {
-            binaryAndOr(mv, Operator.AND)
-        }
-
-        Operator.OR -> {
-            binaryAndOr(mv, Operator.OR)
-        }
-
-        Operator.EQUAL -> {
-            equal(mv, operandType)
-        }
-
-        Operator.NOT_EQUAL -> {
-            notEqual(mv, operandType)
-        }
-
-        Operator.GREATER -> {
-            if (operandType == Type.int) {
-                intComparison(mv, Operator.GREATER)
-            }
-            if (operandType == Type.float) {
-                floatComparison(mv, Operator.GREATER)
-            }
-        }
-
-        Operator.LESS -> {
-            if (operandType == Type.int) {
-                intComparison(mv, Operator.LESS)
-            }
-            if (operandType == Type.float) {
-                floatComparison(mv, Operator.LESS)
-            }
-        }
-
-        Operator.GREATER_EQUAL -> {
-            if (operandType == Type.int) {
-                intComparison(mv, Operator.GREATER_EQUAL)
-            }
-            if (operandType == Type.float) {
-                floatComparison(mv, Operator.GREATER_EQUAL)
-            }
-        }
-
-        Operator.LESS_EQUAL -> {
-            if (operandType == Type.int) {
-                intComparison(mv, Operator.LESS_EQUAL)
-            }
-            if (operandType == Type.float) {
-                floatComparison(mv, Operator.LESS_EQUAL)
-            }
-        }
-
-        else -> {
+        else -> { // Non-binary operators
         }
     }
 }

@@ -5,13 +5,13 @@ import org.objectweb.asm.Label
 import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes.*
 import sron.cg.compiler.ast.GlVarDec
-import sron.cg.type.JVMDescriptor
-import sron.cg.type.JVMName
+import sron.cg.type.descriptor
+import sron.cg.type.name
 import sron.cg.type.Type
 
 fun initGraph(mv: MethodVisitor, gvd: GlVarDec) {
-    val typeName = gvd.type.JVMName()
-    val typeDes = gvd.type.JVMDescriptor()
+    val typeName = gvd.type.name()
+    val typeDes = gvd.type.descriptor()
     mv.visitTypeInsn(NEW, typeName)
     mv.visitInsn(DUP)
     mv.visitInsn(ICONST_0)
