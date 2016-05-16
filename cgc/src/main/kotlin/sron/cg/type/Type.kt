@@ -60,7 +60,7 @@ fun Type.descriptor() = when (this) {
     else -> ""
 }
 
-fun Type.name() = when (this) {
+fun Type.fullName() = when (this) {
     Type.graph -> "sron/cg/runtime/graph/Graph"
     Type.digraph -> "sron/cg/runtime/graph/DiGraph"
     else -> ""

@@ -20,6 +20,7 @@ import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes.*
 import sron.cg.compiler.State
 import sron.cg.type.Type
+import sron.cg.type.fullName
 
 fun getVarIndex(s: State, fName: String, vName: String): Int {
     val idx = s.varIndex[fName]!![vName]!!
@@ -38,17 +39,11 @@ fun pushDefaultToStack(mv: MethodVisitor, type: Type) {
         Type.float -> mv.visitInsn(FCONST_0)
         Type.bool -> mv.visitInsn(ICONST_0)
         Type.string -> mv.visitLdcInsn("")
-        Type.graph -> {
-            mv.visitTypeInsn(NEW, "sron/cg/runtime/graph/Graph")
+        Type.graph, Type.digraph -> {
+            mv.visitTypeInsn(NEW, type.fullName())
             mv.visitInsn(DUP)
             mv.visitInsn(ICONST_0)
-            mv.visitMethodInsn(INVOKESPECIAL, "sron/cg/runtime/graph/Graph", "<init>", "(I)V", false)
-        }
-        Type.digraph -> {
-            mv.visitTypeInsn(NEW, "sron/cg/runtime/graph/DiGraph")
-            mv.visitInsn(DUP)
-            mv.visitInsn(ICONST_0)
-            mv.visitMethodInsn(INVOKESPECIAL, "sron/cg/runtime/graph/DiGraph", "<init>", "(I)V", false)
+            mv.visitMethodInsn(INVOKESPECIAL, type.fullName(), "<init>", "(I)V", false)
         }
         else -> {
         }

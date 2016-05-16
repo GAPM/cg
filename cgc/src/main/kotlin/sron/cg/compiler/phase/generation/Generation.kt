@@ -54,6 +54,8 @@ object Generation {
             fd.generate(s)
         }
 
+        main(cw)
+
         File("EntryPoint.class").outputStream().use {
             it.write(cw.toByteArray())
         }
