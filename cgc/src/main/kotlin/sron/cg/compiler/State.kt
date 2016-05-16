@@ -16,8 +16,8 @@
 
 package sron.cg.compiler
 
-import sron.cg.symbol.SymbolTable
 import sron.cg.symbol.Runtime
+import sron.cg.symbol.SymbolTable
 import java.util.*
 
 class State(val parameters: Parameters) {
