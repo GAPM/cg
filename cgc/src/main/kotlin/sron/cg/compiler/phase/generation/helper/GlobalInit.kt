@@ -19,6 +19,7 @@ fun initializer(cw: ClassWriter, glVarDec: List<GlVarDec>) {
     for (gvd in glVarDec) {
         if (gvd.type == Type.graph || gvd.type == Type.digraph) {
             pushDefaultToStack(mv, gvd.type)
+            mv.visitFieldInsn(PUTSTATIC, "EntryPoint", gvd.name, gvd.type.descriptor())
         }
     }
 

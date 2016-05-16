@@ -178,13 +178,18 @@ object Generation {
     }
 
     private fun Identifier.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
-        val idx = getVarIndex(s, fd.name, name)
+        val variable = s.symbolTable.getSymbol(name, "global", SymType.VAR) as Variable?
+        if (variable != null) {
+            mv.visitFieldInsn(GETSTATIC, "EntryPoint", variable.name, variable.type.descriptor())
+        } else {
+            val idx = getVarIndex(s, fd.name, name)
 
-        when (type) {
-            Type.int -> mv.visitVarInsn(ILOAD, idx)
-            Type.float -> mv.visitVarInsn(FLOAD, idx)
-            Type.bool -> mv.visitVarInsn(ILOAD, idx)
-            else -> mv.visitVarInsn(ALOAD, idx)
+            when (type) {
+                Type.int -> mv.visitVarInsn(ILOAD, idx)
+                Type.float -> mv.visitVarInsn(FLOAD, idx)
+                Type.bool -> mv.visitVarInsn(ILOAD, idx)
+                else -> mv.visitVarInsn(ALOAD, idx)
+            }
         }
     }
 
@@ -266,15 +271,20 @@ object Generation {
 
     private fun Assignment.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
         val variable = lhs.referencedVar!!
-        val idx = getVarIndex(s, fd.name, variable.name)
 
-        rhs.generate(s, mv, fd)
+        if (variable.scope == "global") {
+            mv.visitFieldInsn(PUTSTATIC, "EntryPoint", variable.name, variable.type.descriptor())
+        } else {
+            val idx = getVarIndex(s, fd.name, variable.name)
 
-        when (lhs.type) {
-            Type.int -> mv.visitVarInsn(ISTORE, idx)
-            Type.float -> mv.visitVarInsn(FSTORE, idx)
-            Type.bool -> mv.visitVarInsn(ISTORE, idx)
-            else -> mv.visitVarInsn(ASTORE, idx)
+            rhs.generate(s, mv, fd)
+
+            when (lhs.type) {
+                Type.int -> mv.visitVarInsn(ISTORE, idx)
+                Type.float -> mv.visitVarInsn(FSTORE, idx)
+                Type.bool -> mv.visitVarInsn(ISTORE, idx)
+                else -> mv.visitVarInsn(ASTORE, idx)
+            }
         }
     }
 
