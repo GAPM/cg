@@ -35,6 +35,7 @@ import java.util.*
 
 object Generation {
     private val cw = ClassWriter(COMPUTE_FRAMES)
+    private val varQueue = LinkedList<Triple<Variable, Label, Label>>()
 
     operator fun invoke(s: State, init: Init) = init.generate(s)
 
@@ -82,17 +83,17 @@ object Generation {
         val function = s.symbolTable.getSymbol(name, SymType.FUNC) as Function
         val desc = function.signatureString()
         val mv = cw.visitMethod(ACC_PUBLIC + ACC_STATIC, name, desc, null, null)
-        val varQueue = LinkedList<Variable>()
+
+        val start = Label()
+        val end = Label()
 
         mv.visitCode()
-
-        val ls = Label()
-        mv.visitLabel(ls)
+        mv.visitLabel(start)
 
         for (stmt in stmts) {
             if (stmt is VarDec) {
-                val v = s.symbolTable.getSymbol(stmt.name, scope, SymType.VAR) as Variable
-                varQueue.add(v)
+                val variable = s.symbolTable.getSymbol(stmt.name, scope, SymType.VAR) as Variable
+                varQueue += Triple(variable, start, end)
 
                 stmt.generate(s, mv, this)
             } else {
@@ -101,11 +102,10 @@ object Generation {
         }
 
         mv.visitInsn(RETURN)
-        val le = Label()
-        mv.visitLabel(le)
+        mv.visitLabel(end)
 
         while (varQueue.size > 0) {
-            val variable = varQueue.remove()
+            val (variable, ls, le) = varQueue.remove()
             val varDesc = variable.type.descriptor()
             val idx = getVarIndex(s, name, variable.name)
             mv.visitLocalVariable(variable.name, varDesc, null, ls, le, idx)
@@ -115,7 +115,7 @@ object Generation {
             val arg = s.symbolTable.getSymbol(it.name, scope, SymType.VAR)!!
             val argDesc = it.type.descriptor()
             val idx = getVarIndex(s, name, arg.name)
-            mv.visitLocalVariable(arg.name, argDesc, null, ls, le, idx)
+            mv.visitLocalVariable(arg.name, argDesc, null, start, end, idx)
         }
 
         if (type == Type.void) {
