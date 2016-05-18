@@ -156,6 +156,10 @@ object AST : CGBaseListener() {
             s.returnStmt()?.let { r ->
                 stmt = result.get(r) as Return
             }
+
+            s.controlStmt()?.let { c ->
+                stmt = result.get(c) as Control
+            }
         }
 
         ctx.compoundStmt()?.let { s ->
@@ -543,16 +547,9 @@ object AST : CGBaseListener() {
         val stmts = ArrayList<Stmt>()
         val location = Location(ctx.start)
 
-        ctx.loopStmt().forEach { ls ->
-            ls.controlStmt()?.let {
-                val control = result.get(it) as Control
-                stmts.add(control)
-            }
-
-            ls.stmt()?.let {
-                val stmt = result.get(it) as Stmt
-                stmts.add(stmt)
-            }
+        for (stmt in ctx.stmt()) {
+            val st = result.get(stmt) as Stmt
+            stmts.add(st)
         }
 
         val forc = For(initial, cond, mod, stmts, location)
@@ -566,16 +563,9 @@ object AST : CGBaseListener() {
         val stmts = ArrayList<Stmt>()
         val location = Location(ctx.start)
 
-        ctx.loopStmt().forEach { ls ->
-            ls.controlStmt()?.let {
-                val control = result.get(it) as Control
-                stmts.add(control)
-            }
-
-            ls.stmt()?.let {
-                val stmt = result.get(it) as Stmt
-                stmts.add(stmt)
-            }
+        for (stmt in ctx.stmt()) {
+            val st = result.get(stmt) as Stmt
+            stmts.add(st)
         }
 
         val whilec = While(cond, stmts, location)

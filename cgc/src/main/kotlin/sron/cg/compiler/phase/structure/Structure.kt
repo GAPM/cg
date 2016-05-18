@@ -22,6 +22,8 @@ import sron.cg.compiler.ast.*
 import sron.cg.type.Type
 
 object Structure {
+    private var insideLoop = false
+
     operator fun invoke(state: State, init: Init) = init.structure(state)
 
     private fun Init.structure(state: State) {
@@ -47,6 +49,9 @@ object Structure {
         when (this) {
             is If -> this.structure(s, func)
             is Return -> this.structure(s, func)
+            is Control -> this.structure(s)
+            is For -> this.structure(s, func)
+            is While -> this.structure(s, func)
         }
     }
 
@@ -93,5 +98,31 @@ object Structure {
         if (func.type == Type.void && expr != null) {
             s.errors += Error.nonEmptyReturn(location, func.name)
         }
+    }
+
+    private fun Control.structure(s: State) {
+        if (!insideLoop) {
+            s.errors += Error.controlNotInLoop(location, type)
+        }
+    }
+
+    private fun For.structure(s: State, func: FuncDef) {
+        insideLoop = true
+
+        for (stmt in stmts) {
+            stmt.structure(s, func)
+        }
+
+        insideLoop = false
+    }
+
+    private fun While.structure(s: State, func: FuncDef) {
+        insideLoop = true
+
+        for (stmt in stmts) {
+            stmt.structure(s, func)
+        }
+
+        insideLoop = false
     }
 }

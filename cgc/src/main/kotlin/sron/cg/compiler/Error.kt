@@ -16,6 +16,7 @@
 
 package sron.cg.compiler
 
+import sron.cg.compiler.ast.ControlType
 import sron.cg.compiler.ast.Operator
 import sron.cg.compiler.ast.sign
 import sron.cg.symbol.Location
@@ -62,6 +63,11 @@ object Error {
 
     fun cast(location: Location, target: Type, current: Type): String {
         return e(location, "invalid cast from `$current` to `$target`")
+    }
+
+    fun controlNotInLoop(location: Location, type: ControlType): String {
+        val w = if (type == ControlType.CONTINUE) "continue" else "break"
+        return e(location, "`$w` not inside a loop")
     }
 
     fun emptyReturn(location: Location, fName: String): String {

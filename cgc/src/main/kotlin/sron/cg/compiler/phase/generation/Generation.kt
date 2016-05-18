@@ -36,6 +36,8 @@ import java.util.*
 object Generation {
     private val cw = ClassWriter(COMPUTE_FRAMES)
     private val varQueue = LinkedList<Triple<Variable, Label, Label>>()
+    private var loopStart: Label? = null
+    private var loopEnd: Label? = null
 
     operator fun invoke(s: State, init: Init) = init.generate(s)
 
@@ -132,6 +134,7 @@ object Generation {
             is VarDec -> this.generate(s, mv, fd)
             is Assignment -> this.generate(s, mv, fd)
             is Return -> this.generate(s, mv, fd)
+            is Control -> this.generate(mv)
             is If -> this.generate(s, mv, fd)
             is For -> this.generate(s, mv, fd)
         //is While -> this.generate(s, mv)
@@ -305,6 +308,13 @@ object Generation {
         }
     }
 
+    private fun Control.generate(mv: MethodVisitor) {
+        when (type) {
+            ControlType.CONTINUE -> mv.visitJumpInsn(GOTO, loopStart)
+            ControlType.BREAK -> mv.visitJumpInsn(GOTO, loopEnd)
+        }
+    }
+
     private fun If.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
         val start = Label()
         val end = Label()
@@ -384,6 +394,9 @@ object Generation {
         val start = Label()
         val end = Label()
 
+        loopStart = start
+        loopEnd = end
+
         initial.generate(s, mv, fd)
 
         mv.visitLabel(start)
@@ -397,11 +410,6 @@ object Generation {
                 varQueue += Triple(variable, start, end)
 
                 stmt.generate(s, mv, fd)
-            } else if (stmt is Control) {
-                when (stmt.type) {
-                    ControlType.CONTINUE -> mv.visitJumpInsn(GOTO, start)
-                    ControlType.BREAK -> mv.visitJumpInsn(GOTO, end)
-                }
             } else {
                 stmt.generate(s, mv, fd)
             }
@@ -410,5 +418,8 @@ object Generation {
         mod.generate(s, mv, fd)
         mv.visitJumpInsn(GOTO, start)
         mv.visitLabel(end)
+
+        loopStart = null
+        loopEnd = null
     }
 }

@@ -138,10 +138,10 @@ ifc: 'if' '(' expr ')' '{' stmt* '}' elifc* elsec? ;
 elifc: 'elif' '(' expr ')' '{' stmt* '}' ;
 elsec: 'else' '{' stmt* '}' ;
 
-forc: 'for' '(' initial=assignment ';' cond=expr ';' mod=assignment ')' '{' loopStmt* '}' ;
-whilec: 'while' '(' expr ')' '{' loopStmt* '}' ;
+forc: 'for' '(' initial=assignment ';' cond=expr ';' mod=assignment ')' '{' stmt* '}' ;
+whilec: 'while' '(' expr ')' '{' stmt* '}' ;
 
-controlStmt: wr=('continue'|'break') ';' ;
+controlStmt: wr=('continue'|'break') ;
 
 returnStmt: 'return' expr? ;
 
@@ -154,12 +154,11 @@ simpleStmt: varDec
           | assignment
           | expr
           | returnStmt
+          | controlStmt
           ;
 
 stmt: simpleStmt ';'
     | compoundStmt
     ;
-
-loopStmt: (stmt | controlStmt) ;
 
 init: (funcDef | glVarDec ';')+;
