@@ -137,7 +137,7 @@ object Generation {
             is Control -> this.generate(mv)
             is If -> this.generate(s, mv, fd)
             is For -> this.generate(s, mv, fd)
-        //is While -> this.generate(s, mv)
+            is While -> this.generate(s, mv, fd)
         }
     }
 
@@ -416,6 +416,35 @@ object Generation {
         }
 
         mod.generate(s, mv, fd)
+        mv.visitJumpInsn(GOTO, start)
+        mv.visitLabel(end)
+
+        loopStart = null
+        loopEnd = null
+    }
+
+    private fun While.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
+        val start = Label()
+        val end = Label()
+
+        loopStart = start
+        loopEnd = end
+
+        mv.visitLabel(start)
+        cond.generate(s, mv, fd)
+        mv.visitJumpInsn(IFEQ, end)
+
+        for (stmt in stmts) {
+            if (stmt is VarDec) {
+                val variable = s.symbolTable.getSymbol(stmt.name, scope, SymType.VAR) as Variable
+                varQueue += Triple(variable, start, end)
+
+                stmt.generate(s, mv, fd)
+            } else {
+                stmt.generate(s, mv, fd)
+            }
+        }
+
         mv.visitJumpInsn(GOTO, start)
         mv.visitLabel(end)
 
