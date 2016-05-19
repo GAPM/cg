@@ -30,7 +30,6 @@ import sron.cg.symbol.Variable
 import sron.cg.type.Type
 import sron.cg.type.defaultValue
 import sron.cg.type.descriptor
-import java.io.File
 import java.util.*
 
 object Generation {
@@ -58,10 +57,10 @@ object Generation {
         }
 
         main(cw)
+        cw.visitEnd()
 
-        File("EntryPoint.class").outputStream().use {
-            it.write(cw.toByteArray())
-        }
+        val classBytes = cw.toByteArray()
+        createExec(classBytes)
     }
 
     private fun GlVarDec.generate() {

@@ -66,7 +66,9 @@ class Compiler(fileName: String, val parameters: Parameters) {
             throw ErrorsInCodeException()
         }
 
-        measureTime("Preparation") { Preparation(state, ast) }
-        measureTime("Generation") { Generation(state, ast) }
+        if (!parameters.justCheck) {
+            measureTime("Preparation") { Preparation(state, ast) }
+            measureTime("Generation") { Generation(state, ast) }
+        }
     }
 }
