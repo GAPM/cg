@@ -47,6 +47,7 @@ fun createExec(ba: ByteArray) {
     dumpClass("sron.cg.runtime.graph.IGraph")
     dumpClass("sron.cg.runtime.graph.Graph")
     dumpClass("sron.cg.runtime.graph.DiGraph")
+    dumpClass("sron.cg.runtime.std.Print")
     dumpClass("sron.cg.runtime.std.Str")
 
     File("out${File.separator}EntryPoint.class").outputStream().use {

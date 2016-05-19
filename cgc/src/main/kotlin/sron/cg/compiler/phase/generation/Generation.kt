@@ -137,6 +137,7 @@ object Generation {
             is If -> this.generate(s, mv, fd)
             is For -> this.generate(s, mv, fd)
             is While -> this.generate(s, mv, fd)
+            is Print -> this.generate(s, mv, fd)
         }
     }
 
@@ -449,5 +450,20 @@ object Generation {
 
         loopStart = null
         loopEnd = null
+    }
+
+    private fun Print.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
+        expr.generate(s, mv, fd)
+
+        when (expr.type) {
+            Type.int -> mv.visitMethodInsn(INVOKESTATIC,
+                    "sron/cg/runtime/std/Print", "print", "(I)V", false)
+            Type.float -> mv.visitMethodInsn(INVOKESTATIC,
+                    "sron/cg/runtime/std/Print", "print", "(F)V", false)
+            Type.bool -> mv.visitMethodInsn(INVOKESTATIC,
+                    "sron/cg/runtime/std/Print", "print", "(Z)V", false)
+            else -> mv.visitMethodInsn(INVOKESTATIC,
+                    "sron/cg/runtime/std/Print", "print", "(Ljava/lang/Object;)V", false)
+        }
     }
 }

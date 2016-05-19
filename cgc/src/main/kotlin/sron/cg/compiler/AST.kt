@@ -160,6 +160,10 @@ object AST : CGBaseListener() {
             s.controlStmt()?.let { c ->
                 stmt = result.get(c) as Control
             }
+
+            s.printStmt()?.let { p ->
+                stmt = result.get(p) as Print
+            }
         }
 
         ctx.compoundStmt()?.let { s ->
@@ -465,6 +469,16 @@ object AST : CGBaseListener() {
         val location = Location(ctx.start)
         val ret = Return(expr, location)
         result.put(ctx, ret)
+    }
+
+    override fun exitPrintStmt(ctx: PrintStmtContext) {
+        super.exitPrintStmt(ctx)
+
+        val location = Location(ctx.start)
+        val expr = result.get(ctx.expr()) as Expr
+
+        val print = Print(location, expr)
+        result.put(ctx, print)
     }
 
     override fun exitIfc(ctx: IfcContext) {

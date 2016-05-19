@@ -40,6 +40,7 @@ GT : '>' ;
 IF : 'if' ;
 INT : 'int' ;
 LBRACE : '{' ;
+LBRACK : '[' ;
 LE : '<=' ;
 LPAREN : '(' ;
 LT : '<' ;
@@ -52,7 +53,9 @@ NOT : '!' ;
 NOT_EQUAL : '!=' ;
 OR : '||' ;
 OR_ASSIGN : '||=' ;
+PRINT : 'print' ;
 RBRACE : '}' ;
+RBRACK : ']' ;
 RETURN : 'return' ;
 RPAREN : ')' ;
 SEMI : ';' ;
@@ -62,8 +65,6 @@ SUB_ASSIGN : '-=' ;
 VAR : 'var' ;
 VOID : 'void' ;
 WHILE : 'while' ;
-LBRACK : '[' ;
-RBRACK : ']' ;
 WS: [ \t\r\n] -> skip;
 
 BoolLit: 'true' | 'false';
@@ -145,6 +146,8 @@ controlStmt: wr=('continue'|'break') ;
 
 returnStmt: 'return' expr? ;
 
+printStmt: 'print' expr;
+
 compoundStmt: ifc
             | forc
             | whilec
@@ -155,6 +158,7 @@ simpleStmt: varDec
           | expr
           | returnStmt
           | controlStmt
+          | printStmt
           ;
 
 stmt: simpleStmt ';'
