@@ -457,13 +457,13 @@ object Generation {
 
         when (expr.type) {
             Type.int -> mv.visitMethodInsn(INVOKESTATIC,
-                    "sron/cg/runtime/std/Print", "print", "(I)V", false)
+                    "sron/cg/runtime/rt/Print", "print", "(I)V", false)
             Type.float -> mv.visitMethodInsn(INVOKESTATIC,
-                    "sron/cg/runtime/std/Print", "print", "(F)V", false)
+                    "sron/cg/runtime/rt/Print", "print", "(F)V", false)
             Type.bool -> mv.visitMethodInsn(INVOKESTATIC,
-                    "sron/cg/runtime/std/Print", "print", "(Z)V", false)
+                    "sron/cg/runtime/rt/Print", "print", "(Z)V", false)
             else -> mv.visitMethodInsn(INVOKESTATIC,
-                    "sron/cg/runtime/std/Print", "print", "(Ljava/lang/Object;)V", false)
+                    "sron/cg/runtime/rt/Print", "print", "(Ljava/lang/Object;)V", false)
         }
     }
 }

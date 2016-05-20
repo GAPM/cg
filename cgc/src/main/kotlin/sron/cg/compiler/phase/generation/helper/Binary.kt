@@ -27,7 +27,7 @@ import sron.cg.type.Type
  * string)
  */
 private fun addString(mv: MethodVisitor) {
-    mv.visitMethodInsn(INVOKESTATIC, "sron/cg/runtime/std/Str", "concat",
+    mv.visitMethodInsn(INVOKESTATIC, "sron/cg/runtime/rt/Str", "concat",
             "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", false);
 }
 
@@ -232,7 +232,7 @@ private fun floatEquality(mv: MethodVisitor, op: Operator) {
  * @param op The operator
  */
 private fun stringEquality(mv: MethodVisitor, op: Operator) {
-    mv.visitMethodInsn(INVOKESTATIC, "sron/cg/runtime/std/Str", "equal",
+    mv.visitMethodInsn(INVOKESTATIC, "sron/cg/runtime/rt/Str", "equal",
             "(Ljava/lang/String;Ljava/lang/String;)Z", false)
     if (op == Operator.NOT_EQUAL) {
         not(mv)
