@@ -18,6 +18,9 @@ package sron.cg.runtime.graph;
 
 import sron.cg.runtime.collections.BitMatrix;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DiGraph implements IGraph {
     private int size;
     private BitMatrix adj;
@@ -81,5 +84,31 @@ public class DiGraph implements IGraph {
     @Override
     public void removeAllEdges() {
         this.adj.reset();
+    }
+
+    @Override
+    public String toString() {
+        String res = "{";
+        List<String> edges = new ArrayList<>();
+
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (containsEdge(i, j)) {
+                    edges.add("[" + i + ", " + j + "]");
+                }
+            }
+        }
+
+        int c = 0;
+        for (String edge : edges) {
+            res += edge;
+            if (c != edge.length() - 1) {
+                res += ", ";
+            }
+            c += 1;
+        }
+
+        res += "}";
+        return res;
     }
 }
