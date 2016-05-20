@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sron.cg.runtime.std;
+package sron.cg.runtime.rt;
 
 public class Print {
     public static void print(int i) {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sron.cg.runtime.std;
+package sron.cg.runtime.rt;
 
 public class Str {
     public static String concat(String s1, String s2) {
