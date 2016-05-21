@@ -33,7 +33,7 @@ import java.io.File
 class Compiler(fileName: String, val parameters: Parameters) {
     private val file = File(fileName)
 
-    private val state = State(parameters)
+    private val state = State(file.nameWithoutExtension, parameters)
 
     lateinit private var parser: CGParser
 

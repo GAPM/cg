@@ -16,9 +16,13 @@
 
 package sron.cg.compiler.phase.generation.helper
 
-import java.io.File
+import sron.cg.compiler.State
 
-private val root = "out"
+import java.io.File
+import java.util.jar.Attributes
+import java.util.jar.JarEntry
+import java.util.jar.JarOutputStream
+import java.util.jar.Manifest
 
 private fun classToByteArray(fullName: String): ByteArray {
     var result = ByteArray(0)
@@ -32,16 +36,39 @@ private fun classToByteArray(fullName: String): ByteArray {
 private fun dumpClass(className: String) {
     val bytes = classToByteArray(className)
     val fileName = "${className.replace(".", File.separator)}.class"
-    val file = File("$root${File.separator}$fileName")
+    val file = File(fileName)
     file.parentFile.mkdirs()
+    file.createNewFile()
     file.outputStream().use {
         it.write(bytes)
     }
 }
 
-fun createExec(ba: ByteArray) {
-    File(root).mkdir()
+private fun JarOutputStream.add(source: File) {
+    if (source.isDirectory) {
+        var name = source.path.replace("\\", "/")
+        if (!name.isEmpty()) {
+            if (!name.endsWith("/")) {
+                name += "/"
+            }
 
+            val entry = JarEntry(name)
+            entry.time = source.lastModified()
+            putNextEntry(entry)
+            closeEntry()
+        }
+
+        source.listFiles().map { add(it) }
+    } else {
+        val entry = JarEntry(source.path.replace("\\", "/"))
+        putNextEntry(entry)
+        val bytes = source.inputStream().readBytes()
+        write(bytes)
+        closeEntry()
+    }
+}
+
+fun createExec(ba: ByteArray, s: State) {
     dumpClass("sron.cg.runtime.collections.BitArray")
     dumpClass("sron.cg.runtime.collections.BitMatrix")
     dumpClass("sron.cg.runtime.graph.IGraph")
@@ -50,7 +77,21 @@ fun createExec(ba: ByteArray) {
     dumpClass("sron.cg.runtime.rt.Print")
     dumpClass("sron.cg.runtime.rt.Str")
 
-    File("$root${File.separator}EntryPoint.class").outputStream().use {
+    File("EntryPoint.class").outputStream().use {
         it.write(ba)
+    }
+
+    if (!s.parameters.justClass) {
+        val manifest = Manifest()
+        manifest.mainAttributes.put(Attributes.Name.MANIFEST_VERSION, "1.0")
+        manifest.mainAttributes.put(Attributes.Name.MAIN_CLASS, "EntryPoint")
+        val jar = JarOutputStream(File("${s.name}.jar").outputStream(), manifest)
+
+        File("sron").listFiles().map { jar.add(it) }
+        jar.add(File("EntryPoint.class"))
+        jar.close()
+
+        File("sron").deleteRecursively()
+        File("EntryPoint.class").delete()
     }
 }

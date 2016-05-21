@@ -60,7 +60,7 @@ object Generation {
         cw.visitEnd()
 
         val classBytes = cw.toByteArray()
-        createExec(classBytes)
+        createExec(classBytes, s)
     }
 
     private fun GlVarDec.generate() {
