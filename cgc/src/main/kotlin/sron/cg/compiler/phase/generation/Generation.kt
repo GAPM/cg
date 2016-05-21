@@ -219,7 +219,7 @@ object Generation {
         } else if (expr.type == Type.int && type == Type.string) {
             mv.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "toString",
                     "(I)Ljava/lang/String;", false);
-        } else if (expr.type == Type.float && type == Type.float) {
+        } else if (expr.type == Type.float && type == Type.string) {
             mv.visitMethodInsn(INVOKESTATIC, "java/lang/Float", "toString",
                     "(F)Ljava/lang/String;", false);
         } else if (expr.type == Type.bool && type == Type.string) {
