@@ -50,7 +50,7 @@ fun createExec(ba: ByteArray) {
     dumpClass("sron.cg.runtime.rt.Print")
     dumpClass("sron.cg.runtime.rt.Str")
 
-    File("out${File.separator}EntryPoint.class").outputStream().use {
+    File("$root${File.separator}EntryPoint.class").outputStream().use {
         it.write(ba)
     }
 }

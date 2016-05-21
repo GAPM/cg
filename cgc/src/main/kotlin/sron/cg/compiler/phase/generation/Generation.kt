@@ -241,7 +241,8 @@ object Generation {
         if (gtype == GraphType.GRAPH) {
             mv.visitMethodInsn(INVOKESPECIAL, "sron/cg/runtime/graph/Graph", "<init>", "(I)V", false);
         } else {
-            mv.visitMethodInsn(INVOKESPECIAL, "sron/cg/runtime/graph/DiGraph", "<init>", "(I)V", false);
+            mv.visitMethodInsn(INVOKESPECIAL, "sron/cg/runtime/graph/DiGraph",
+                    "<init>", "(I)V", false);
         }
 
         for (edge in edges) {
@@ -250,9 +251,11 @@ object Generation {
             edge.target.generate(s, mv, fd)
 
             if (gtype == GraphType.GRAPH) {
-                mv.visitMethodInsn(INVOKEVIRTUAL, "sron/cg/runtime/graph/Graph", "addEdge", "(II)V", false);
+                mv.visitMethodInsn(INVOKEVIRTUAL, "sron/cg/runtime/graph/Graph",
+                        "addEdge", "(II)V", false);
             } else {
-                mv.visitMethodInsn(INVOKEVIRTUAL, "sron/cg/runtime/graph/DiGraph", "addEdge", "(II)V", false);
+                mv.visitMethodInsn(INVOKEVIRTUAL, "sron/cg/runtime/graph/DiGraph",
+                        "addEdge", "(II)V", false);
             }
         }
     }

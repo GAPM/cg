@@ -84,6 +84,7 @@ object Types {
             is If -> this.types(s, funcDef, scope)
             is For -> this.types(s, funcDef, scope)
             is While -> this.types(s, funcDef, scope)
+            is Print -> this.types(s, scope)
         }
     }
 
@@ -349,5 +350,9 @@ object Types {
         for (stmt in stmts) {
             stmt.types(s, funcDef, this.scope)
         }
+    }
+
+    private fun Print.types(s: State, scope: String) {
+        expr.types(s, scope)
     }
 }
