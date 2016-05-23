@@ -43,7 +43,7 @@ object Globals {
         when (qry) {
             null -> noEntry = true
             is Function -> {
-                if (qry.type != Type.void) {
+                if (qry.type != Type.void || qry.args.size != 0) {
                     noEntry = true
                 }
             }
