@@ -97,6 +97,11 @@ object Generation {
                 varQueue += Triple(variable, start, end)
 
                 stmt.generate(s, mv, this)
+            } else if (stmt is FunctionCall) {
+                stmt.generate(s, mv, this)
+                if (stmt.type != Type.void) {
+                    mv.visitInsn(POP)
+                }
             } else {
                 stmt.generate(s, mv, this)
             }
@@ -333,6 +338,11 @@ object Generation {
                 varQueue += Triple(variable, start, end)
 
                 stmt.generate(s, mv, fd)
+            } else if (stmt is FunctionCall) {
+                stmt.generate(s, mv, fd)
+                if (stmt.type != Type.void) {
+                    mv.visitInsn(POP)
+                }
             } else {
                 stmt.generate(s, mv, fd)
             }
@@ -363,6 +373,11 @@ object Generation {
                 varQueue += Triple(variable, start, end)
 
                 stmt.generate(s, mv, fd)
+            } else if (stmt is FunctionCall) {
+                stmt.generate(s, mv, fd)
+                if (stmt.type != Type.void) {
+                    mv.visitInsn(POP)
+                }
             } else {
                 stmt.generate(s, mv, fd)
             }
@@ -384,6 +399,11 @@ object Generation {
                 varQueue += Triple(variable, start, end)
 
                 stmt.generate(s, mv, fd)
+            } else if (stmt is FunctionCall) {
+                stmt.generate(s, mv, fd)
+                if (stmt.type != Type.void) {
+                    mv.visitInsn(POP)
+                }
             } else {
                 stmt.generate(s, mv, fd)
             }
@@ -413,6 +433,11 @@ object Generation {
                 varQueue += Triple(variable, start, end)
 
                 stmt.generate(s, mv, fd)
+            } else if (stmt is FunctionCall) {
+                stmt.generate(s, mv, fd)
+                if (stmt.type != Type.void) {
+                    mv.visitInsn(POP)
+                }
             } else {
                 stmt.generate(s, mv, fd)
             }
@@ -443,6 +468,11 @@ object Generation {
                 varQueue += Triple(variable, start, end)
 
                 stmt.generate(s, mv, fd)
+            } else if (stmt is FunctionCall) {
+                stmt.generate(s, mv, fd)
+                if (stmt.type != Type.void) {
+                    mv.visitInsn(POP)
+                }
             } else {
                 stmt.generate(s, mv, fd)
             }
