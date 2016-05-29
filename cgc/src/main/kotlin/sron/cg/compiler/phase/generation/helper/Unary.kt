@@ -35,18 +35,26 @@ import sron.cg.type.Type
  *
  * @param mv The method visitor
  */
-fun not(mv: MethodVisitor) {
-    val start = Label()
-    val isTrue = Label()
-    val end = Label()
+fun not(mv: MethodVisitor, type: Type) {
+    if (type == Type.bool) {
+        val start = Label()
+        val isTrue = Label()
+        val end = Label()
 
-    mv.visitLabel(start)
-    mv.visitJumpInsn(IFNE, isTrue)
-    mv.visitInsn(ICONST_1)
-    mv.visitJumpInsn(GOTO, end)
-    mv.visitLabel(isTrue)
-    mv.visitInsn(ICONST_0)
-    mv.visitLabel(end)
+        mv.visitLabel(start)
+        mv.visitJumpInsn(IFNE, isTrue)
+        mv.visitInsn(ICONST_1)
+        mv.visitJumpInsn(GOTO, end)
+        mv.visitLabel(isTrue)
+        mv.visitInsn(ICONST_0)
+        mv.visitLabel(end)
+    } else if (type == Type.graph) {
+        mv.visitMethodInsn(INVOKEVIRTUAL, "sron/cg/lang/Graph", "negation",
+                "()Lsron/cg/lang/Graph;", false);
+    } else {
+        mv.visitMethodInsn(INVOKEVIRTUAL, "sron/cg/lang/DiGraph", "negation",
+                "()Lsron/cg/lang/DiGraph;", false);
+    }
 }
 
 /**

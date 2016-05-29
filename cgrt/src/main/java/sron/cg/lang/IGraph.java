@@ -30,4 +30,6 @@ interface IGraph {
     void removeEdge(int source, int target);
 
     void removeAllEdges();
+
+    IGraph negation();
 }

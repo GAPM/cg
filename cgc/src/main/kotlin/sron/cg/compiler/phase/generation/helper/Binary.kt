@@ -235,7 +235,7 @@ private fun stringEquality(mv: MethodVisitor, op: Operator) {
     mv.visitMethodInsn(INVOKESTATIC, "sron/cg/runtime/rt/Str", "equal",
             "(Ljava/lang/String;Ljava/lang/String;)Z", false)
     if (op == Operator.NOT_EQUAL) {
-        not(mv)
+        not(mv, Type.bool)
     }
 }
 

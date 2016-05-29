@@ -89,6 +89,23 @@ public class Graph implements IGraph {
     }
 
     @Override
+    public Graph negation() {
+        Graph graph = new Graph(size);
+
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (adj.get(i, j)) {
+                    graph.adj.set(i, j, false);
+                } else {
+                    graph.adj.set(i, j, true);
+                }
+            }
+        }
+
+        return graph;
+    }
+
+    @Override
     public String toString() {
         List<String> edges = new ArrayList<>();
 

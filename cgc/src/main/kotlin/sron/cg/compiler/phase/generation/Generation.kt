@@ -175,9 +175,9 @@ object Generation {
         expr.generate(s, mv, fd)
 
         if (operator == Operator.NOT) {
-            not(mv)
+            not(mv, expr.type)
         } else if (operator == Operator.MINUS) {
-            minus(mv, type)
+            minus(mv, expr.type)
         }
     }
 

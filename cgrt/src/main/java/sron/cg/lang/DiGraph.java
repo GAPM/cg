@@ -87,6 +87,23 @@ public class DiGraph implements IGraph {
     }
 
     @Override
+    public DiGraph negation() {
+        DiGraph diGraph = new DiGraph(size);
+
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (adj.get(i, j)) {
+                    diGraph.adj.set(i, j, false);
+                } else {
+                    diGraph.adj.set(i, j, true);
+                }
+            }
+        }
+
+        return diGraph;
+    }
+
+    @Override
     public String toString() {
         List<String> edges = new ArrayList<>();
 

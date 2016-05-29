@@ -79,7 +79,9 @@ object OpTable {
             UnaryOp(sign, Type.int),
             UnaryOp(sign, Type.float),
 
-            UnaryOp(listOf(Operator.NOT), Type.bool)
+            UnaryOp(listOf(Operator.NOT), Type.bool),
+            UnaryOp(listOf(Operator.NOT), Type.graph),
+            UnaryOp(listOf(Operator.NOT), Type.digraph)
     )
 
     fun checkBinaryOp(op: Operator, lhs: Type, rhs: Type): Type {
