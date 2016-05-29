@@ -69,14 +69,14 @@ private fun JarOutputStream.add(source: File) {
 }
 
 fun createExec(ba: ByteArray, s: State) {
-    dumpClass("sron.cg.runtime.collections.BitArray")
-    dumpClass("sron.cg.runtime.collections.BitMatrix")
-    dumpClass("sron.cg.runtime.graph.IGraph")
-    dumpClass("sron.cg.runtime.graph.Graph")
-    dumpClass("sron.cg.runtime.graph.DiGraph")
-    dumpClass("sron.cg.runtime.rt.Print")
-    dumpClass("sron.cg.runtime.rt.RT")
-    dumpClass("sron.cg.runtime.rt.Str")
+    dumpClass("sron.cg.lang.collections.BitArray")
+    dumpClass("sron.cg.lang.collections.BitMatrix")
+    dumpClass("sron.cg.lang.rt.Print")
+    dumpClass("sron.cg.lang.rt.RT")
+    dumpClass("sron.cg.lang.rt.Str")
+    dumpClass("sron.cg.lang.IGraph")
+    dumpClass("sron.cg.lang.Graph")
+    dumpClass("sron.cg.lang.DiGraph")
 
     File("EntryPoint.class").outputStream().use {
         it.write(ba)

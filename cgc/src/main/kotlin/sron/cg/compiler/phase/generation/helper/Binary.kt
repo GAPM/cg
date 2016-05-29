@@ -27,7 +27,7 @@ import sron.cg.type.Type
  * string)
  */
 private fun addString(mv: MethodVisitor) {
-    mv.visitMethodInsn(INVOKESTATIC, "sron/cg/runtime/rt/Str", "concat",
+    mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/Str", "concat",
             "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", false);
 }
 

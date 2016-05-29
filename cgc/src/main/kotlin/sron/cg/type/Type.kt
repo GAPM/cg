@@ -54,15 +54,15 @@ fun Type.descriptor() = when (this) {
     Type.bool -> "Z"
     Type.void -> "V"
     Type.string -> "Ljava/lang/String;"
-    Type.graph -> "Lsron/cg/runtime/graph/Graph;"
-    Type.digraph -> "Lsron/cg/runtime/graph/DiGraph;"
+    Type.graph -> "Lsron/cg/lang/Graph;"
+    Type.digraph -> "Lsron/cg/lang/DiGraph;"
 
     else -> ""
 }
 
 fun Type.fullName() = when (this) {
-    Type.graph -> "sron/cg/runtime/graph/Graph"
-    Type.digraph -> "sron/cg/runtime/graph/DiGraph"
+    Type.graph -> "sron/cg/lang/Graph"
+    Type.digraph -> "sron/cg/lang/DiGraph"
     else -> ""
 }
 

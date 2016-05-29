@@ -41,7 +41,8 @@ object Generation {
     operator fun invoke(s: State, init: Init) = init.generate(s)
 
     private fun Init.generate(s: State) {
-        cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, "EntryPoint", null, "java/lang/Object", null)
+        cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, "EntryPoint", null,
+                "java/lang/Object", null)
 
         constructor(cw)
 
@@ -190,7 +191,8 @@ object Generation {
     private fun Identifier.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
         val variable = s.symbolTable.getSymbol(name, "global", SymType.VAR) as Variable?
         if (variable != null) {
-            mv.visitFieldInsn(GETSTATIC, "EntryPoint", variable.name, variable.type.descriptor())
+            mv.visitFieldInsn(GETSTATIC, "EntryPoint", variable.name,
+                    variable.type.descriptor())
         } else {
             val idx = getVarIndex(s, fd.name, name)
 
@@ -239,18 +241,18 @@ object Generation {
 
     private fun Graph.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
         if (gtype == GraphType.GRAPH) {
-            mv.visitTypeInsn(NEW, "sron/cg/runtime/graph/Graph")
+            mv.visitTypeInsn(NEW, "sron/cg/lang/Graph")
         } else {
-            mv.visitTypeInsn(NEW, "sron/cg/runtime/graph/DiGraph");
+            mv.visitTypeInsn(NEW, "sron/cg/lang/DiGraph");
         }
 
         mv.visitInsn(DUP)
         num.generate(s, mv, fd)
 
         if (gtype == GraphType.GRAPH) {
-            mv.visitMethodInsn(INVOKESPECIAL, "sron/cg/runtime/graph/Graph", "<init>", "(I)V", false);
+            mv.visitMethodInsn(INVOKESPECIAL, "sron/cg/lang/Graph", "<init>", "(I)V", false);
         } else {
-            mv.visitMethodInsn(INVOKESPECIAL, "sron/cg/runtime/graph/DiGraph",
+            mv.visitMethodInsn(INVOKESPECIAL, "sron/cg/lang/DiGraph",
                     "<init>", "(I)V", false);
         }
 
@@ -260,10 +262,10 @@ object Generation {
             edge.target.generate(s, mv, fd)
 
             if (gtype == GraphType.GRAPH) {
-                mv.visitMethodInsn(INVOKEVIRTUAL, "sron/cg/runtime/graph/Graph",
+                mv.visitMethodInsn(INVOKEVIRTUAL, "sron/cg/lang/Graph",
                         "addEdge", "(II)V", false);
             } else {
-                mv.visitMethodInsn(INVOKEVIRTUAL, "sron/cg/runtime/graph/DiGraph",
+                mv.visitMethodInsn(INVOKEVIRTUAL, "sron/cg/lang/DiGraph",
                         "addEdge", "(II)V", false);
             }
         }
@@ -494,13 +496,13 @@ object Generation {
 
         when (expr.type) {
             Type.int -> mv.visitMethodInsn(INVOKESTATIC,
-                    "sron/cg/runtime/rt/Print", "print", "(I)V", false)
+                    "sron/cg/lang/rt/Print", "print", "(I)V", false)
             Type.float -> mv.visitMethodInsn(INVOKESTATIC,
-                    "sron/cg/runtime/rt/Print", "print", "(F)V", false)
+                    "sron/cg/lang/rt/Print", "print", "(F)V", false)
             Type.bool -> mv.visitMethodInsn(INVOKESTATIC,
-                    "sron/cg/runtime/rt/Print", "print", "(Z)V", false)
+                    "sron/cg/lang/rt/Print", "print", "(Z)V", false)
             else -> mv.visitMethodInsn(INVOKESTATIC,
-                    "sron/cg/runtime/rt/Print", "print", "(Ljava/lang/Object;)V", false)
+                    "sron/cg/lang/rt/Print", "print", "(Ljava/lang/Object;)V", false)
         }
     }
 }

@@ -21,13 +21,13 @@ import org.objectweb.asm.Opcodes.INVOKESTATIC
 import sron.cg.symbol.Function
 
 private fun gAddNodes(mv: MethodVisitor) {
-    mv.visitMethodInsn(INVOKESTATIC, "sron/cg/runtime/rt/RT", "gAddNodes",
-            "(Lsron/cg/runtime/graph/Graph;I)Lsron/cg/runtime/graph/Graph;", false);
+    mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/RT", "gAddNodes",
+            "(Lsron/cg/lang/Graph;I)Lsron/cg/lang/Graph;", false);
 }
 
 private fun dgAddNodes(mv: MethodVisitor) {
-    mv.visitMethodInsn(INVOKESTATIC, "sron/cg/runtime/rt/RT", "dgAddNodes",
-            "(Lsron/cg/runtime/graph/DiGraph;I)Lsron/cg/runtime/graph/DiGraph;", false);
+    mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/RT", "dgAddNodes",
+            "(Lsron/cg/lang/DiGraph;I)Lsron/cg/lang/DiGraph;", false);
 }
 
 fun handleSpecial(mv: MethodVisitor, function: Function) {
