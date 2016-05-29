@@ -21,6 +21,7 @@ import sron.cg.compiler.State
 import sron.cg.compiler.ast.FuncDef
 import sron.cg.compiler.ast.GlVarDec
 import sron.cg.compiler.ast.Init
+import sron.cg.compiler.phase.globals.helper.rtFunctions
 import sron.cg.symbol.Function
 import sron.cg.symbol.SymType
 import sron.cg.symbol.Variable
@@ -30,6 +31,11 @@ object Globals {
     operator fun invoke(state: State, init: Init) = init.globals(state)
 
     private fun Init.globals(s: State) {
+
+        for (f in rtFunctions) {
+            s.symbolTable.addSymbol(f)
+        }
+
         for (gvd in glVarDec) {
             gvd.globals(s)
         }

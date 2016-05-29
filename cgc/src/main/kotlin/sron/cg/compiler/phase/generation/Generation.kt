@@ -209,9 +209,13 @@ object Generation {
         }
 
         val function = s.symbolTable.getSymbol(name, SymType.FUNC) as Function
-        val desc = function.signatureString()
 
-        mv.visitMethodInsn(INVOKESTATIC, "EntryPoint", name, desc, false)
+        if (function.isSpecial) {
+            handleSpecial(mv, function)
+        } else {
+            val desc = function.signatureString()
+            mv.visitMethodInsn(INVOKESTATIC, "EntryPoint", name, desc, false)
+        }
     }
 
     private fun Cast.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
