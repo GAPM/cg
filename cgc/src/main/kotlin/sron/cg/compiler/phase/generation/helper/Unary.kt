@@ -22,9 +22,10 @@ import org.objectweb.asm.Opcodes.*
 import sron.cg.type.Type
 
 /**
- * Generates code for boolean not
+ * Generates code for boolean not and graph negation
  *
- * !i gets translated to (assuming that i is on top of the stack):
+ * !i gets translated to (assuming that i is on top of the stack and it's a
+ * boolean):
  *
  * IFNE isTrue
  * ICONST_1
@@ -33,7 +34,10 @@ import sron.cg.type.Type
  * ICONST_0
  * end:
  *
+ * If i has a graph type, code for the negation() method is generated
+ *
  * @param mv The method visitor
+ * @param type The type of the operand
  */
 fun not(mv: MethodVisitor, type: Type) {
     if (type == Type.bool) {
