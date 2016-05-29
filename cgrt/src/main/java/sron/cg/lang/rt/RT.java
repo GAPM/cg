@@ -14,22 +14,17 @@
  * limitations under the License.
  */
 
-package sron.cg.runtime.rt;
+package sron.cg.lang.rt;
 
-public class Print {
-    public static void print(int i) {
-        System.out.println(i);
+import sron.cg.lang.DiGraph;
+import sron.cg.lang.Graph;
+
+public class RT {
+    public static Graph gAddNodes(Graph g, int n) {
+        return g.addVertex(n);
     }
 
-    public static void print(float f) {
-        System.out.println(f);
-    }
-
-    public static void print(boolean b) {
-        System.out.println(b);
-    }
-
-    public static void print(Object b) {
-        System.out.println(b.toString());
+    public static DiGraph dgAddNodes(DiGraph g, int n) {
+        return g.addVertex(n);
     }
 }

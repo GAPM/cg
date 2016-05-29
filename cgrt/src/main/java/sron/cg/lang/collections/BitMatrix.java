@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sron.cg.runtime.collections;
+package sron.cg.lang.collections;
 
 public class BitMatrix {
     private int rows;

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package sron.cg.runtime.graph;
+package sron.cg.lang;
 
-import sron.cg.runtime.collections.BitMatrix;
+import sron.cg.lang.collections.BitMatrix;
 
 import java.util.ArrayList;
 import java.util.List;

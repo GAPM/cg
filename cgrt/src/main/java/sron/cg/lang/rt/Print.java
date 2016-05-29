@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-package sron.cg.runtime.graph;
+package sron.cg.lang.rt;
 
-interface IGraph {
-    int getSize();
+public class Print {
+    public static void print(int i) {
+        System.out.println(i);
+    }
 
-    boolean containsVertex(int idx);
+    public static void print(float f) {
+        System.out.println(f);
+    }
 
-    boolean containsEdge(int source, int target);
+    public static void print(boolean b) {
+        System.out.println(b);
+    }
 
-    IGraph addVertex(int n);
-
-    void addEdge(int source, int target);
-
-    void removeEdge(int source, int target);
-
-    void removeAllEdges();
+    public static void print(Object b) {
+        System.out.println(b.toString());
+    }
 }

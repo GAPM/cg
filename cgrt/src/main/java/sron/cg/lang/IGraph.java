@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
-package sron.cg.runtime.rt;
+package sron.cg.lang;
 
-import sron.cg.runtime.graph.DiGraph;
-import sron.cg.runtime.graph.Graph;
+interface IGraph {
+    int getSize();
 
-public class RT {
-    public static Graph gAddNodes(Graph g, int n) {
-        return g.addVertex(n);
-    }
+    boolean containsVertex(int idx);
 
-    public static DiGraph dgAddNodes(DiGraph g, int n) {
-        return g.addVertex(n);
-    }
+    boolean containsEdge(int source, int target);
+
+    IGraph addVertex(int n);
+
+    void addEdge(int source, int target);
+
+    void removeEdge(int source, int target);
+
+    void removeAllEdges();
 }
