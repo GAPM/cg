@@ -19,7 +19,7 @@ package sron.cg.compiler.phase.structure
 import sron.cg.compiler.Error
 import sron.cg.compiler.State
 import sron.cg.compiler.ast.*
-import sron.cg.type.Type
+import sron.cg.compiler.type.Type
 
 object Structure {
     private var insideLoop = false

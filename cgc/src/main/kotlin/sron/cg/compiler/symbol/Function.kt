@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package sron.cg.symbol
+package sron.cg.compiler.symbol
 
-import sron.cg.type.Type
-import sron.cg.type.descriptor
+import sron.cg.compiler.type.Type
+import sron.cg.compiler.type.descriptor
 
 /**
  * Represents a function in the symbol table

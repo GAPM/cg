@@ -14,14 +14,25 @@
  * limitations under the License.
  */
 
-package sron.cg.symbol
+package sron.cg.compiler.util
 
-import sron.cg.type.Type
+object Logger {
+    enum class LogLevel {
+        ERROR,
+        DEBUG
+    }
 
-/**
- * Represents a variable in the symbol table
- */
-class Variable(name: String, val type: Type, scope: String,
-               location: Location) : Symbol(name, scope, location) {
-    override val symType: SymType = SymType.VAR
+    var maxLevel = LogLevel.ERROR
+
+    private fun log(msg: String?, level: LogLevel) {
+        if (level <= maxLevel) {
+            when (level) {
+                LogLevel.ERROR -> System.err.println("$level: $msg")
+                else -> println("$level: $msg")
+            }
+        }
+    }
+
+    fun debug(msg: String?) = log(msg, LogLevel.DEBUG)
+    fun error(msg: String?) = log(msg, LogLevel.ERROR)
 }

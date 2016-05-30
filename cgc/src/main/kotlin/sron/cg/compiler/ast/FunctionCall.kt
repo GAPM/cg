@@ -16,6 +16,6 @@
 
 package sron.cg.compiler.ast
 
-import sron.cg.symbol.Location
+import sron.cg.compiler.symbol.Location
 
 class FunctionCall(val name: String, val expr: List<Expr>, location: Location) : Atom(location)

@@ -16,6 +16,6 @@
 
 package sron.cg.compiler.ast
 
-import sron.cg.symbol.Location
+import sron.cg.compiler.symbol.Location
 
-class Print (location: Location, val expr: Expr) : Stmt(location)
+class Print(location: Location, val expr: Expr) : Stmt(location)

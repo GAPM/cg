@@ -16,6 +16,6 @@
 
 package sron.cg.compiler.ast
 
-import sron.cg.symbol.Location
+import sron.cg.compiler.symbol.Location
 
 open class Atom(location: Location) : Expr(location)

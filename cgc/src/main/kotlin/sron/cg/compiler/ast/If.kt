@@ -16,7 +16,7 @@
 
 package sron.cg.compiler.ast
 
-import sron.cg.symbol.Location
+import sron.cg.compiler.symbol.Location
 
 class If(val cond: Expr, val stmts: List<Stmt>,
          val elifs: List<Elif>, val elsec: Else?, location: Location) : Stmt(location)

@@ -18,7 +18,7 @@ package sron.cg.compiler
 
 import sron.cg.compiler.internal.CGErrorListener
 import sron.cg.compiler.internal.CGParser
-import sron.cg.util.Logger
+import sron.cg.compiler.util.Logger
 
 private var id = 0
 

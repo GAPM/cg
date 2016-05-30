@@ -16,9 +16,9 @@
 
 package sron.cg.compiler.ast
 
-import sron.cg.symbol.Location
-import sron.cg.symbol.Variable
-import sron.cg.type.Type
+import sron.cg.compiler.symbol.Location
+import sron.cg.compiler.symbol.Variable
+import sron.cg.compiler.type.Type
 
 open class Expr(location: Location) : Stmt(location) {
     open var type = Type.ERROR

@@ -18,6 +18,8 @@ package sron.cg.compiler
 
 import org.antlr.v4.runtime.ANTLRInputStream
 import org.antlr.v4.runtime.CommonTokenStream
+import sron.cg.compiler.exception.ErrorsInCodeException
+import sron.cg.compiler.exception.ParsingException
 import sron.cg.compiler.internal.CGLexer
 import sron.cg.compiler.internal.CGParser
 import sron.cg.compiler.phase.generation.Generation
@@ -25,9 +27,7 @@ import sron.cg.compiler.phase.globals.Globals
 import sron.cg.compiler.phase.preparation.Preparation
 import sron.cg.compiler.phase.structure.Structure
 import sron.cg.compiler.phase.types.Types
-import sron.cg.exception.ErrorsInCodeException
-import sron.cg.exception.ParsingException
-import sron.cg.util.Logger
+import sron.cg.compiler.util.Logger
 import java.io.File
 
 class Compiler(fileName: String, val parameters: Parameters) {

@@ -16,10 +16,10 @@
 
 package sron.cg.compiler.phase.globals.helper
 
-import sron.cg.symbol.Function
-import sron.cg.symbol.Location
-import sron.cg.symbol.Variable
-import sron.cg.type.Type
+import sron.cg.compiler.symbol.Function
+import sron.cg.compiler.symbol.Location
+import sron.cg.compiler.symbol.Variable
+import sron.cg.compiler.type.Type
 
 val rtFunctions by lazy {
     val g = "global"

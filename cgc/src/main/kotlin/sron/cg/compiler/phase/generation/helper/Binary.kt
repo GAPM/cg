@@ -20,7 +20,7 @@ import org.objectweb.asm.Label
 import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes.*
 import sron.cg.compiler.ast.Operator
-import sron.cg.type.Type
+import sron.cg.compiler.type.Type
 
 /**
  * Generates code for string concatenation (operator + with operands of type

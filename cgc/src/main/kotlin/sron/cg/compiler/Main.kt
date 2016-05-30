@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-package sron.cg
+package sron.cg.compiler
 
 import org.apache.commons.cli.DefaultParser
 import org.apache.commons.cli.HelpFormatter
 import org.apache.commons.cli.Options
 import org.apache.commons.cli.UnrecognizedOptionException
-import sron.cg.compiler.Compiler
-import sron.cg.compiler.Parameters
-import sron.cg.exception.CompilerException
-import sron.cg.util.Logger
+import sron.cg.compiler.exception.CompilerException
+import sron.cg.compiler.util.Logger
 import java.io.IOException
 
 fun main(args: Array<String>) {

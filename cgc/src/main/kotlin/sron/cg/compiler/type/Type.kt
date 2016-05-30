@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sron.cg.type
+package sron.cg.compiler.type
 
 import org.antlr.v4.runtime.tree.TerminalNode
 import sron.cg.compiler.internal.CGLexer

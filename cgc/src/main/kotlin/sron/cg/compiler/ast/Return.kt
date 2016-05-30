@@ -16,7 +16,7 @@
 
 package sron.cg.compiler.ast
 
-import sron.cg.symbol.Location
+import sron.cg.compiler.symbol.Location
 
 class Return(val expr: Expr?, location: Location) : Stmt(location) {
     init {

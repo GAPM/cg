@@ -16,7 +16,7 @@
 
 package sron.cg.compiler.ast
 
-import sron.cg.symbol.Location
+import sron.cg.compiler.symbol.Location
 
 class BinaryExpr(val operator: Operator, val lhs: Expr, val rhs: Expr,
                  location: Location) : Expr(location)

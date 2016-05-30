@@ -16,8 +16,8 @@
 
 package sron.cg.compiler.ast
 
-import sron.cg.symbol.Location
-import sron.cg.type.Type
+import sron.cg.compiler.symbol.Location
+import sron.cg.compiler.type.Type
 
 class VarDec(val name: String, val type: Type, val exp: Expr?,
              location: Location) : Stmt(location)

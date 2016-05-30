@@ -14,7 +14,16 @@
  * limitations under the License.
  */
 
-package sron.cg.exception
+package sron.cg.compiler.type
 
-class ErrorsInCodeException :
-        CompilerException("Error(s) found in code. Won't continue")
+object CastTable {
+
+    private val tab = mapOf(
+            Type.int to listOf(Type.float, Type.string),
+            Type.float to listOf(Type.int, Type.string),
+            Type.bool to listOf(Type.string),
+            Type.string to listOf()
+    )
+
+    fun check(type1: Type, type2: Type) = tab[type1]?.contains(type2) ?: false
+}

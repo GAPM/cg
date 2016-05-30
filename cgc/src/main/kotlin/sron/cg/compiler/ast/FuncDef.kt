@@ -16,8 +16,8 @@
 
 package sron.cg.compiler.ast
 
-import sron.cg.symbol.Location
-import sron.cg.type.Type
+import sron.cg.compiler.symbol.Location
+import sron.cg.compiler.type.Type
 
 class FuncDef(val name: String, val type: Type, val args: List<Arg>,
               val stmts: List<Stmt>, location: Location) : ASTNode(location) {

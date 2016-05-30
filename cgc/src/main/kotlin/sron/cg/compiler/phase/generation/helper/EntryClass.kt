@@ -20,8 +20,8 @@ import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes.*
 import sron.cg.compiler.ast.GlVarDec
-import sron.cg.type.Type
-import sron.cg.type.descriptor
+import sron.cg.compiler.type.Type
+import sron.cg.compiler.type.descriptor
 
 fun constructor(cw: ClassWriter) {
     val mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null)

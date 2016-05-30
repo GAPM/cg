@@ -20,12 +20,12 @@ import sron.cg.compiler.Error
 import sron.cg.compiler.State
 import sron.cg.compiler.ast.*
 import sron.cg.compiler.nextId
-import sron.cg.symbol.Function
-import sron.cg.symbol.SymType
-import sron.cg.symbol.Variable
-import sron.cg.type.CastTable
-import sron.cg.type.OpTable
-import sron.cg.type.Type
+import sron.cg.compiler.symbol.Function
+import sron.cg.compiler.symbol.SymType
+import sron.cg.compiler.symbol.Variable
+import sron.cg.compiler.type.CastTable
+import sron.cg.compiler.type.OpTable
+import sron.cg.compiler.type.Type
 
 object Types {
     operator fun invoke(state: State, init: Init) = init.types(state)

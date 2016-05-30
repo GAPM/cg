@@ -14,23 +14,7 @@
  * limitations under the License.
  */
 
-package sron.cg.symbol
+package sron.cg.compiler.exception
 
-import org.antlr.v4.runtime.Token
-import org.antlr.v4.runtime.tree.TerminalNode
-
-/**
- * Location of a symbol in source code
- *
- * @property line The source code line
- */
-class Location(val line: Int) {
-    constructor(token: Token) : this(token.line)
-
-    constructor(tn: TerminalNode) : this(tn.symbol)
-
-    override fun toString(): String = when (line) {
-        -1 -> "runtime"
-        else -> "$line"
-    }
-}
+class ErrorsInCodeException :
+        CompilerException("Error(s) found in code. Won't continue")

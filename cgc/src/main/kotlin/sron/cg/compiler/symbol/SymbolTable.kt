@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sron.cg.symbol
+package sron.cg.compiler.symbol
 
 import java.util.*
 

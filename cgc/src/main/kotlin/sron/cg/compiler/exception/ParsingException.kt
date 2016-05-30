@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
-package sron.cg.exception
+package sron.cg.compiler.exception
 
-open class CompilerException(msg: String) : Exception(msg)
+class ParsingException :
+        CompilerException("there were errors during parsing. Won't continue.")

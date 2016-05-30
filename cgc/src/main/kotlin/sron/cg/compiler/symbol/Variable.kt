@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-package sron.cg.type
+package sron.cg.compiler.symbol
 
-object CastTable {
+import sron.cg.compiler.type.Type
 
-    private val tab = mapOf(
-            Type.int to listOf(Type.float, Type.string),
-            Type.float to listOf(Type.int, Type.string),
-            Type.bool to listOf(Type.string),
-            Type.string to listOf()
-    )
-
-    fun check(type1: Type, type2: Type) = tab[type1]?.contains(type2) ?: false
+/**
+ * Represents a variable in the symbol table
+ */
+class Variable(name: String, val type: Type, scope: String,
+               location: Location) : Symbol(name, scope, location) {
+    override val symType: SymType = SymType.VAR
 }

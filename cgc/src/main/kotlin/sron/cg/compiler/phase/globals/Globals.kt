@@ -22,10 +22,10 @@ import sron.cg.compiler.ast.FuncDef
 import sron.cg.compiler.ast.GlVarDec
 import sron.cg.compiler.ast.Init
 import sron.cg.compiler.phase.globals.helper.rtFunctions
-import sron.cg.symbol.Function
-import sron.cg.symbol.SymType
-import sron.cg.symbol.Variable
-import sron.cg.type.Type
+import sron.cg.compiler.symbol.Function
+import sron.cg.compiler.symbol.SymType
+import sron.cg.compiler.symbol.Variable
+import sron.cg.compiler.type.Type
 
 object Globals {
     operator fun invoke(state: State, init: Init) = init.globals(state)

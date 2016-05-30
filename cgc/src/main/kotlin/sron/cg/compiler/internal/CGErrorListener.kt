@@ -19,7 +19,7 @@ package sron.cg.compiler.internal
 import org.antlr.v4.runtime.BaseErrorListener
 import org.antlr.v4.runtime.RecognitionException
 import org.antlr.v4.runtime.Recognizer
-import sron.cg.util.Logger
+import sron.cg.compiler.util.Logger
 
 class CGErrorListener(val fileName: String) : BaseErrorListener() {
     override fun syntaxError(recognizer: Recognizer<*, *>, offendingSymbol: Any,

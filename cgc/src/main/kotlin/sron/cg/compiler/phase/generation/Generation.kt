@@ -24,12 +24,12 @@ import org.objectweb.asm.Opcodes.*
 import sron.cg.compiler.State
 import sron.cg.compiler.ast.*
 import sron.cg.compiler.phase.generation.helper.*
-import sron.cg.symbol.Function
-import sron.cg.symbol.SymType
-import sron.cg.symbol.Variable
-import sron.cg.type.Type
-import sron.cg.type.defaultValue
-import sron.cg.type.descriptor
+import sron.cg.compiler.symbol.Function
+import sron.cg.compiler.symbol.SymType
+import sron.cg.compiler.symbol.Variable
+import sron.cg.compiler.type.Type
+import sron.cg.compiler.type.defaultValue
+import sron.cg.compiler.type.descriptor
 import java.util.*
 
 object Generation {

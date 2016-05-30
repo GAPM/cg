@@ -16,7 +16,7 @@
 
 package sron.cg.compiler.ast
 
-import sron.cg.symbol.Location
+import sron.cg.compiler.symbol.Location
 import java.util.*
 
 class Init : ASTNode(Location(0)) {

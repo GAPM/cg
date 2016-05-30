@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sron.cg.type
+package sron.cg.compiler.type
 
 import sron.cg.compiler.ast.Operator
 
@@ -71,6 +71,9 @@ object OpTable {
             BinOp(listOf(Operator.ADD), Type.string),
             BinOp(comparison, Type.string, Type.bool),
             BinOp(comparison, Type.bool),
+
+            BinOp(listOf(Operator.AND, Operator.OR, Operator.SUB), Type.graph),
+            BinOp(listOf(Operator.AND, Operator.OR, Operator.SUB), Type.digraph),
 
             BinOp(logic, Type.bool)
     )

@@ -16,6 +16,6 @@
 
 package sron.cg.compiler.ast
 
-import sron.cg.symbol.Location
+import sron.cg.compiler.symbol.Location
 
 class Graph(val gtype: GraphType, val num: Expr, val edges: Array<Edge>, location: Location) : Atom(location)

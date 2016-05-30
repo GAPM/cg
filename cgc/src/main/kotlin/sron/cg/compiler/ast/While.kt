@@ -16,6 +16,6 @@
 
 package sron.cg.compiler.ast
 
-import sron.cg.symbol.Location
+import sron.cg.compiler.symbol.Location
 
 class While(val cond: Expr, val stmts: List<Stmt>, location: Location) : Stmt(location)

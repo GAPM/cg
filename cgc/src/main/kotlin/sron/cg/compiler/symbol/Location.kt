@@ -14,12 +14,23 @@
  * limitations under the License.
  */
 
-package sron.cg.symbol
+package sron.cg.compiler.symbol
+
+import org.antlr.v4.runtime.Token
+import org.antlr.v4.runtime.tree.TerminalNode
 
 /**
- * Contains all types a symbol can be
+ * Location of a symbol in source code
+ *
+ * @property line The source code line
  */
-enum class SymType {
-    VAR,
-    FUNC
+class Location(val line: Int) {
+    constructor(token: Token) : this(token.line)
+
+    constructor(tn: TerminalNode) : this(tn.symbol)
+
+    override fun toString(): String = when (line) {
+        -1 -> "runtime"
+        else -> "$line"
+    }
 }

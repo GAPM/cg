@@ -23,9 +23,9 @@ import sron.cg.compiler.ast.*
 import sron.cg.compiler.internal.CGBaseListener
 import sron.cg.compiler.internal.CGLexer
 import sron.cg.compiler.internal.CGParser.*
-import sron.cg.symbol.Location
-import sron.cg.type.Type
-import sron.cg.type.toCGType
+import sron.cg.compiler.symbol.Location
+import sron.cg.compiler.type.Type
+import sron.cg.compiler.type.toCGType
 import java.util.*
 
 object AST : CGBaseListener() {

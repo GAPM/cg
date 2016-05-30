@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-package sron.cg.exception
+package sron.cg.compiler.symbol
 
-class ParsingException :
-        CompilerException("there were errors during parsing. Won't continue.")
+/**
+ * Abstract class of all the symbols in the symbol table
+ */
+abstract class Symbol(val name: String, val scope: String,
+                      val location: Location) {
+    abstract val symType: SymType
+}

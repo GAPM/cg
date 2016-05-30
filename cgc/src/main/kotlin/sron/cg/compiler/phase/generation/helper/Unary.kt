@@ -19,7 +19,7 @@ package sron.cg.compiler.phase.generation.helper
 import org.objectweb.asm.Label
 import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes.*
-import sron.cg.type.Type
+import sron.cg.compiler.type.Type
 
 /**
  * Generates code for boolean not and graph negation

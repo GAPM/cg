@@ -18,7 +18,7 @@ package sron.cg.compiler.phase.generation.helper
 
 import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes.INVOKESTATIC
-import sron.cg.symbol.Function
+import sron.cg.compiler.symbol.Function
 
 private fun gAddNodes(mv: MethodVisitor) {
     mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/RT", "gAddNodes",
