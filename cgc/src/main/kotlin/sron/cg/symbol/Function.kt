@@ -19,11 +19,19 @@ package sron.cg.symbol
 import sron.cg.type.Type
 import sron.cg.type.descriptor
 
+/**
+ * Represents a function in the symbol table
+ */
 class Function(name: String, scope: String, val type: Type, location: Location,
                vararg val args: Variable) : Symbol(name, scope, location) {
     override val symType: SymType = SymType.FUNC
     var isSpecial = false
 
+    /**
+     * Retrieves the JVM signature for the function
+     *
+     * @return The signature as a String
+     */
     fun signatureString(): String {
         var result = "("
         for (arg in args) {

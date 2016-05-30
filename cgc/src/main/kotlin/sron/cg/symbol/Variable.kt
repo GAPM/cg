@@ -18,6 +18,9 @@ package sron.cg.symbol
 
 import sron.cg.type.Type
 
+/**
+ * Represents a variable in the symbol table
+ */
 class Variable(name: String, val type: Type, scope: String,
                location: Location) : Symbol(name, scope, location) {
     override val symType: SymType = SymType.VAR

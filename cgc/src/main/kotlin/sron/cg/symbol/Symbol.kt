@@ -16,6 +16,9 @@
 
 package sron.cg.symbol
 
+/**
+ * Abstract class of all the symbols in the symbol table
+ */
 abstract class Symbol(val name: String, val scope: String,
                       val location: Location) {
     abstract val symType: SymType

@@ -16,7 +16,6 @@
 
 package sron.cg.compiler
 
-import sron.cg.symbol.Runtime
 import sron.cg.symbol.SymbolTable
 import java.util.*
 
@@ -24,10 +23,4 @@ class State(val name: String, val parameters: Parameters) {
     val errors = ArrayList<String>()
     val symbolTable = SymbolTable()
     val varIndex = mutableMapOf<String, MutableMap<String, Int>>()
-
-    init {
-        for (f in Runtime.functions) {
-            symbolTable.addSymbol(f)
-        }
-    }
 }

@@ -16,6 +16,9 @@
 
 package sron.cg.symbol
 
+/**
+ * Contains all types a symbol can be
+ */
 enum class SymType {
     VAR,
     FUNC
