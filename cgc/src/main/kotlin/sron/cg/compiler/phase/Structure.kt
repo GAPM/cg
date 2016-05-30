@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package sron.cg.compiler.phase.structure
+package sron.cg.compiler.phase
 
 import sron.cg.compiler.Error
 import sron.cg.compiler.State
 import sron.cg.compiler.ast.*
 import sron.cg.compiler.type.Type
 
-object Structure {
+class Structure(private val s: State, private val init: Init) : Phase {
     private var insideLoop = false
 
-    operator fun invoke(state: State, init: Init) = init.structure(state)
+    override fun execute() = init.structure(s)
 
     private fun Init.structure(state: State) {
         for (fd in this.funcDef) {

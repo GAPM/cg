@@ -18,17 +18,15 @@ package sron.cg.compiler
 
 import org.antlr.v4.runtime.ANTLRInputStream
 import org.antlr.v4.runtime.CommonTokenStream
+import sron.cg.compiler.ast.Init
 import sron.cg.compiler.exception.ErrorsInCodeException
 import sron.cg.compiler.exception.ParsingException
 import sron.cg.compiler.internal.CGLexer
 import sron.cg.compiler.internal.CGParser
-import sron.cg.compiler.phase.generation.Generation
-import sron.cg.compiler.phase.globals.Globals
-import sron.cg.compiler.phase.preparation.Preparation
-import sron.cg.compiler.phase.structure.Structure
-import sron.cg.compiler.phase.types.Types
+import sron.cg.compiler.phase.*
 import sron.cg.compiler.util.Logger
 import java.io.File
+import kotlin.system.measureTimeMillis
 
 class Compiler(fileName: String, val parameters: Parameters) {
     private val file = File(fileName)
@@ -50,6 +48,16 @@ class Compiler(fileName: String, val parameters: Parameters) {
         }
     }
 
+    private fun <T : Phase> executePhase(constructor: (State, Init) -> T, init: Init) {
+        val phase = constructor(state, init)
+
+        val ms = measureTimeMillis {
+            phase.execute()
+        }
+
+        Logger.debug("${phase.javaClass.name}: $ms ms")
+    }
+
     /**
      * Handles the compilation process.
      */
@@ -59,11 +67,11 @@ class Compiler(fileName: String, val parameters: Parameters) {
             throw ParsingException()
         }
 
-        val ast = measureTime("To AST") { AST(tree) }
+        val ast = AST(tree)
 
-        measureTime("Globals") { Globals(state, ast) }
-        measureTime("Structure") { Structure(state, ast) }
-        measureTime("Types") { Types(state, ast) }
+        executePhase(::Globals, ast)
+        executePhase(::Structure, ast)
+        executePhase(::Types, ast)
 
         if (state.errors.size > 0) {
             state.errors.forEach { Logger.error(it) }
@@ -71,8 +79,8 @@ class Compiler(fileName: String, val parameters: Parameters) {
         }
 
         if (!parameters.justCheck) {
-            measureTime("Preparation") { Preparation(state, ast) }
-            measureTime("Generation") { Generation(state, ast) }
+            executePhase(::Preparation, ast)
+            executePhase(::Generation, ast)
         }
     }
 }

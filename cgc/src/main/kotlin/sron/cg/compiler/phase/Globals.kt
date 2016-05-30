@@ -14,23 +14,24 @@
  * limitations under the License.
  */
 
-package sron.cg.compiler.phase.globals
+package sron.cg.compiler.phase
 
 import sron.cg.compiler.Error
 import sron.cg.compiler.State
 import sron.cg.compiler.ast.FuncDef
 import sron.cg.compiler.ast.GlVarDec
 import sron.cg.compiler.ast.Init
-import sron.cg.compiler.phase.globals.helper.rtFunctions
+import sron.cg.compiler.phase.globals.rtFunctions
 import sron.cg.compiler.symbol.Function
 import sron.cg.compiler.symbol.SymType
 import sron.cg.compiler.symbol.Variable
 import sron.cg.compiler.type.Type
 
-object Globals {
-    operator fun invoke(state: State, init: Init) = init.globals(state)
+class Globals(private val s: State, private val init: Init) : Phase {
 
-    private fun Init.globals(s: State) {
+    override fun execute() = init.globals(s)
+
+    private fun Init.globals(s: sron.cg.compiler.State) {
 
         for (f in rtFunctions) {
             s.symbolTable += f
@@ -48,7 +49,7 @@ object Globals {
         val qry = s.symbolTable["main", SymType.FUNC]
         when (qry) {
             null -> noEntry = true
-            is Function -> {
+            is sron.cg.compiler.symbol.Function -> {
                 if (qry.type != Type.void || qry.args.size != 0) {
                     noEntry = true
                 }

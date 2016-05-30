@@ -18,7 +18,6 @@ package sron.cg.compiler
 
 import sron.cg.compiler.internal.CGErrorListener
 import sron.cg.compiler.internal.CGParser
-import sron.cg.compiler.util.Logger
 
 private var id = 0
 
@@ -26,14 +25,6 @@ fun CGParser.withFileName(fileName: String): CGParser {
     this.removeErrorListeners()
     this.addErrorListener(CGErrorListener(fileName))
     return this
-}
-
-inline fun <T> measureTime(label: String, block: () -> T): T {
-    val start = System.currentTimeMillis()
-    val result = block()
-    val ms = System.currentTimeMillis() - start
-    Logger.debug("$label: $ms ms")
-    return result
 }
 
 fun nextId(): Int = id++
