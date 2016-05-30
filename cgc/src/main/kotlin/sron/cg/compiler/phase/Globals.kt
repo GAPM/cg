@@ -32,7 +32,6 @@ class Globals(private val s: State, private val init: Init) : Phase {
     override fun execute() = init.globals(s)
 
     private fun Init.globals(s: sron.cg.compiler.State) {
-
         for (f in runtimeFunctions) {
             s.symbolTable += f
         }
