@@ -85,7 +85,7 @@ fun createExec(ba: ByteArray, s: State) {
     val manifest = Manifest()
     manifest.mainAttributes.put(Attributes.Name.MANIFEST_VERSION, "1.0")
     manifest.mainAttributes.put(Attributes.Name.MAIN_CLASS, "EntryPoint")
-    val jar = JarOutputStream(File("${s.name}.jar").outputStream(), manifest)
+    val jar = JarOutputStream(File("${s.parameters.output}.jar").outputStream(), manifest)
 
     File("sron").listFiles().map { jar.add(it) }
     jar.add(File("EntryPoint.class"))

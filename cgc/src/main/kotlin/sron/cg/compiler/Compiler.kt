@@ -33,11 +33,15 @@ import java.io.File
 class Compiler(fileName: String, val parameters: Parameters) {
     private val file = File(fileName)
 
-    private val state = State(file.nameWithoutExtension, parameters)
+    private val state = State(parameters)
 
     lateinit private var parser: CGParser
 
     init {
+        if (parameters.output == "") {
+            parameters.output = file.nameWithoutExtension
+        }
+
         file.inputStream().use {
             val input = ANTLRInputStream(it)
             val lexer = CGLexer(input)
