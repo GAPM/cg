@@ -148,7 +148,7 @@ object Types {
     }
 
     private fun Identifier.types(s: State, scope: String) {
-        val qry = s.symbolTable.getSymbol(name, scope, SymType.VAR)
+        val qry = s.symbolTable[name, scope, SymType.VAR]
 
         if (qry != null) {
             val variable = qry as Variable
@@ -163,7 +163,7 @@ object Types {
 
     private fun FunctionCall.types(s: State, scope: String) {
         expr.map { it.types(s, scope) }
-        val qry = s.symbolTable.getSymbol(name, SymType.FUNC)
+        val qry = s.symbolTable[name, SymType.FUNC]
 
         if (qry != null) {
             val function = qry as Function
@@ -253,11 +253,11 @@ object Types {
     }
 
     private fun VarDec.types(s: State, scope: String) {
-        val qry = s.symbolTable.getSymbol(name, scope, SymType.VAR)
+        val qry = s.symbolTable[name, scope, SymType.VAR]
 
         if (qry == null) {
             val variable = Variable(name, type, scope, location)
-            s.symbolTable.addSymbol(variable)
+            s.symbolTable += variable
 
             exp?.let {
                 exp.types(s, scope)

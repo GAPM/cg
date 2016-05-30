@@ -82,7 +82,7 @@ object Generation {
     }
 
     private fun FuncDef.generate(s: State) {
-        val function = s.symbolTable.getSymbol(name, SymType.FUNC) as Function
+        val function = s.symbolTable[name, SymType.FUNC] as Function
         val desc = function.signatureString()
         val mv = cw.visitMethod(ACC_PUBLIC + ACC_STATIC, name, desc, null, null)
 
@@ -94,7 +94,7 @@ object Generation {
 
         for (stmt in stmts) {
             if (stmt is VarDec) {
-                val variable = s.symbolTable.getSymbol(stmt.name, scope, SymType.VAR) as Variable
+                val variable = s.symbolTable[stmt.name, scope, SymType.VAR] as Variable
                 varQueue += Triple(variable, start, end)
 
                 stmt.generate(s, mv, this)
@@ -119,7 +119,7 @@ object Generation {
         }
 
         args.map {
-            val arg = s.symbolTable.getSymbol(it.name, scope, SymType.VAR)!!
+            val arg = s.symbolTable[it.name, scope, SymType.VAR]!!
             val argDesc = it.type.descriptor()
             val idx = getVarIndex(s, name, arg.name)
             mv.visitLocalVariable(arg.name, argDesc, null, start, end, idx)
@@ -189,7 +189,7 @@ object Generation {
     }
 
     private fun Identifier.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
-        val variable = s.symbolTable.getSymbol(name, "global", SymType.VAR) as Variable?
+        val variable = s.symbolTable[name, "global", SymType.VAR] as Variable?
         if (variable != null) {
             mv.visitFieldInsn(GETSTATIC, "EntryPoint", variable.name,
                     variable.type.descriptor())
@@ -210,7 +210,7 @@ object Generation {
             e.generate(s, mv, fd)
         }
 
-        val function = s.symbolTable.getSymbol(name, SymType.FUNC) as Function
+        val function = s.symbolTable[name, SymType.FUNC] as Function
 
         if (function.isSpecial) {
             handleSpecial(mv, function)
@@ -340,7 +340,7 @@ object Generation {
 
         for (stmt in stmts) {
             if (stmt is VarDec) {
-                val variable = s.symbolTable.getSymbol(stmt.name, scope, SymType.VAR) as Variable
+                val variable = s.symbolTable[stmt.name, scope, SymType.VAR] as Variable
                 varQueue += Triple(variable, start, end)
 
                 stmt.generate(s, mv, fd)
@@ -375,7 +375,7 @@ object Generation {
 
         for (stmt in stmts) {
             if (stmt is VarDec) {
-                val variable = s.symbolTable.getSymbol(stmt.name, scope, SymType.VAR) as Variable
+                val variable = s.symbolTable[stmt.name, scope, SymType.VAR] as Variable
                 varQueue += Triple(variable, start, end)
 
                 stmt.generate(s, mv, fd)
@@ -401,7 +401,7 @@ object Generation {
 
         for (stmt in stmts) {
             if (stmt is VarDec) {
-                val variable = s.symbolTable.getSymbol(stmt.name, scope, SymType.VAR) as Variable
+                val variable = s.symbolTable[stmt.name, scope, SymType.VAR] as Variable
                 varQueue += Triple(variable, start, end)
 
                 stmt.generate(s, mv, fd)
@@ -435,7 +435,7 @@ object Generation {
 
         for (stmt in stmts) {
             if (stmt is VarDec) {
-                val variable = s.symbolTable.getSymbol(stmt.name, scope, SymType.VAR) as Variable
+                val variable = s.symbolTable[stmt.name, scope, SymType.VAR] as Variable
                 varQueue += Triple(variable, start, end)
 
                 stmt.generate(s, mv, fd)
@@ -470,7 +470,7 @@ object Generation {
 
         for (stmt in stmts) {
             if (stmt is VarDec) {
-                val variable = s.symbolTable.getSymbol(stmt.name, scope, SymType.VAR) as Variable
+                val variable = s.symbolTable[stmt.name, scope, SymType.VAR] as Variable
                 varQueue += Triple(variable, start, end)
 
                 stmt.generate(s, mv, fd)

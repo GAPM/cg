@@ -29,7 +29,7 @@ class SymbolTable {
      * @param symType  the type to be matched
      * @return a symbol with matching name, scope and type if its found
      */
-    fun getSymbol(name: String, scope: String, symType: SymType): Symbol? {
+    operator fun get(name: String, scope: String, symType: SymType): Symbol? {
         return symTab.filter { it.name == name }
                 .filter { scope.startsWith(it.scope) || scope == "" }
                 .filter { it.symType == symType }
@@ -43,12 +43,14 @@ class SymbolTable {
      * @param symType  the type to be matched
      * @return a symbol with matching name, scope and type if its found
      */
-    fun getSymbol(name: String, symType: SymType) = getSymbol(name, "", symType)
+    operator fun get(name: String, symType: SymType) = this[name, "", symType]
 
     /**
      * Inserts a symbol into the symbol table
      *
      * @param s The symbol to be added
      */
-    fun addSymbol(s: Symbol) = symTab.add(s)
+    operator fun plusAssign(s: Symbol): Unit {
+        symTab.add(s)
+    }
 }

@@ -33,7 +33,7 @@ object Globals {
     private fun Init.globals(s: State) {
 
         for (f in rtFunctions) {
-            s.symbolTable.addSymbol(f)
+            s.symbolTable += f
         }
 
         for (gvd in glVarDec) {
@@ -45,7 +45,7 @@ object Globals {
         }
 
         var noEntry = false
-        val qry = s.symbolTable.getSymbol("main", SymType.FUNC)
+        val qry = s.symbolTable["main", SymType.FUNC]
         when (qry) {
             null -> noEntry = true
             is Function -> {
@@ -61,7 +61,7 @@ object Globals {
     }
 
     private fun FuncDef.globals(s: State) {
-        val qry = s.symbolTable.getSymbol(name, SymType.FUNC)
+        val qry = s.symbolTable[name, SymType.FUNC]
 
         if (qry == null) {
             val args = Array(args.size) { i ->
@@ -69,19 +69,21 @@ object Globals {
             }
 
             val func = Function(name, "global", type, location, *args)
-            s.symbolTable.addSymbol(func)
-            args.map { s.symbolTable.addSymbol(it) }
+            s.symbolTable += func
+            args.map {
+                s.symbolTable += it
+            }
         } else {
             s.errors += Error.redeclaration(location, qry.location, name, SymType.FUNC)
         }
     }
 
     private fun GlVarDec.globals(s: State) {
-        val qry = s.symbolTable.getSymbol(this.name, SymType.FUNC)
+        val qry = s.symbolTable[this.name, SymType.FUNC]
 
         if (qry == null) {
             val glVar = Variable(this.name, this.type, "global", this.location)
-            s.symbolTable.addSymbol(glVar)
+            s.symbolTable += glVar
         } else {
             s.errors += Error.redeclaration(this.location, qry.location, this.name, SymType.VAR)
         }
