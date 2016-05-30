@@ -43,5 +43,10 @@ val runtimeFunctions by lazy {
             "g" to Type.digraph,
             "n" to Type.int)
 
+    result += function("g_remove_loops", Type.void,
+            "g" to Type.graph)
+    result += function("dg_remove_loops", Type.void,
+            "g" to Type.digraph)
+
     result
 }

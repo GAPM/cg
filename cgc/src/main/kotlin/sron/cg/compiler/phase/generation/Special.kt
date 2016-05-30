@@ -18,6 +18,7 @@ package sron.cg.compiler.phase.generation
 
 import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes.INVOKESTATIC
+import org.objectweb.asm.Opcodes.INVOKEVIRTUAL
 import sron.cg.compiler.symbol.Function
 
 private fun gAddNodes(mv: MethodVisitor) {
@@ -30,9 +31,21 @@ private fun dgAddNodes(mv: MethodVisitor) {
             "(Lsron/cg/lang/DiGraph;I)Lsron/cg/lang/DiGraph;", false);
 }
 
+private fun gRemoveLoops(mv: MethodVisitor) {
+    mv.visitMethodInsn(INVOKEVIRTUAL, "sron/cg/lang/Graph", "removeLoops",
+            "()V", false)
+}
+
+private fun dgRemoveLoops(mv: MethodVisitor) {
+    mv.visitMethodInsn(INVOKEVIRTUAL, "sron/cg/lang/DiGraph", "removeLoops",
+            "()V", false)
+}
+
 fun handleSpecial(mv: MethodVisitor, function: Function) {
     when (function.name) {
         "g_add_nodes" -> gAddNodes(mv)
         "dg_add_nodes" -> dgAddNodes(mv)
+        "g_remove_loops" -> gRemoveLoops(mv)
+        "dg_remove_loops" -> dgRemoveLoops(mv)
     }
 }

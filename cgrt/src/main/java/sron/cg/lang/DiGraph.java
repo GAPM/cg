@@ -104,6 +104,13 @@ public class DiGraph implements IGraph {
     }
 
     @Override
+    public void removeLoops() {
+        for (int i = 0; i < size; i++) {
+            adj.set(i, i, false);
+        }
+    }
+
+    @Override
     public String toString() {
         List<String> edges = new ArrayList<>();
 

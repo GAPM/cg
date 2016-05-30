@@ -32,4 +32,6 @@ interface IGraph {
     void removeAllEdges();
 
     IGraph negation();
+
+    void removeLoops();
 }
