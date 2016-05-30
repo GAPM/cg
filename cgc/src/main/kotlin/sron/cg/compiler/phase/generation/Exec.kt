@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sron.cg.compiler.phase.generation.helper
+package sron.cg.compiler.phase.generation
 
 import sron.cg.compiler.State
 

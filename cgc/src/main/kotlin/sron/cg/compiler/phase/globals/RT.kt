@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sron.cg.compiler.phase.globals.helper
+package sron.cg.compiler.phase.globals
 
 import sron.cg.compiler.symbol.Function
 import sron.cg.compiler.symbol.Location

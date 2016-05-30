@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sron.cg.compiler.phase.generation.helper
+package sron.cg.compiler.phase.generation
 
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.Label

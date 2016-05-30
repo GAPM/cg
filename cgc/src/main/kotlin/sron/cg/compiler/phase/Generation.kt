@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sron.cg.compiler.phase.generation
+package sron.cg.compiler.phase
 
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.ClassWriter.COMPUTE_FRAMES
@@ -23,7 +23,7 @@ import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes.*
 import sron.cg.compiler.State
 import sron.cg.compiler.ast.*
-import sron.cg.compiler.phase.generation.helper.*
+import sron.cg.compiler.phase.generation.*
 import sron.cg.compiler.symbol.Function
 import sron.cg.compiler.symbol.SymType
 import sron.cg.compiler.symbol.Variable
@@ -32,13 +32,13 @@ import sron.cg.compiler.type.defaultValue
 import sron.cg.compiler.type.descriptor
 import java.util.*
 
-object Generation {
+class Generation(private val s: State, private val init: Init) : Phase {
     private val cw = ClassWriter(COMPUTE_FRAMES)
     private val varQueue = LinkedList<Triple<Variable, Label, Label>>()
     private var loopStart: Label? = null
     private var loopEnd: Label? = null
 
-    operator fun invoke(s: State, init: Init) = init.generate(s)
+    override fun execute() = init.generate(s)
 
     private fun Init.generate(s: State) {
         cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, "EntryPoint", null,

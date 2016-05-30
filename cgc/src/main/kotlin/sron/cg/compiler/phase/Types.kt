@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sron.cg.compiler.phase.types
+package sron.cg.compiler.phase
 
 import sron.cg.compiler.Error
 import sron.cg.compiler.State
@@ -27,8 +27,8 @@ import sron.cg.compiler.type.CastTable
 import sron.cg.compiler.type.OpTable
 import sron.cg.compiler.type.Type
 
-object Types {
-    operator fun invoke(state: State, init: Init) = init.types(state)
+class Types(private val s: State, private val init: Init) : Phase {
+    override fun execute() = init.types(s)
 
     private fun Init.types(s: State) {
         for (gvd in glVarDec) {

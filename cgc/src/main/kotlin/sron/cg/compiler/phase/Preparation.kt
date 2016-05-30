@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package sron.cg.compiler.phase.preparation
+package sron.cg.compiler.phase
 
 import sron.cg.compiler.State
 import sron.cg.compiler.ast.*
 
-object Preparation {
+class Preparation(private val s: State, private val init: Init) : Phase {
     private var varId = 0
 
-    operator fun invoke(s: State, init: Init) = init.prepare(s)
+    override fun execute() = init.prepare(s)
 
     private fun Init.prepare(s: State) {
         for (fd in funcDef) {
