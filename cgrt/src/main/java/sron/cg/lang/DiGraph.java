@@ -119,16 +119,9 @@ public class DiGraph implements IGraph {
             }
         }
 
-        int c = 0;
-        for (String edge : edges) {
-            res += edge;
-            if (c != edge.length() - 1) {
-                res += ", ";
-            }
-            c += 1;
-        }
-
+        res += String.join(", ", edges);
         res += "}";
+
         return res;
     }
 }

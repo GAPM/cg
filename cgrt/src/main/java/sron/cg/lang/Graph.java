@@ -121,17 +121,7 @@ public class Graph implements IGraph {
             }
         }
 
-        int c = 0;
-        for (String edge : edges) {
-            res += edge;
-
-            if (c != size) {
-                res += ", ";
-            }
-
-            c++;
-        }
-
+        res += String.join(", ", edges);
         res += "}";
 
         return res;
