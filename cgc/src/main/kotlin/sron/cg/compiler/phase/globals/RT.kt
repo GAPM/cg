@@ -21,22 +21,27 @@ import sron.cg.compiler.symbol.Location
 import sron.cg.compiler.symbol.Variable
 import sron.cg.compiler.type.Type
 
-val rtFunctions by lazy {
-    val g = "global"
+private fun arg(name: String, type: Type) = name to type
+
+private fun function(name: String, type: Type, vararg pairs: Pair<String, Type>): Function {
+    val scope = "global.$name"
+    val args = pairs.map {
+        Variable(it.first, it.second, scope, Location(-1))
+    }
+    val f = Function(name, "global", type, Location(-1), *args.toTypedArray())
+    f.isSpecial = true
+    return f
+}
+
+val runtimeFunctions by lazy {
     val result = mutableListOf<Function>()
 
-    result += Function("g_add_nodes", g, Type.graph, Location(-1),
-            Variable("g", Type.graph, "$g.g_add_nodes", Location(-1)),
-            Variable("n", Type.int, "$g.g_add_nodes", Location(-1))
-    )
-    result += Function("dg_add_nodes", g, Type.digraph, Location(-1),
-            Variable("g", Type.digraph, "$g.dg_add_nodes", Location(-1)),
-            Variable("n", Type.int, "$g.dg_add_nodes", Location(-1))
-    )
-
-    for (f in result) {
-        f.isSpecial = true
-    }
+    result += function("g_add_nodes", Type.graph,
+            "g" to Type.graph,
+            "n" to Type.int)
+    result += function("dg_add_nodes", Type.digraph,
+            "g" to Type.digraph,
+            "n" to Type.int)
 
     result
 }

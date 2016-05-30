@@ -21,7 +21,7 @@ import sron.cg.compiler.State
 import sron.cg.compiler.ast.FuncDef
 import sron.cg.compiler.ast.GlVarDec
 import sron.cg.compiler.ast.Init
-import sron.cg.compiler.phase.globals.rtFunctions
+import sron.cg.compiler.phase.globals.runtimeFunctions
 import sron.cg.compiler.symbol.Function
 import sron.cg.compiler.symbol.SymType
 import sron.cg.compiler.symbol.Variable
@@ -33,7 +33,7 @@ class Globals(private val s: State, private val init: Init) : Phase {
 
     private fun Init.globals(s: sron.cg.compiler.State) {
 
-        for (f in rtFunctions) {
+        for (f in runtimeFunctions) {
             s.symbolTable += f
         }
 
