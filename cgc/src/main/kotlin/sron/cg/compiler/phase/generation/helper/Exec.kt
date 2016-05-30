@@ -82,17 +82,15 @@ fun createExec(ba: ByteArray, s: State) {
         it.write(ba)
     }
 
-    if (!s.parameters.justClass) {
-        val manifest = Manifest()
-        manifest.mainAttributes.put(Attributes.Name.MANIFEST_VERSION, "1.0")
-        manifest.mainAttributes.put(Attributes.Name.MAIN_CLASS, "EntryPoint")
-        val jar = JarOutputStream(File("${s.name}.jar").outputStream(), manifest)
+    val manifest = Manifest()
+    manifest.mainAttributes.put(Attributes.Name.MANIFEST_VERSION, "1.0")
+    manifest.mainAttributes.put(Attributes.Name.MAIN_CLASS, "EntryPoint")
+    val jar = JarOutputStream(File("${s.name}.jar").outputStream(), manifest)
 
-        File("sron").listFiles().map { jar.add(it) }
-        jar.add(File("EntryPoint.class"))
-        jar.close()
+    File("sron").listFiles().map { jar.add(it) }
+    jar.add(File("EntryPoint.class"))
+    jar.close()
 
-        File("sron").deleteRecursively()
-        File("EntryPoint.class").delete()
-    }
+    File("sron").deleteRecursively()
+    File("EntryPoint.class").delete()
 }

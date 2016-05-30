@@ -18,6 +18,5 @@ package sron.cg.compiler
 
 class Parameters() {
     var justCheck = false
-    var justClass = false
     var output = ""
 }

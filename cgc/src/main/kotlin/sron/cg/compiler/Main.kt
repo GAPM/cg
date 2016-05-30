@@ -27,8 +27,7 @@ import java.io.IOException
 fun main(args: Array<String>) {
     val options = Options()
 
-    options.addOption("c", false, "Just check the code, don't compile, overrides --nojar")
-    options.addOption("nj", "nojar", false, "Don't build the executable JAR")
+    options.addOption("c", "check", false, "Just check the code, don't compile")
     options.addOption("d", "debug", false, "Print compiler debug messages")
     options.addOption("h", "help", false, "Show this help")
     options.addOption("o", "output", true, "The name of the generated jar")
@@ -56,10 +55,6 @@ fun main(args: Array<String>) {
 
         if (cmd.hasOption("c")) {
             parameters.justCheck = true
-        }
-
-        if (cmd.hasOption("nj")) {
-            parameters.justClass = true
         }
 
         if (cmd.hasOption("o")) {
