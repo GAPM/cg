@@ -39,6 +39,8 @@ private fun function(name: String, type: Type, vararg pairs: Pair<String, Type>)
 val runtimeFunctions by lazy {
     val result = mutableListOf<Function>()
 
+    result += function("read", Type.string)
+
     result += function("g_add_nodes", Type.graph,
             "g" to Type.graph,
             "n" to Type.int)

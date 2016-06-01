@@ -16,7 +16,12 @@
 
 package sron.cg.lang.rt;
 
-public class Print {
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+
+public class IO {
     public static void print(int i) {
         System.out.println(i);
     }
@@ -31,5 +36,20 @@ public class Print {
 
     public static void print(Object b) {
         System.out.println(b.toString());
+    }
+
+    public static String read() {
+        String result;
+        try (InputStreamReader isr = new InputStreamReader(System.in, Charset.defaultCharset())) {
+            try (BufferedReader br = new BufferedReader(isr)) {
+                result = br.readLine();
+            } catch (IOException e) {
+                result = "";
+            }
+        } catch (IOException e) {
+            result = "";
+        }
+
+        return result;
     }
 }

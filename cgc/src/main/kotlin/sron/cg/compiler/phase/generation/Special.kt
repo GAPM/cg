@@ -21,6 +21,11 @@ import org.objectweb.asm.Opcodes.INVOKESTATIC
 import org.objectweb.asm.Opcodes.INVOKEVIRTUAL
 import sron.cg.compiler.symbol.Function
 
+private fun read(mv: MethodVisitor) {
+    mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/IO", "read",
+            "()Ljava/lang/String;", false)
+}
+
 private fun gAddNodes(mv: MethodVisitor) {
     mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/RT", "gAddNodes",
             "(Lsron/cg/lang/Graph;I)Lsron/cg/lang/Graph;", false);
@@ -43,8 +48,11 @@ private fun dgRemoveLoops(mv: MethodVisitor) {
 
 fun handleSpecial(mv: MethodVisitor, function: Function) {
     when (function.name) {
+        "read" -> read(mv)
+
         "g_add_nodes" -> gAddNodes(mv)
         "dg_add_nodes" -> dgAddNodes(mv)
+
         "g_remove_loops" -> gRemoveLoops(mv)
         "dg_remove_loops" -> dgRemoveLoops(mv)
     }

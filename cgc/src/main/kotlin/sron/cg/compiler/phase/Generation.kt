@@ -496,13 +496,13 @@ class Generation(private val s: State, private val init: Init) : Phase {
 
         when (expr.type) {
             Type.int -> mv.visitMethodInsn(INVOKESTATIC,
-                    "sron/cg/lang/rt/Print", "print", "(I)V", false)
+                    "sron/cg/lang/rt/IO", "print", "(I)V", false)
             Type.float -> mv.visitMethodInsn(INVOKESTATIC,
-                    "sron/cg/lang/rt/Print", "print", "(F)V", false)
+                    "sron/cg/lang/rt/IO", "print", "(F)V", false)
             Type.bool -> mv.visitMethodInsn(INVOKESTATIC,
-                    "sron/cg/lang/rt/Print", "print", "(Z)V", false)
+                    "sron/cg/lang/rt/IO", "print", "(Z)V", false)
             else -> mv.visitMethodInsn(INVOKESTATIC,
-                    "sron/cg/lang/rt/Print", "print", "(Ljava/lang/Object;)V", false)
+                    "sron/cg/lang/rt/IO", "print", "(Ljava/lang/Object;)V", false)
         }
     }
 }
