@@ -40,7 +40,7 @@ public class IO {
 
     public static String read() {
         String result;
-        try (InputStreamReader isr = new InputStreamReader(System.in, Charset.defaultCharset())) {
+        try (InputStreamReader isr = new InputStreamReader(System.in)) {
             try (BufferedReader br = new BufferedReader(isr)) {
                 result = br.readLine();
             } catch (IOException e) {
