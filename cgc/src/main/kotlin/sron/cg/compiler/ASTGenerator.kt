@@ -16,9 +16,7 @@
 
 package sron.cg.compiler
 
-import org.antlr.v4.runtime.tree.ParseTree
 import org.antlr.v4.runtime.tree.ParseTreeProperty
-import org.antlr.v4.runtime.tree.ParseTreeWalker
 import sron.cg.compiler.ast.*
 import sron.cg.compiler.internal.CGBaseListener
 import sron.cg.compiler.internal.CGLexer
@@ -28,15 +26,11 @@ import sron.cg.compiler.type.Type
 import sron.cg.compiler.type.toCGType
 import java.util.*
 
-object AST : CGBaseListener() {
+class ASTGenerator : CGBaseListener() {
     private val result = ParseTreeProperty<ASTNode>()
     private var initCtx: InitContext? = null
 
-    operator fun invoke(tree: ParseTree): Init {
-        val walker = ParseTreeWalker()
-        walker.walk(this, tree)
-        return result.get(initCtx) as Init
-    }
+    fun getInit() = result.get(initCtx) as Init
 
     override fun exitInit(ctx: InitContext) {
         super.exitInit(ctx)
@@ -46,12 +40,12 @@ object AST : CGBaseListener() {
 
         for (funcDef in ctx.funcDef()) {
             val fd = result.get(funcDef) as FuncDef
-            init.funcDef.add(fd)
+            init.funcDef += fd
         }
 
         for (glVarDec in ctx.glVarDec()) {
             val gvd = result.get(glVarDec) as GlVarDec
-            init.glVarDec.add(gvd)
+            init.glVarDec += gvd
         }
 
         result.put(ctx, init)

@@ -30,10 +30,10 @@ import kotlin.system.measureTimeMillis
 
 class Compiler(fileName: String, val parameters: Parameters) {
     private val file = File(fileName)
-
     private val state = State(parameters)
 
     lateinit private var parser: CGParser
+    lateinit private var astGenerator: ASTGenerator
 
     init {
         if (parameters.output == "") {
@@ -44,7 +44,9 @@ class Compiler(fileName: String, val parameters: Parameters) {
             val input = ANTLRInputStream(it)
             val lexer = CGLexer(input)
             val tokens = CommonTokenStream(lexer)
+            astGenerator = ASTGenerator()
             parser = CGParser(tokens).withFileName(file.name)
+            parser.addParseListener(astGenerator)
         }
     }
 
@@ -62,12 +64,12 @@ class Compiler(fileName: String, val parameters: Parameters) {
      * Handles the compilation process.
      */
     fun compile() {
-        val tree = parser.init()
+        parser.init()
         if (parser.numberOfSyntaxErrors > 0) {
             throw ParsingException()
         }
 
-        val ast = AST(tree)
+        val ast = astGenerator.getInit()
 
         executePhase(::Globals, ast)
         executePhase(::Structure, ast)
