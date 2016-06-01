@@ -34,8 +34,8 @@ public class IO {
         System.out.println(b);
     }
 
-    public static void print(Object b) {
-        System.out.println(b.toString());
+    public static void print(Object o) {
+        System.out.println(o.toString());
     }
 
     public static String read() {
