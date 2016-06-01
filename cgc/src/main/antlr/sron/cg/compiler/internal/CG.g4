@@ -98,7 +98,7 @@ type: 'int'
     ;
 
 edge: '[' source=expr ',' target=expr ']';
-graphLit: gtype=('graph'|'digraph') '(' num=expr ')' ('{' (edge (',' edge)*)? '}')?;
+graphLit: gtype=('graph'|'digraph') '[' num=expr ']' ('{' (edge (',' edge)*)? '}')?;
 
 arg: Identifier type;
 argList: (arg (',' arg)*)?;
