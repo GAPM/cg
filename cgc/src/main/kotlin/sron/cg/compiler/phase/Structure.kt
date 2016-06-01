@@ -27,7 +27,7 @@ class Structure(private val s: State, private val init: Init) : Phase {
     override fun execute() = init.structure(s)
 
     private fun Init.structure(state: State) {
-        for (fd in this.funcDef) {
+        for (fd in funcDef) {
             fd.structure(state)
         }
     }

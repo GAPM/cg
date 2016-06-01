@@ -31,12 +31,19 @@ class Types(private val s: State, private val init: Init) : Phase {
     override fun execute() = init.types(s)
 
     private fun Init.types(s: State) {
+        for (fd in funcDef) {
+            fd.types(s)
+        }
+
         for (gvd in glVarDec) {
             gvd.types(s)
         }
+    }
 
-        for (fd in funcDef) {
-            fd.types(s)
+    private fun FuncDef.types(s: State) {
+        scope = "global.$name"
+        for (stmt in stmts) {
+            stmt.types(s, this, scope)
         }
     }
 
@@ -65,13 +72,6 @@ class Types(private val s: State, private val init: Init) : Phase {
                     s.errors += Error.outOfRange(exp.location, exp.text)
                 }
             }
-        }
-    }
-
-    private fun FuncDef.types(s: State) {
-        scope = "global.$name"
-        for (stmt in stmts) {
-            stmt.types(s, this, scope)
         }
     }
 
