@@ -25,11 +25,14 @@ private fun arg(name: String, type: Type) = name to type
 
 private fun function(name: String, type: Type, vararg pairs: Pair<String, Type>): Function {
     val scope = "global.$name"
-    val args = pairs.map {
-        Variable(it.first, it.second, scope, Location(-1))
+
+    val args = Array(pairs.size) { i ->
+        Variable(pairs[i].first, pairs[i].second, scope, Location(-1))
     }
-    val f = Function(name, "global", type, Location(-1), *args.toTypedArray())
+
+    val f = Function(name, "global", type, Location(-1), *args)
     f.isSpecial = true
+
     return f
 }
 

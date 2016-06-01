@@ -48,7 +48,7 @@ class Globals(private val s: State, private val init: Init) : Phase {
         val qry = s.symbolTable["main", SymType.FUNC]
         when (qry) {
             null -> noEntry = true
-            is sron.cg.compiler.symbol.Function -> {
+            is Function -> {
                 if (qry.type != Type.void || qry.args.size != 0) {
                     noEntry = true
                 }
