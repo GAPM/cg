@@ -19,8 +19,8 @@ package sron.cg.compiler.type
 object CastTable {
 
     private val tab = mapOf(
-            Type.int to listOf(Type.float, Type.string),
-            Type.float to listOf(Type.int, Type.string),
+            Type.int to listOf(Type.int, Type.float, Type.string),
+            Type.float to listOf(Type.int, Type.float, Type.string),
             Type.bool to listOf(Type.string),
             Type.string to listOf()
     )

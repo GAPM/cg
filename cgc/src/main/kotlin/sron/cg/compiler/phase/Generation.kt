@@ -223,6 +223,11 @@ class Generation(private val s: State, private val init: Init) : Phase {
     private fun Cast.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
         expr.generate(s, mv, fd)
 
+        // Trivial cast -> skip
+        if (expr.type == type) {
+            return
+        }
+
         if (expr.type == Type.int && type == Type.float) {
             mv.visitInsn(I2F)
         } else if (expr.type == Type.float && type == Type.int) {
