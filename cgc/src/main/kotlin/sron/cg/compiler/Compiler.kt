@@ -18,6 +18,8 @@ package sron.cg.compiler
 
 import org.antlr.v4.runtime.ANTLRInputStream
 import org.antlr.v4.runtime.CommonTokenStream
+import org.antlr.v4.runtime.tree.ParseTree
+import org.antlr.v4.runtime.tree.ParseTreeWalker
 import sron.cg.compiler.ast.Init
 import sron.cg.compiler.exception.ErrorsInCodeException
 import sron.cg.compiler.exception.ParsingException
@@ -33,7 +35,6 @@ class Compiler(fileName: String, val parameters: Parameters) {
     private val state = State(parameters)
 
     lateinit private var parser: CGParser
-    lateinit private var astGenerator: ASTGenerator
 
     init {
         if (parameters.output == "") {
@@ -44,10 +45,15 @@ class Compiler(fileName: String, val parameters: Parameters) {
             val input = ANTLRInputStream(it)
             val lexer = CGLexer(input)
             val tokens = CommonTokenStream(lexer)
-            astGenerator = ASTGenerator()
             parser = CGParser(tokens).withFileName(file.name)
-            parser.addParseListener(astGenerator)
         }
+    }
+
+    private fun buildAST(tree: ParseTree): Init {
+        val walker = ParseTreeWalker()
+        val astGenerator = ASTGenerator()
+        walker.walk(astGenerator, tree)
+        return astGenerator.getInit()
     }
 
     private fun <T : Phase> executePhase(constructor: (State, Init) -> T, init: Init) {
@@ -64,12 +70,12 @@ class Compiler(fileName: String, val parameters: Parameters) {
      * Handles the compilation process.
      */
     fun compile() {
-        parser.init()
+        val tree = parser.init()
         if (parser.numberOfSyntaxErrors > 0) {
             throw ParsingException()
         }
 
-        val ast = astGenerator.getInit()
+        val ast = buildAST(tree);
 
         executePhase(::Globals, ast)
         executePhase(::Structure, ast)
