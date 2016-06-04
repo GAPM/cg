@@ -91,7 +91,14 @@ class Compiler(fileName: String, val parameters: Parameters) {
             throw ErrorsInCodeException()
         }
 
-        if (!parameters.justCheck) {
+        if (parameters.justCheck) {
+            val msg = if (state.errors.size == 0) {
+                "No errors found."
+            } else {
+                "${state.errors.size} error(s) found."
+            }
+            Logger.info("Check done. $msg")
+        } else {
             executePhase(::Preparation, ast)
             executePhase(::Generation, ast)
         }
