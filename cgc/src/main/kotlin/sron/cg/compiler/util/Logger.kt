@@ -17,22 +17,19 @@
 package sron.cg.compiler.util
 
 object Logger {
-    enum class LogLevel {
-        ERROR,
-        DEBUG
+    private var debug = false
+
+    fun enableDebug() {
+        debug = true
     }
 
-    var maxLevel = LogLevel.ERROR
+    fun info(msg: String) = println(msg)
 
-    private fun log(msg: String?, level: LogLevel) {
-        if (level <= maxLevel) {
-            when (level) {
-                LogLevel.ERROR -> System.err.println("$level: $msg")
-                else -> println("$level: $msg")
-            }
+    fun debug(msg: String) {
+        if (debug) {
+            println("DEBUG: $msg")
         }
     }
 
-    fun debug(msg: String?) = log(msg, LogLevel.DEBUG)
-    fun error(msg: String?) = log(msg, LogLevel.ERROR)
+    fun error(msg: String?) = System.err.println("ERROR: $msg")
 }

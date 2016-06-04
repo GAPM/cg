@@ -68,7 +68,7 @@ class Compiler(fileName: String, val parameters: Parameters) {
             phase.execute()
         }
 
-        Logger.debug("${phase.javaClass.name}: $ms ms")
+        Logger.debug("${phase.javaClass.simpleName}: $ms ms")
     }
 
     /**

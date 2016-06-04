@@ -50,7 +50,7 @@ fun main(args: Array<String>) {
         }
 
         if (cmd.hasOption("d")) {
-            Logger.maxLevel = Logger.LogLevel.DEBUG
+            Logger.enableDebug()
         }
 
         if (cmd.hasOption("c")) {
