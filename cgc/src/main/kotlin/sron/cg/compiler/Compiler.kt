@@ -24,17 +24,22 @@ import sron.cg.compiler.ast.Init
 import sron.cg.compiler.exception.ErrorsInCodeException
 import sron.cg.compiler.exception.ParsingException
 import sron.cg.compiler.internal.CGLexer
-import sron.cg.compiler.internal.CGParser
+import sron.cg.compiler.internal.CGParserCustom
 import sron.cg.compiler.phase.*
 import sron.cg.compiler.util.Logger
 import java.io.File
 import kotlin.system.measureTimeMillis
 
 class Compiler(fileName: String, val parameters: Parameters) {
+    companion object {
+        private var id = 0
+        fun nextID() = id++
+    }
+
     private val file = File(fileName)
     private val state = State(parameters)
 
-    lateinit private var parser: CGParser
+    lateinit private var parser: CGParserCustom
 
     init {
         if (parameters.output == "") {
@@ -45,7 +50,7 @@ class Compiler(fileName: String, val parameters: Parameters) {
             val input = ANTLRInputStream(it)
             val lexer = CGLexer(input)
             val tokens = CommonTokenStream(lexer)
-            parser = CGParser(tokens).withFileName(file.name)
+            parser = CGParserCustom(file.name, tokens)
         }
     }
 

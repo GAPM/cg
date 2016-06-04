@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-package sron.cg.compiler
+package sron.cg.compiler.internal
 
-import sron.cg.compiler.internal.CGErrorListener
-import sron.cg.compiler.internal.CGParser
+import org.antlr.v4.runtime.CommonTokenStream
 
-private var id = 0
-
-fun CGParser.withFileName(fileName: String): CGParser {
-    this.removeErrorListeners()
-    this.addErrorListener(CGErrorListener(fileName))
-    return this
+class CGParserCustom(fileName: String, tokens: CommonTokenStream) : CGParser(tokens) {
+    init {
+        removeErrorListeners()
+        addErrorListener(CGErrorListener(fileName))
+    }
 }
-
-fun nextId(): Int = id++

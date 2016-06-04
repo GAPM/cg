@@ -16,10 +16,10 @@
 
 package sron.cg.compiler.phase
 
+import sron.cg.compiler.Compiler.Companion.nextID
 import sron.cg.compiler.Error
 import sron.cg.compiler.State
 import sron.cg.compiler.ast.*
-import sron.cg.compiler.nextId
 import sron.cg.compiler.symbol.Function
 import sron.cg.compiler.symbol.SymType
 import sron.cg.compiler.symbol.Variable
@@ -287,7 +287,7 @@ class Types(private val s: State, private val init: Init) : Phase {
             s.errors += Error.nonBoolCondition(cond.location, cond.type)
         }
 
-        this.scope = "$scope.if${nextId()}"
+        this.scope = "$scope.if${nextID()}"
 
         for (stmt in stmts) {
             stmt.types(s, funcDef, this.scope)
@@ -307,7 +307,7 @@ class Types(private val s: State, private val init: Init) : Phase {
             s.errors += Error.nonBoolCondition(cond.location, cond.type)
         }
 
-        this.scope = "$scope.elif${nextId()}"
+        this.scope = "$scope.elif${nextID()}"
 
         for (stmt in stmts) {
             stmt.types(s, funcDef, this.scope)
@@ -315,7 +315,7 @@ class Types(private val s: State, private val init: Init) : Phase {
     }
 
     private fun Else.types(s: State, funcDef: FuncDef, scope: String) {
-        this.scope = "$scope.else${nextId()}"
+        this.scope = "$scope.else${nextID()}"
 
         for (stmt in stmts) {
             stmt.types(s, funcDef, this.scope)
@@ -331,7 +331,7 @@ class Types(private val s: State, private val init: Init) : Phase {
             s.errors += Error.nonBoolCondition(cond.location, cond.type)
         }
 
-        this.scope = "$scope.for${nextId()}"
+        this.scope = "$scope.for${nextID()}"
 
         for (stmt in stmts) {
             stmt.types(s, funcDef, this.scope)
@@ -345,7 +345,7 @@ class Types(private val s: State, private val init: Init) : Phase {
             s.errors += Error.nonBoolCondition(cond.location, cond.type)
         }
 
-        this.scope = "$scope.while${nextId()}"
+        this.scope = "$scope.while${nextID()}"
 
         for (stmt in stmts) {
             stmt.types(s, funcDef, this.scope)
