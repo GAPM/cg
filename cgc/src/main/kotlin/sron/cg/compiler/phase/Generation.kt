@@ -295,13 +295,12 @@ class Generation(private val s: State, private val init: Init) : Phase {
 
     private fun Assignment.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
         val variable = lhs.referencedVar!!
+        rhs.generate(s, mv, fd)
 
         if (variable.scope == "global") {
             mv.visitFieldInsn(PUTSTATIC, "EntryPoint", variable.name, variable.type.descriptor())
         } else {
             val idx = getVarIndex(s, fd.name, variable.name)
-
-            rhs.generate(s, mv, fd)
 
             when (lhs.type) {
                 Type.int -> mv.visitVarInsn(ISTORE, idx)
