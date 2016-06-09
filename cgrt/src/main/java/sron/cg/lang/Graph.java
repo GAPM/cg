@@ -116,9 +116,9 @@ public class Graph implements IGraph {
     public String toString() {
         List<String> edges = new ArrayList<>();
 
-        String res = "graph (";
+        String res = "graph [";
         res += Integer.toString(size);
-        res += ") {";
+        res += "] {";
 
         for (int i = 0; i < size; i++) {
             for (int j = 0; j <= i; j++) {
