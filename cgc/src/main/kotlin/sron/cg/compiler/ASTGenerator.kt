@@ -34,6 +34,7 @@ class ASTGenerator : CGBaseListener() {
 
     override fun exitInit(ctx: InitContext) {
         super.exitInit(ctx)
+
         initCtx = ctx
 
         val init = Init()
@@ -56,15 +57,10 @@ class ASTGenerator : CGBaseListener() {
 
         val name = ctx.Identifier().text
         val type = ctx.type().toCGType()
-        var expr: GlExpr? = null
+        val expr = result.get(ctx.glExpr()) as? GlExpr
         val location = Location(ctx.Identifier())
 
-        if (ctx.glExpr() != null) {
-            expr = result.get(ctx.glExpr()) as GlExpr
-        }
-
         val glVarDec = GlVarDec(name, type, expr, location)
-
         result.put(ctx, glVarDec)
     }
 
@@ -75,20 +71,11 @@ class ASTGenerator : CGBaseListener() {
         var type = Type.ERROR
         val location = Location(ctx.start)
 
-        if (ctx.BoolLit() != null) {
-            type = Type.bool
-        }
-
-        if (ctx.IntLit() != null) {
-            type = Type.int
-        }
-
-        if (ctx.FloatLit() != null) {
-            type = Type.float
-        }
-
-        if (ctx.StringLit() != null) {
-            type = Type.string
+        when {
+            ctx.BoolLit() != null -> type = Type.bool
+            ctx.IntLit() != null -> type = Type.int
+            ctx.FloatLit() != null -> type = Type.float
+            ctx.StringLit() != null -> type = Type.string
         }
 
         val glExpr = GlExpr(type, text, location)
@@ -106,16 +93,15 @@ class ASTGenerator : CGBaseListener() {
 
         for (a in ctx.argList().arg()) {
             val arg = result.get(a) as Arg
-            args.add(arg)
+            args += arg
         }
 
         for (s in ctx.stmt()) {
             val stmt = result.get(s) as Stmt
-            stmts.add(stmt)
+            stmts += stmt
         }
 
         val funcDef = FuncDef(name, type, args, stmts, location)
-
         result.put(ctx, funcDef)
     }
 
@@ -132,49 +118,22 @@ class ASTGenerator : CGBaseListener() {
 
     override fun exitStmt(ctx: StmtContext) {
         super.exitStmt(ctx)
-        var stmt: Stmt? = null
 
-        ctx.simpleStmt()?.let { s ->
-            s.varDec()?.let { vd ->
-                stmt = result.get(vd) as VarDec
-            }
-
-            s.assignment()?.let { a ->
-                stmt = result.get(a) as Assignment
-            }
-
-            s.expr()?.let { e ->
-                stmt = result.get(e) as Expr
-            }
-
-            s.returnStmt()?.let { r ->
-                stmt = result.get(r) as Return
-            }
-
-            s.controlStmt()?.let { c ->
-                stmt = result.get(c) as Control
-            }
-
-            s.printStmt()?.let { p ->
-                stmt = result.get(p) as Print
-            }
+        val resCtx = ctx.simpleStmt()?.let { stmt ->
+            stmt.assignment()
+                    ?: stmt.controlStmt()
+                    ?: stmt.expr()
+                    ?: stmt.printStmt()
+                    ?: stmt.returnStmt()
+                    ?: stmt.varDec()
+        } ?: ctx.compoundStmt()?.let { stmt ->
+            stmt.forc()
+                    ?: stmt.ifc()
+                    ?: stmt.whilec()
         }
 
-        ctx.compoundStmt()?.let { s ->
-            s.forc()?.let { f ->
-                stmt = result.get(f) as For
-            }
-
-            s.ifc()?.let { i ->
-                stmt = result.get(i) as If
-            }
-
-            s.whilec()?.let { w ->
-                stmt = result.get(w) as While
-            }
-        }
-
-        result.put(ctx, stmt!!)
+        val stmt = result.get(resCtx) as Stmt
+        result.put(ctx, stmt)
     }
 
     override fun exitVarDec(ctx: VarDecContext) {
@@ -182,15 +141,10 @@ class ASTGenerator : CGBaseListener() {
 
         val name = ctx.Identifier().text
         val type = ctx.type().toCGType()
-        var expr: Expr? = null
+        val expr = result.get(ctx.expr()) as? Expr
         val location = Location(ctx.Identifier())
 
-        if (ctx.expr() != null) {
-            expr = result.get(ctx.expr()) as Expr
-        }
-
         val varDec = VarDec(name, type, expr, location)
-
         result.put(ctx, varDec)
     }
 
@@ -232,8 +186,8 @@ class ASTGenerator : CGBaseListener() {
 
         val text = ctx.IntLit().text
         val location = Location(ctx.start)
-        val literal = Literal(Type.int, text, location)
 
+        val literal = Literal(Type.int, text, location)
         result.put(ctx, literal)
     }
 
@@ -242,8 +196,8 @@ class ASTGenerator : CGBaseListener() {
 
         val text = ctx.FloatLit().text
         val location = Location(ctx.start)
-        val literal = Literal(Type.float, text, location)
 
+        val literal = Literal(Type.float, text, location)
         result.put(ctx, literal)
     }
 
@@ -252,8 +206,8 @@ class ASTGenerator : CGBaseListener() {
 
         val text = ctx.BoolLit().text
         val location = Location(ctx.start)
-        val literal = Literal(Type.bool, text, location)
 
+        val literal = Literal(Type.bool, text, location)
         result.put(ctx, literal)
     }
 
@@ -262,8 +216,8 @@ class ASTGenerator : CGBaseListener() {
 
         val text = ctx.StringLit().text
         val location = Location(ctx.start)
-        val literal = Literal(Type.string, text, location)
 
+        val literal = Literal(Type.string, text, location)
         result.put(ctx, literal)
     }
 
@@ -272,8 +226,8 @@ class ASTGenerator : CGBaseListener() {
 
         val name = ctx.Identifier().text
         val location = Location(ctx.Identifier())
-        val identifier = Identifier(name, location)
 
+        val identifier = Identifier(name, location)
         result.put(ctx, identifier)
     }
 
@@ -313,7 +267,7 @@ class ASTGenerator : CGBaseListener() {
 
         for (e in ctx.funcCall().exprList().expr()) {
             val exp = result.get(e) as Expr
-            expr.add(exp)
+            expr += exp
         }
 
         val funcCall = FunctionCall(name, expr, location)
@@ -334,6 +288,7 @@ class ASTGenerator : CGBaseListener() {
     override fun exitUnary(ctx: UnaryContext) {
         super.exitUnary(ctx)
 
+        val location = Location(ctx.start)
         val expr = result.get(ctx.expr()) as Expr
         val op = if (ctx.op.type == CGLexer.NOT) {
             Operator.NOT
@@ -342,8 +297,6 @@ class ASTGenerator : CGBaseListener() {
         } else {
             Operator.PLUS
         }
-
-        val location = Location(ctx.start)
 
         val unaryExpr = UnaryExpr(op, expr, location)
         result.put(ctx, unaryExpr)
@@ -481,21 +434,17 @@ class ASTGenerator : CGBaseListener() {
         val cond = result.get(ctx.expr()) as Expr
         val stmts = ArrayList<Stmt>()
         val elifs = ArrayList<Elif>()
-        var elsec: Else? = null
+        val elsec = result.get(ctx.elsec()) as? Else
         val location = Location(ctx.start)
 
-        ctx.elsec()?.let {
-            elsec = result.get(ctx.elsec()) as Else
+        for (s in ctx.stmt()) {
+            val stmt = result.get(s) as Stmt
+            stmts += stmt
         }
 
-        ctx.stmt().forEach {
-            val stmt = result.get(it) as Stmt
-            stmts.add(stmt)
-        }
-
-        ctx.elifc().forEach {
-            val elifc = result.get(it) as Elif
-            elifs.add(elifc)
+        for (e in ctx.elifc()) {
+            val elif = result.get(e) as Elif
+            elifs += elif
         }
 
         val ifc = If(cond, stmts, elifs, elsec, location)
@@ -509,9 +458,9 @@ class ASTGenerator : CGBaseListener() {
         val stmts = ArrayList<Stmt>()
         val location = Location(ctx.start)
 
-        ctx.stmt().forEach {
-            val stmt = result.get(it) as Stmt
-            stmts.add(stmt)
+        for (s in ctx.stmt()) {
+            val stmt = result.get(s) as Stmt
+            stmts += stmt
         }
 
         val elif = Elif(cond, stmts, location)
@@ -522,11 +471,12 @@ class ASTGenerator : CGBaseListener() {
         super.exitElsec(ctx)
 
         val stmts = ArrayList<Stmt>()
-        ctx.stmt().forEach {
-            val stmt = result.get(it) as Stmt
+        val location = Location(ctx.start)
+
+        for (s in ctx.stmt()) {
+            val stmt = result.get(s) as Stmt
             stmts.add(stmt)
         }
-        val location = Location(ctx.start)
 
         val elsec = Else(stmts, location)
         result.put(ctx, elsec)
@@ -534,6 +484,7 @@ class ASTGenerator : CGBaseListener() {
 
     override fun exitControlStmt(ctx: ControlStmtContext) {
         super.exitControlStmt(ctx)
+
         val location = Location(ctx.start)
         val type = if (ctx.wr.type == CGLexer.CONTINUE) {
             ControlType.CONTINUE
@@ -542,7 +493,6 @@ class ASTGenerator : CGBaseListener() {
         }
 
         val control = Control(type, location)
-
         result.put(ctx, control)
     }
 
@@ -555,9 +505,9 @@ class ASTGenerator : CGBaseListener() {
         val stmts = ArrayList<Stmt>()
         val location = Location(ctx.start)
 
-        for (stmt in ctx.stmt()) {
-            val st = result.get(stmt) as Stmt
-            stmts.add(st)
+        for (s in ctx.stmt()) {
+            val stmt = result.get(s) as Stmt
+            stmts += stmt
         }
 
         val forc = For(initial, cond, mod, stmts, location)
@@ -571,9 +521,9 @@ class ASTGenerator : CGBaseListener() {
         val stmts = ArrayList<Stmt>()
         val location = Location(ctx.start)
 
-        for (stmt in ctx.stmt()) {
-            val st = result.get(stmt) as Stmt
-            stmts.add(st)
+        for (s in ctx.stmt()) {
+            val stmt = result.get(s) as Stmt
+            stmts += stmt
         }
 
         val whilec = While(cond, stmts, location)

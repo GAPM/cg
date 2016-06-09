@@ -80,7 +80,9 @@ class Compiler(fileName: String, val parameters: Parameters) {
             throw ParsingException()
         }
 
+        val start = System.currentTimeMillis()
         val ast = buildAST(tree);
+        Logger.debug("AST: ${System.currentTimeMillis() - start} ms")
 
         executePhase(::Globals, ast)
         executePhase(::Structure, ast)
