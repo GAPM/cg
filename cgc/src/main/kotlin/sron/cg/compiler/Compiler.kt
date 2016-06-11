@@ -88,11 +88,6 @@ class Compiler(fileName: String, val parameters: Parameters) {
         executePhase(::Structure, ast)
         executePhase(::Types, ast)
 
-        if (state.errors.size > 0) {
-            state.errors.forEach { Logger.error(it) }
-            throw ErrorsInCodeException()
-        }
-
         if (parameters.justCheck) {
             val msg = if (state.errors.size == 0) {
                 "No errors found."
@@ -101,6 +96,11 @@ class Compiler(fileName: String, val parameters: Parameters) {
             }
             Logger.info("Check done. $msg")
         } else {
+            if (state.errors.size > 0) {
+                state.errors.forEach { Logger.error(it) }
+                throw ErrorsInCodeException()
+            }
+
             executePhase(::Preparation, ast)
             executePhase(::Generation, ast)
         }
