@@ -56,7 +56,7 @@ class Compiler(fileName: String, val parameters: Parameters) {
 
     private fun buildAST(tree: ParseTree): Init {
         val walker = ParseTreeWalker()
-        val astGenerator = ASTGenerator()
+        val astGenerator = ASTSimplifier()
         walker.walk(astGenerator, tree)
         return astGenerator.getInit()
     }
@@ -75,12 +75,17 @@ class Compiler(fileName: String, val parameters: Parameters) {
      * Handles the compilation process.
      */
     fun compile() {
+        var start: Long
+
+        start = System.currentTimeMillis()
         val tree = parser.init()
+        Logger.debug("Parse: ${System.currentTimeMillis() - start} ms")
+
         if (parser.numberOfSyntaxErrors > 0) {
             throw ParsingException()
         }
 
-        val start = System.currentTimeMillis()
+        start = System.currentTimeMillis()
         val ast = buildAST(tree);
         Logger.debug("AST: ${System.currentTimeMillis() - start} ms")
 

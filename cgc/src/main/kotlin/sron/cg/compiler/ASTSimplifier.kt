@@ -26,7 +26,7 @@ import sron.cg.compiler.type.Type
 import sron.cg.compiler.type.toCGType
 import java.util.*
 
-class ASTGenerator : CGBaseListener() {
+class ASTSimplifier : CGBaseListener() {
     private val result = ParseTreeProperty<ASTNode>()
     private var initCtx: InitContext? = null
 
