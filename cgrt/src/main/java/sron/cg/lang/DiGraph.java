@@ -104,6 +104,54 @@ public class DiGraph implements IGraph {
     }
 
     @Override
+    public DiGraph edgeIntersection(IGraph other) {
+        assert other instanceof DiGraph;
+        DiGraph result = new DiGraph(size);
+
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (containsEdge(i, j) && other.containsEdge(i, j)) {
+                    result.addEdge(i, j);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public DiGraph edgeUnion(IGraph other) {
+        assert other instanceof DiGraph;
+        DiGraph result = new DiGraph(size);
+
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (containsEdge(i, j) || other.containsEdge(i, j)) {
+                    result.addEdge(i, j);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public DiGraph edgeDifference(IGraph other) {
+        assert other instanceof DiGraph;
+        DiGraph result = new DiGraph(size);
+
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (containsEdge(i, j) && !other.containsEdge(i, j)) {
+                    result.addEdge(i, j);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @Override
     public void removeLoops() {
         for (int i = 0; i < size; i++) {
             adj.set(i, i, false);

@@ -33,5 +33,11 @@ interface IGraph {
 
     IGraph negation();
 
+    IGraph edgeIntersection(IGraph other);
+
+    IGraph edgeUnion(IGraph other);
+
+    IGraph edgeDifference(IGraph other);
+
     void removeLoops();
 }

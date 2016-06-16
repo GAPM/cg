@@ -51,7 +51,16 @@ private fun add(mv: MethodVisitor, type: Type) = when (type) {
  */
 private fun sub(mv: MethodVisitor, type: Type) = when (type) {
     Type.int -> mv.visitInsn(ISUB)
-    else -> mv.visitInsn(FSUB)
+    Type.float -> mv.visitInsn(FSUB)
+    Type.graph -> mv.visitMethodInsn(INVOKESTATIC, "sron/lang/rt/RT",
+            "gDifference",
+            "(Lsron/cg/lang/Graph;Lsron/cg/lang/Graph;)Lsron/cg/lang/Graph;",
+            false)
+    Type.digraph -> mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/RT",
+            "gDifference",
+            "(Lsron/cg/lang/Graph;Lsron/cg/lang/Graph;)Lsron/cg/lang/Graph;",
+            false)
+    else -> error("Invalid type for operator SUB")
 }
 
 /**
@@ -106,28 +115,59 @@ private fun mul(mv: MethodVisitor, type: Type) = when (type) {
  * @param mv The method visitor
  * @param op The operator, whether OR or AND
  */
-private fun binaryAndOr(mv: MethodVisitor, op: Operator) {
-    val opcode = if (op == Operator.AND) {
-        IAND
-    } else {
-        IOR
+private fun binaryAndOr(mv: MethodVisitor, op: Operator, operandType: Type) {
+    when (operandType) {
+        Type.bool -> {
+            val opcode = if (op == Operator.AND) {
+                IAND
+            } else {
+                IOR
+            }
+
+            val start = Label()
+            val isFalse = Label()
+            val end = Label()
+
+            mv.visitLabel(start)
+            mv.visitInsn(opcode)
+            mv.visitJumpInsn(IFEQ, isFalse)
+            mv.visitInsn(ICONST_1)
+            mv.visitJumpInsn(GOTO, end)
+
+            mv.visitLabel(isFalse)
+            mv.visitInsn(ICONST_0)
+            mv.visitJumpInsn(GOTO, end)
+
+            mv.visitLabel(end)
+        }
+        Type.graph -> {
+            if (op == Operator.AND) {
+                mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/RT",
+                        "gIntersection",
+                        "(Lsron/cg/lang/Graph;Lsron/cg/lang/Graph;)Lsron/cg/lang/Graph;",
+                        false)
+            } else {
+                mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/RT",
+                        "gUnion",
+                        "(Lsron/cg/lang/Graph;Lsron/cg/lang/Graph;)Lsron/cg/lang/Graph;",
+                        false)
+            }
+        }
+        Type.digraph -> {
+            if (op == Operator.AND) {
+                mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/RT",
+                        "dgIntersection",
+                        "(Lsron/cg/lang/DiGraph;Lsron/cg/lang/DiGraph;)Lsron/cg/lang/DiGraph;",
+                        false)
+            } else {
+                mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/RT",
+                        "dgUnion",
+                        "(Lsron/cg/lang/DiGraph;Lsron/cg/lang/DiGraph;)Lsron/cg/lang/DiGraph;",
+                        false)
+            }
+        }
+        else -> error("Invalid type for binary op")
     }
-
-    val start = Label()
-    val isFalse = Label()
-    val end = Label()
-
-    mv.visitLabel(start)
-    mv.visitInsn(opcode)
-    mv.visitJumpInsn(IFEQ, isFalse)
-    mv.visitInsn(ICONST_1)
-    mv.visitJumpInsn(GOTO, end)
-
-    mv.visitLabel(isFalse)
-    mv.visitInsn(ICONST_0)
-    mv.visitJumpInsn(GOTO, end)
-
-    mv.visitLabel(end)
 }
 
 /**
@@ -402,7 +442,7 @@ fun binaryOp(mv: MethodVisitor, op: Operator, operandType: Type) {
         Operator.MUL -> mul(mv, operandType)
         Operator.DIV -> div(mv, operandType)
         Operator.MOD -> mod(mv, operandType)
-        Operator.AND, Operator.OR -> binaryAndOr(mv, op)
+        Operator.AND, Operator.OR -> binaryAndOr(mv, op, operandType)
         Operator.EQUAL -> equal(mv, operandType)
         Operator.NOT_EQUAL -> notEqual(mv, operandType)
         Operator.GREATER, Operator.LESS, Operator.GREATER_EQUAL, Operator.LESS_EQUAL -> {

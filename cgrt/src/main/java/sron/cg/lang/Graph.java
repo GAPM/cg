@@ -106,6 +106,54 @@ public class Graph implements IGraph {
     }
 
     @Override
+    public Graph edgeIntersection(IGraph other) {
+        assert other instanceof Graph;
+        Graph result = new Graph(size);
+
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (containsEdge(i, j) && other.containsEdge(i, j)) {
+                    result.addEdge(i, j);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public Graph edgeUnion(IGraph other) {
+        assert other instanceof Graph;
+        Graph result = new Graph(size);
+
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (containsEdge(i, j) || other.containsEdge(i, j)) {
+                    result.addEdge(i, j);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public Graph edgeDifference(IGraph other) {
+        assert other instanceof Graph;
+        Graph result = new Graph(size);
+
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (containsEdge(i, j) && !other.containsEdge(i, j)) {
+                    result.addEdge(i, j);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @Override
     public void removeLoops() {
         for (int i = 0; i < size; i++) {
             adj.set(i, i, false);
