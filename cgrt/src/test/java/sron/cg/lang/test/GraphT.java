@@ -75,12 +75,28 @@ public class GraphT {
     }
 
     @Test
+    public void intersection() {
+        Graph g1 = new Graph(3);
+        Graph g2 = new Graph(3);
+
+        g1.addEdge(0, 1);
+        g2.addEdge(0, 1);
+        g2.addEdge(1, 2);
+
+        Graph r = g1.edgeIntersection(g2);
+
+        assertTrue(r.containsEdge(0, 1));
+        assertTrue(r.containsEdge(1, 0));
+        assertFalse(r.containsEdge(1, 2));
+    }
+
+    @Test
     public void string() {
         Graph g = new Graph(0);
-        assertTrue(g.toString().equals("graph (0) {}"));
+        assertTrue(g.toString().equals("graph [0] {}"));
 
         g = g.addVertex(2);
         g.addEdge(0, 1);
-        assertTrue(g.toString().equals("graph (2) {[1, 0]}"));
+        assertTrue(g.toString().equals("graph [2] {[1, 0]}"));
     }
 }
