@@ -23,6 +23,7 @@ AND_ASSIGN : '&&=' ;
 BOOL : 'bool' ;
 BREAK : 'break' ;
 COMMA : ',' ;
+COMMENT : '//' (.)*? '\n' -> skip;
 CONTINUE : 'continue' ;
 DIGRAPH : 'digraph' ;
 DIV : '/' ;
