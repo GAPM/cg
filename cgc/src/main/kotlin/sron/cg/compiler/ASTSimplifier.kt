@@ -77,7 +77,6 @@ class ASTSimplifier : CGBaseListener() {
     override fun exitGlExpr(ctx: GlExprContext) {
         super.exitGlExpr(ctx)
 
-        val text = ctx.text.escape()
         var type = Type.ERROR
         val location = Location(ctx.start)
 
@@ -87,6 +86,8 @@ class ASTSimplifier : CGBaseListener() {
             ctx.FloatLit() != null -> type = Type.float
             ctx.StringLit() != null -> type = Type.string
         }
+
+        val text = if (type == Type.string) ctx.text.escape() else ctx.text
 
         val glExpr = GlExpr(type, text, location)
         result.put(ctx, glExpr)
