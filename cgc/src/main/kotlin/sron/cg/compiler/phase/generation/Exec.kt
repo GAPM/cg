@@ -71,6 +71,7 @@ private fun JarOutputStream.add(source: File) {
 fun createExec(ba: ByteArray, s: State) {
     dumpClass("sron.cg.lang.collections.BitArray")
     dumpClass("sron.cg.lang.collections.BitMatrix")
+    dumpClass("sron.cg.lang.rt.GOps")
     dumpClass("sron.cg.lang.rt.IO")
     dumpClass("sron.cg.lang.rt.RT")
     dumpClass("sron.cg.lang.rt.Str")

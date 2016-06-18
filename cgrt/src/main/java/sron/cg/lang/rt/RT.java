@@ -20,48 +20,6 @@ import sron.cg.lang.DiGraph;
 import sron.cg.lang.Graph;
 
 public class RT {
-    public static Graph gIntersection(Graph g1, Graph g2) {
-        if (g1.getSize() == g2.getSize()) {
-            return g1.edgeIntersection(g2);
-        }
-        return new Graph(0);
-    }
-
-    public static DiGraph dgIntersection(DiGraph g1, DiGraph g2) {
-        if (g1.getSize() == g2.getSize()) {
-            return g1.edgeIntersection(g2);
-        }
-        return new DiGraph(0);
-    }
-
-    public static Graph gUnion(Graph g1, Graph g2) {
-        if (g1.getSize() == g2.getSize()) {
-            return g1.edgeUnion(g2);
-        }
-        return new Graph(0);
-    }
-
-    public static DiGraph dgUnion(DiGraph g1, DiGraph g2) {
-        if (g1.getSize() == g2.getSize()) {
-            return g1.edgeUnion(g2);
-        }
-        return new DiGraph(0);
-    }
-
-    public static Graph gDifference(Graph g1, Graph g2) {
-        if (g1.getSize() == g2.getSize()) {
-            return g1.edgeDifference(g2);
-        }
-        return new Graph(0);
-    }
-
-    public static DiGraph dgDifference(DiGraph g1, DiGraph g2) {
-        if (g1.getSize() == g2.getSize()) {
-            return g1.edgeDifference(g2);
-        }
-        return new DiGraph(0);
-    }
-
     public static Graph gAddNodes(Graph g, int n) {
         return g.addVertex(n);
     }

@@ -52,13 +52,13 @@ private fun add(mv: MethodVisitor, type: Type) = when (type) {
 private fun sub(mv: MethodVisitor, type: Type) = when (type) {
     Type.int -> mv.visitInsn(ISUB)
     Type.float -> mv.visitInsn(FSUB)
-    Type.graph -> mv.visitMethodInsn(INVOKESTATIC, "sron/lang/rt/RT",
+    Type.graph -> mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/GOps",
             "gDifference",
             "(Lsron/cg/lang/Graph;Lsron/cg/lang/Graph;)Lsron/cg/lang/Graph;",
             false)
-    Type.digraph -> mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/RT",
-            "gDifference",
-            "(Lsron/cg/lang/Graph;Lsron/cg/lang/Graph;)Lsron/cg/lang/Graph;",
+    Type.digraph -> mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/GOps",
+            "dgDifference",
+            "(Lsron/cg/lang/DiGraph;Lsron/cg/lang/DiGraph;)Lsron/cg/lang/DiGraph;",
             false)
     else -> error("Invalid type for operator SUB")
 }
@@ -142,12 +142,12 @@ private fun binaryAndOr(mv: MethodVisitor, op: Operator, operandType: Type) {
         }
         Type.graph -> {
             if (op == Operator.AND) {
-                mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/RT",
+                mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/GOps",
                         "gIntersection",
                         "(Lsron/cg/lang/Graph;Lsron/cg/lang/Graph;)Lsron/cg/lang/Graph;",
                         false)
             } else {
-                mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/RT",
+                mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/GOps",
                         "gUnion",
                         "(Lsron/cg/lang/Graph;Lsron/cg/lang/Graph;)Lsron/cg/lang/Graph;",
                         false)
@@ -155,12 +155,12 @@ private fun binaryAndOr(mv: MethodVisitor, op: Operator, operandType: Type) {
         }
         Type.digraph -> {
             if (op == Operator.AND) {
-                mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/RT",
+                mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/GOps",
                         "dgIntersection",
                         "(Lsron/cg/lang/DiGraph;Lsron/cg/lang/DiGraph;)Lsron/cg/lang/DiGraph;",
                         false)
             } else {
-                mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/RT",
+                mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/GOps",
                         "dgUnion",
                         "(Lsron/cg/lang/DiGraph;Lsron/cg/lang/DiGraph;)Lsron/cg/lang/DiGraph;",
                         false)
