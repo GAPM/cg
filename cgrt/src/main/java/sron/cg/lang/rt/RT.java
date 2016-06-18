@@ -35,4 +35,12 @@ public class RT {
     public static void dgAddEdge(DiGraph g, int a, int b) {
         g.addEdge(a, b);
     }
+
+    public static void gRemoveEdge(Graph g, int a, int b) {
+        g.removeEdge(a, b);
+    }
+
+    public static void dgRemoveEdge(DiGraph g, int a, int b) {
+        g.removeEdge(a, b);
+    }
 }

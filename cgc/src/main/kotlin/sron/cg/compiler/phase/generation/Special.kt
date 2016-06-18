@@ -56,6 +56,16 @@ private fun dgAddEdge(mv: MethodVisitor) {
             "(Lsron/cg/lang/DiGraph;II)V", false)
 }
 
+private fun gRemoveEdge(mv: MethodVisitor) {
+    mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/RT", "gRemoveEdge",
+            "(Lsron/cg/lang/Graph;II)V", false)
+}
+
+private fun dgRemoveEdge(mv: MethodVisitor) {
+    mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/RT", "dgRemoveEdge",
+            "(Lsron/cg/lang/DiGraph;II)V", false)
+}
+
 private fun gRemoveLoops(mv: MethodVisitor) {
     mv.visitMethodInsn(INVOKEVIRTUAL, "sron/cg/lang/Graph", "removeLoops",
             "()V", false)
@@ -78,6 +88,9 @@ fun handleSpecial(mv: MethodVisitor, function: Function) {
 
         "g_add_edge" -> gAddEdge(mv)
         "dg_add_edge" -> dgAddEdge(mv)
+
+        "g_remove_edge" -> gRemoveEdge(mv)
+        "dg_remove_edge" -> dgRemoveEdge(mv)
 
         "g_remove_loops" -> gRemoveLoops(mv)
         "dg_remove_loops" -> dgRemoveLoops(mv)
