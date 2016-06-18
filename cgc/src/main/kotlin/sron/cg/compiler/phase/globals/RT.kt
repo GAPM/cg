@@ -41,6 +41,11 @@ val runtimeFunctions by lazy {
 
     result += function("read", Type.string)
 
+    result += function("g_size", Type.int,
+            "g" to Type.graph)
+    result += function("dg_size", Type.int,
+            "g" to Type.digraph)
+
     result += function("g_add_nodes", Type.graph,
             "g" to Type.graph,
             "n" to Type.int)

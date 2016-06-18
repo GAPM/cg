@@ -26,6 +26,15 @@ private fun read(mv: MethodVisitor) {
             "()Ljava/lang/String;", false)
 }
 
+private fun gSize(mv: MethodVisitor) {
+    mv.visitMethodInsn(INVOKEVIRTUAL, "sron/cg/lang/Graph", "getSize", "()I",
+            false)
+}
+private fun dgSize(mv: MethodVisitor) {
+    mv.visitMethodInsn(INVOKEVIRTUAL, "sron/cg/lang/DiGraph", "getSize", "()I",
+            false)
+}
+
 private fun gAddNodes(mv: MethodVisitor) {
     mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/RT", "gAddNodes",
             "(Lsron/cg/lang/Graph;I)Lsron/cg/lang/Graph;", false);
@@ -50,10 +59,14 @@ fun handleSpecial(mv: MethodVisitor, function: Function) {
     when (function.name) {
         "read" -> read(mv)
 
+        "g_size" -> gSize(mv)
+        "dg_size" -> dgSize(mv)
+
         "g_add_nodes" -> gAddNodes(mv)
         "dg_add_nodes" -> dgAddNodes(mv)
 
         "g_remove_loops" -> gRemoveLoops(mv)
         "dg_remove_loops" -> dgRemoveLoops(mv)
     }
+
 }
