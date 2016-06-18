@@ -87,7 +87,7 @@ FloatLit: DecimalLit '.' DecimalLit Exponent?
 fragment Escape: '\\' [tbnr"'\\];
 fragment Char: ~[\\'"];
 
-StringLit: '"' (Escape | Char)* '"';
+StringLit: '"' (Escape|Char)*? '"';
 
 type: 'int'
     | 'float'
