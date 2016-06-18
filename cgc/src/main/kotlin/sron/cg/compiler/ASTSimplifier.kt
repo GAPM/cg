@@ -30,6 +30,18 @@ class ASTSimplifier : CGBaseListener() {
     private val result = ParseTreeProperty<ASTNode>()
     private var initCtx: InitContext? = null
 
+    private fun String.escape(): String {
+        var res = this
+        res = res.replace("\\t", "\t")
+        res = res.replace("\\b", "\b")
+        res = res.replace("\\n", "\n")
+        res = res.replace("\\r", "\r")
+        res = res.replace("\\\"", "\"")
+        res = res.replace("\\\'", "\'")
+        res = res.replace("\\\\", "\\")
+        return res
+    }
+
     fun getInit() = result.get(initCtx) as Init
 
     override fun exitInit(ctx: InitContext) {
@@ -67,7 +79,7 @@ class ASTSimplifier : CGBaseListener() {
     override fun exitGlExpr(ctx: GlExprContext) {
         super.exitGlExpr(ctx)
 
-        val text = ctx.text
+        val text = ctx.text.escape()
         var type = Type.ERROR
         val location = Location(ctx.start)
 
@@ -214,7 +226,7 @@ class ASTSimplifier : CGBaseListener() {
     override fun exitString(ctx: StringContext) {
         super.exitString(ctx)
 
-        val text = ctx.StringLit().text
+        val text = ctx.StringLit().text.escape()
         val location = Location(ctx.start)
 
         val literal = Literal(Type.string, text, location)
