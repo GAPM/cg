@@ -31,15 +31,13 @@ class ASTSimplifier : CGBaseListener() {
     private var initCtx: InitContext? = null
 
     private fun String.escape(): String {
-        var res = this
-        res = res.replace("\\t", "\t")
-        res = res.replace("\\b", "\b")
-        res = res.replace("\\n", "\n")
-        res = res.replace("\\r", "\r")
-        res = res.replace("\\\"", "\"")
-        res = res.replace("\\\'", "\'")
-        res = res.replace("\\\\", "\\")
-        return res
+        return this.replace("\\t", "\t")
+                .replace("\\b", "\b")
+                .replace("\\n", "\n")
+                .replace("\\r", "\r")
+                .replace("\\\"", "\"")
+                .replace("\\\'", "\'")
+                .replace("\\\\", "\\")
     }
 
     fun getInit() = result.get(initCtx) as Init
