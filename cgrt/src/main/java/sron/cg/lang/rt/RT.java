@@ -27,4 +27,12 @@ public class RT {
     public static DiGraph dgAddNodes(DiGraph g, int n) {
         return g.addVertex(n);
     }
+
+    public static void gAddEdge(Graph g, int a, int b) {
+        g.addEdge(a, b);
+    }
+
+    public static void dgAddEdge(DiGraph g, int a, int b) {
+        g.addEdge(a, b);
+    }
 }

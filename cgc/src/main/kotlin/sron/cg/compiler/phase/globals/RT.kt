@@ -53,6 +53,15 @@ val runtimeFunctions by lazy {
             "g" to Type.digraph,
             "n" to Type.int)
 
+    result += function("g_add_edge", Type.void,
+            "g" to Type.graph,
+            "a" to Type.int,
+            "b" to Type.int)
+    result += function("dg_add_edge", Type.void,
+            "g" to Type.digraph,
+            "a" to Type.int,
+            "b" to Type.int)
+
     result += function("g_remove_loops", Type.void,
             "g" to Type.graph)
     result += function("dg_remove_loops", Type.void,

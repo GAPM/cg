@@ -30,6 +30,7 @@ private fun gSize(mv: MethodVisitor) {
     mv.visitMethodInsn(INVOKEVIRTUAL, "sron/cg/lang/Graph", "getSize", "()I",
             false)
 }
+
 private fun dgSize(mv: MethodVisitor) {
     mv.visitMethodInsn(INVOKEVIRTUAL, "sron/cg/lang/DiGraph", "getSize", "()I",
             false)
@@ -37,12 +38,22 @@ private fun dgSize(mv: MethodVisitor) {
 
 private fun gAddNodes(mv: MethodVisitor) {
     mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/RT", "gAddNodes",
-            "(Lsron/cg/lang/Graph;I)Lsron/cg/lang/Graph;", false);
+            "(Lsron/cg/lang/Graph;I)Lsron/cg/lang/Graph;", false)
 }
 
 private fun dgAddNodes(mv: MethodVisitor) {
     mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/RT", "dgAddNodes",
-            "(Lsron/cg/lang/DiGraph;I)Lsron/cg/lang/DiGraph;", false);
+            "(Lsron/cg/lang/DiGraph;I)Lsron/cg/lang/DiGraph;", false)
+}
+
+private fun gAddEdge(mv: MethodVisitor) {
+    mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/RT", "gAddEdge",
+            "(Lsron/cg/lang/Graph;II)V", false)
+}
+
+private fun dgAddEdge(mv: MethodVisitor) {
+    mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/RT", "dgAddEdge",
+            "(Lsron/cg/lang/DiGraph;II)V", false)
 }
 
 private fun gRemoveLoops(mv: MethodVisitor) {
@@ -64,6 +75,9 @@ fun handleSpecial(mv: MethodVisitor, function: Function) {
 
         "g_add_nodes" -> gAddNodes(mv)
         "dg_add_nodes" -> dgAddNodes(mv)
+
+        "g_add_edge" -> gAddEdge(mv)
+        "dg_add_edge" -> dgAddEdge(mv)
 
         "g_remove_loops" -> gRemoveLoops(mv)
         "dg_remove_loops" -> dgRemoveLoops(mv)
