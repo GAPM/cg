@@ -21,8 +21,6 @@ import sron.cg.compiler.symbol.Location
 import sron.cg.compiler.symbol.Variable
 import sron.cg.compiler.type.Type
 
-private fun arg(name: String, type: Type) = name to type
-
 private fun function(name: String, type: Type, vararg pairs: Pair<String, Type>): Function {
     val scope = "global.$name"
 
