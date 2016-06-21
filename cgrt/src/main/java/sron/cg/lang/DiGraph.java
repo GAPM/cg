@@ -16,9 +16,11 @@
 
 package sron.cg.lang;
 
+import sron.cg.lang.collections.BitArray;
 import sron.cg.lang.collections.BitMatrix;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class DiGraph implements IGraph {
@@ -148,6 +150,40 @@ public class DiGraph implements IGraph {
             }
         }
 
+        return result;
+    }
+
+    @Override
+    public Graph shortestPath(int node) {
+        BitArray visited = new BitArray(size);
+        LinkedList<Integer> queue = new LinkedList<>();
+
+        int parent[] = new int[size];
+        for (int i = 0; i < size; i++) {
+            parent[i] = -1;
+        }
+
+        queue.addLast(node);
+        visited.set(node, true);
+
+        while (!queue.isEmpty()) {
+            int current = queue.removeFirst();
+
+            for (int i = 0; i < size; i++) {
+                if (!visited.get(i) && adj.get(current, i)) {
+                    parent[i] = current;
+                    queue.addLast(i);
+                    visited.set(i, true);
+                }
+            }
+        }
+
+        Graph result = new Graph(size);
+        for (int i = 0; i < size; i++) {
+            if (parent[i] != -1) {
+                result.addEdge(parent[i], i);
+            }
+        }
         return result;
     }
 

@@ -39,5 +39,7 @@ interface IGraph {
 
     IGraph edgeDifference(IGraph other);
 
+    IGraph shortestPath(int node);
+
     void removeLoops();
 }
