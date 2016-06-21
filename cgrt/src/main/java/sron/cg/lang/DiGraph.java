@@ -178,7 +178,7 @@ public class DiGraph implements IGraph {
             }
         }
 
-        Graph result = new Graph(size);
+        DiGraph result = new DiGraph(size);
         for (int i = 0; i < size; i++) {
             if (parent[i] != -1) {
                 result.addEdge(parent[i], i);
