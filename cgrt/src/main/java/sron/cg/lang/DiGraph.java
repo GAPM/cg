@@ -154,7 +154,7 @@ public class DiGraph implements IGraph {
     }
 
     @Override
-    public Graph shortestPath(int node) {
+    public DiGraph shortestPath(int node) {
         BitArray visited = new BitArray(size);
         LinkedList<Integer> queue = new LinkedList<>();
 

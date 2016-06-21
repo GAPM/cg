@@ -43,4 +43,20 @@ public class RT {
     public static void dgRemoveEdge(DiGraph g, int a, int b) {
         g.removeEdge(a, b);
     }
+
+    public static Graph gShortestPath(Graph g, int node) {
+        if (node >= 0 && node < g.getSize()) {
+            return g.shortestPath(node);
+        } else {
+            return new Graph(0);
+        }
+    }
+
+    public static DiGraph dgShortestPath(DiGraph g, int node) {
+        if (node >= 0 && node < g.getSize()) {
+            return g.shortestPath(node);
+        } else {
+            return new DiGraph(0);
+        }
+    }
 }
