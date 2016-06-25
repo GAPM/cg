@@ -18,7 +18,7 @@ package sron.cg.compiler.type
 
 import org.antlr.v4.runtime.tree.TerminalNode
 import sron.cg.compiler.internal.CGLexer
-import sron.cg.compiler.internal.CGParser
+import sron.cg.compiler.internal.CGParser.TypeContext
 
 enum class Type {
     int,
@@ -29,47 +29,50 @@ enum class Type {
     graph,
     digraph,
 
-    ERROR
-}
+    ERROR;
 
-fun CGParser.TypeContext.toCGType(): Type {
-    val tn = this.getChild(0) as TerminalNode
-    val t = tn.symbol.type
+    fun descriptor() = when (this) {
+        Type.int -> "I"
+        Type.float -> "F"
+        Type.bool -> "Z"
+        Type.void -> "V"
+        Type.string -> "Ljava/lang/String;"
+        Type.graph -> "Lsron/cg/lang/Graph;"
+        Type.digraph -> "Lsron/cg/lang/DiGraph;"
 
-    return when (t) {
-        CGLexer.INT -> Type.int
-        CGLexer.FLOAT -> Type.float
-        CGLexer.BOOL -> Type.bool
-        CGLexer.VOID -> Type.void
-        CGLexer.STRING -> Type.string
-        CGLexer.GRAPH -> Type.graph
-        CGLexer.DIGRAPH -> Type.digraph
-        else -> Type.ERROR
+        else -> throw IllegalStateException()
     }
-}
 
-fun Type.descriptor() = when (this) {
-    Type.int -> "I"
-    Type.float -> "F"
-    Type.bool -> "Z"
-    Type.void -> "V"
-    Type.string -> "Ljava/lang/String;"
-    Type.graph -> "Lsron/cg/lang/Graph;"
-    Type.digraph -> "Lsron/cg/lang/DiGraph;"
+    fun fullName() = when (this) {
+        Type.graph -> "sron/cg/lang/Graph"
+        Type.digraph -> "sron/cg/lang/DiGraph"
 
-    else -> ""
-}
+        else -> throw IllegalStateException()
+    }
 
-fun Type.fullName() = when (this) {
-    Type.graph -> "sron/cg/lang/Graph"
-    Type.digraph -> "sron/cg/lang/DiGraph"
-    else -> ""
-}
+    fun defaultValue(): Any? = when (this) {
+        Type.int -> 0
+        Type.float -> 0.0f
+        Type.bool -> false
+        Type.string -> ""
+        else -> null
+    }
 
-fun Type.defaultValue(): Any? = when (this) {
-    Type.int -> 0
-    Type.float -> 0.0f
-    Type.bool -> false
-    Type.string -> ""
-    else -> null
+    companion object {
+        fun toCGType(ctx: TypeContext): Type {
+            val tn = ctx.getChild(0) as TerminalNode
+            val t = tn.symbol.type
+
+            return when (t) {
+                CGLexer.INT -> Type.int
+                CGLexer.FLOAT -> Type.float
+                CGLexer.BOOL -> Type.bool
+                CGLexer.VOID -> Type.void
+                CGLexer.STRING -> Type.string
+                CGLexer.GRAPH -> Type.graph
+                CGLexer.DIGRAPH -> Type.digraph
+                else -> Type.ERROR
+            }
+        }
+    }
 }

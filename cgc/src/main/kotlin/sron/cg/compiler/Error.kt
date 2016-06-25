@@ -18,7 +18,6 @@ package sron.cg.compiler
 
 import sron.cg.compiler.ast.ControlType
 import sron.cg.compiler.ast.Operator
-import sron.cg.compiler.ast.sign
 import sron.cg.compiler.symbol.Location
 import sron.cg.compiler.symbol.SymType
 import sron.cg.compiler.type.Type

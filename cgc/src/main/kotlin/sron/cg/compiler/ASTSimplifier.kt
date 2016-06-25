@@ -23,7 +23,6 @@ import sron.cg.compiler.internal.CGLexer
 import sron.cg.compiler.internal.CGParser.*
 import sron.cg.compiler.symbol.Location
 import sron.cg.compiler.type.Type
-import sron.cg.compiler.type.toCGType
 import java.util.*
 
 class ASTSimplifier : CGBaseListener() {
@@ -47,18 +46,17 @@ class ASTSimplifier : CGBaseListener() {
 
         initCtx = ctx
 
-        val init = Init()
-
-        for (funcDef in ctx.funcDef()) {
-            val fd = result.get(funcDef) as FuncDef
-            init.funcDef += fd
+        val glVarCtxs = ctx.glVarDec()
+        val glVars = Array(glVarCtxs.size) { i ->
+            result.get(glVarCtxs[i]) as GlVarDec
         }
 
-        for (glVarDec in ctx.glVarDec()) {
-            val gvd = result.get(glVarDec) as GlVarDec
-            init.glVarDec += gvd
+        val fdCtxs = ctx.funcDef()
+        val funcDefs = Array(fdCtxs.size) { i ->
+            result.get(fdCtxs[i]) as FuncDef
         }
 
+        val init = Init(glVars, funcDefs)
         result.put(ctx, init)
     }
 
@@ -66,7 +64,7 @@ class ASTSimplifier : CGBaseListener() {
         super.exitGlVarDec(ctx)
 
         val name = ctx.Identifier().text
-        val type = ctx.type().toCGType()
+        val type = Type.toCGType(ctx.type())
         val expr = result.get(ctx.glExpr()) as? GlExpr
         val location = Location(ctx.Identifier())
 
@@ -77,14 +75,14 @@ class ASTSimplifier : CGBaseListener() {
     override fun exitGlExpr(ctx: GlExprContext) {
         super.exitGlExpr(ctx)
 
-        var type = Type.ERROR
         val location = Location(ctx.start)
 
-        when {
-            ctx.BoolLit() != null -> type = Type.bool
-            ctx.IntLit() != null -> type = Type.int
-            ctx.FloatLit() != null -> type = Type.float
-            ctx.StringLit() != null -> type = Type.string
+        val type = when {
+            ctx.BoolLit() != null -> Type.bool
+            ctx.IntLit() != null -> Type.int
+            ctx.FloatLit() != null -> Type.float
+            ctx.StringLit() != null -> Type.string
+            else -> Type.ERROR
         }
 
         val text = if (type == Type.string) ctx.text.escape() else ctx.text
@@ -97,19 +95,17 @@ class ASTSimplifier : CGBaseListener() {
         super.exitFuncDef(ctx)
 
         val name = ctx.Identifier().text
-        val type = ctx.type()?.toCGType() ?: Type.void
-        val args = ArrayList<Arg>()
-        val stmts = ArrayList<Stmt>()
+        val type = ctx.type()?.let { Type.toCGType(it) } ?: Type.void
         val location = Location(ctx.Identifier())
 
-        for (a in ctx.argList().arg()) {
-            val arg = result.get(a) as Arg
-            args += arg
+        val argCtxs = ctx.argList().arg()
+        val args = Array(argCtxs.size) { i ->
+            result.get(argCtxs[i]) as Arg
         }
 
-        for (s in ctx.stmt()) {
-            val stmt = result.get(s) as Stmt
-            stmts += stmt
+        val stmtCtxs = ctx.stmt()
+        val stmts = Array(stmtCtxs.size) { i ->
+            result.get(stmtCtxs[i]) as Stmt
         }
 
         val funcDef = FuncDef(name, type, args, stmts, location)
@@ -120,7 +116,7 @@ class ASTSimplifier : CGBaseListener() {
         super.exitArg(ctx)
 
         val name = ctx.Identifier().text
-        val type = ctx.type().toCGType()
+        val type = Type.toCGType(ctx.type())
         val location = Location(ctx.Identifier())
 
         val arg = Arg(name, type, location)
@@ -151,7 +147,7 @@ class ASTSimplifier : CGBaseListener() {
         super.exitVarDec(ctx)
 
         val name = ctx.Identifier().text
-        val type = ctx.type().toCGType()
+        val type = Type.toCGType(ctx.type())
         val expr = result.get(ctx.expr()) as? Expr
         val location = Location(ctx.Identifier())
 
@@ -178,7 +174,8 @@ class ASTSimplifier : CGBaseListener() {
                 CGLexer.DIV_ASSIGN -> Operator.DIV
                 CGLexer.MOD_ASSIGN -> Operator.MOD
                 CGLexer.AND_ASSIGN -> Operator.AND
-                else -> Operator.OR
+                CGLexer.OR_ASSIGN -> Operator.OR
+                else -> throw IllegalStateException()
             }
             assign = Assignment(lhs, BinaryExpr(op, lhs, rhs, location), location)
         }
@@ -273,12 +270,11 @@ class ASTSimplifier : CGBaseListener() {
         super.exitFunctionCall(ctx)
 
         val name = ctx.funcCall().Identifier().text
-        val expr = ArrayList<Expr>()
         val location = Location(ctx.funcCall().Identifier())
 
-        for (e in ctx.funcCall().exprList().expr()) {
-            val exp = result.get(e) as Expr
-            expr += exp
+        val exprCtxs = ctx.funcCall().exprList().expr()
+        val expr = Array(exprCtxs.size) { i ->
+            result.get(exprCtxs[i]) as Expr
         }
 
         val funcCall = FunctionCall(name, expr, location)
@@ -288,7 +284,7 @@ class ASTSimplifier : CGBaseListener() {
     override fun exitCast(ctx: CastContext) {
         super.exitCast(ctx)
 
-        val type = ctx.type().toCGType()
+        val type = Type.toCGType(ctx.type())
         val expr = result.get(ctx.expr()) as Expr
         val location = Location(ctx.start)
 
@@ -443,19 +439,17 @@ class ASTSimplifier : CGBaseListener() {
         super.exitIfc(ctx)
 
         val cond = result.get(ctx.expr()) as Expr
-        val stmts = ArrayList<Stmt>()
-        val elifs = ArrayList<Elif>()
         val elsec = result.get(ctx.elsec()) as? Else
         val location = Location(ctx.start)
 
-        for (s in ctx.stmt()) {
-            val stmt = result.get(s) as Stmt
-            stmts += stmt
+        val stmtCtxs = ctx.stmt()
+        val stmts = Array(stmtCtxs.size) { i->
+            result.get(stmtCtxs[i]) as Stmt
         }
 
-        for (e in ctx.elifc()) {
-            val elif = result.get(e) as Elif
-            elifs += elif
+        val elifCtxs = ctx.stmt()
+        val elifs = Array(stmtCtxs.size) { i->
+            result.get(elifCtxs[i]) as Elif
         }
 
         val ifc = If(cond, stmts, elifs, elsec, location)
@@ -513,12 +507,11 @@ class ASTSimplifier : CGBaseListener() {
         val initial = result.get(ctx.initial) as Assignment
         val cond = result.get(ctx.cond) as Expr
         val mod = result.get(ctx.mod) as Assignment
-        val stmts = ArrayList<Stmt>()
         val location = Location(ctx.start)
 
-        for (s in ctx.stmt()) {
-            val stmt = result.get(s) as Stmt
-            stmts += stmt
+        val stmtCxts = ctx.stmt()
+        val stmts = Array(stmtCxts.size) { i->
+            result.get(stmtCxts[i]) as Stmt
         }
 
         val forc = For(initial, cond, mod, stmts, location)
@@ -529,12 +522,11 @@ class ASTSimplifier : CGBaseListener() {
         super.exitWhilec(ctx)
 
         val cond = result.get(ctx.expr()) as Expr
-        val stmts = ArrayList<Stmt>()
         val location = Location(ctx.start)
 
-        for (s in ctx.stmt()) {
-            val stmt = result.get(s) as Stmt
-            stmts += stmt
+        val stmtCxts = ctx.stmt()
+        val stmts = Array(stmtCxts.size) { i->
+            result.get(stmtCxts[i]) as Stmt
         }
 
         val whilec = While(cond, stmts, location)

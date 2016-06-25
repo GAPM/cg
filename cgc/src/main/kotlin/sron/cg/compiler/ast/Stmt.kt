@@ -17,8 +17,47 @@
 package sron.cg.compiler.ast
 
 import sron.cg.compiler.symbol.Location
+import sron.cg.compiler.type.Type
+
+enum class ControlType {
+    CONTINUE,
+    BREAK
+}
 
 abstract class Stmt(location: Location) : ASTNode(location) {
     var returns = false
     var scope = ""
 }
+
+class Assignment(val lhs: Expr, val rhs: Expr, location: Location) : Stmt(location)
+
+class Control(val type: ControlType, location: Location) : Stmt(location)
+
+class Elif(val cond: Expr, val stmts: List<Stmt>, location: Location) : ASTNode(location) {
+    var returns = false
+    var scope = ""
+}
+
+class Else(val stmts: List<Stmt>, location: Location) : ASTNode(location) {
+    var returns = false
+    var scope = ""
+}
+
+class For(val initial: Assignment, val cond: Expr, val mod: Assignment,
+          val stmts: Array<Stmt>, location: Location) : Stmt(location)
+
+class If(val cond: Expr, val stmts: Array<Stmt>, val elifs: Array<Elif>,
+         val elsec: Else?, location: Location) : Stmt(location)
+
+class Print(location: Location, val expr: Expr) : Stmt(location)
+
+class Return(val expr: Expr?, location: Location) : Stmt(location) {
+    init {
+        returns = true
+    }
+}
+
+class VarDec(val name: String, val type: Type, val exp: Expr?,
+             location: Location) : Stmt(location)
+
+class While(val cond: Expr, val stmts: Array<Stmt>, location: Location) : Stmt(location)

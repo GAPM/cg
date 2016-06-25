@@ -21,7 +21,6 @@ import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes.*
 import sron.cg.compiler.ast.GlVarDec
 import sron.cg.compiler.type.Type
-import sron.cg.compiler.type.descriptor
 
 fun constructor(cw: ClassWriter) {
     val mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null)
@@ -38,7 +37,7 @@ fun constructor(cw: ClassWriter) {
     mv.visitEnd()
 }
 
-fun initializer(cw: ClassWriter, glVarDec: List<GlVarDec>) {
+fun initializer(cw: ClassWriter, glVarDec: Array<GlVarDec>) {
     val mv = cw.visitMethod(ACC_STATIC, "<clinit>", "()V", null, null)
     mv.visitCode()
 

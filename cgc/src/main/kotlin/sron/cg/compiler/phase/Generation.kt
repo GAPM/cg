@@ -28,8 +28,6 @@ import sron.cg.compiler.symbol.Function
 import sron.cg.compiler.symbol.SymType
 import sron.cg.compiler.symbol.Variable
 import sron.cg.compiler.type.Type
-import sron.cg.compiler.type.defaultValue
-import sron.cg.compiler.type.descriptor
 import java.util.*
 
 class Generation(private val s: State, private val init: Init) : Phase {

@@ -20,7 +20,6 @@ import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes.*
 import sron.cg.compiler.State
 import sron.cg.compiler.type.Type
-import sron.cg.compiler.type.fullName
 
 fun getVarIndex(s: State, fName: String, vName: String): Int {
     val idx = s.varIndex[fName]!![vName]!!
