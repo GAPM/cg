@@ -18,9 +18,7 @@ package sron.cg.compiler.symbol
 
 import java.util.*
 
-class SymbolTable {
-    private val symTab = ArrayList<Symbol>()
-
+class SymbolTable : LinkedList<Symbol>() {
     /**
      * Gets a symbol with matching name, scope and type.
      *
@@ -30,7 +28,7 @@ class SymbolTable {
      * @return a symbol with matching name, scope and type if its found
      */
     operator fun get(name: String, scope: String, symType: SymType): Symbol? {
-        return symTab.filter { it.name == name }
+        return filter { it.name == name }
                 .filter { scope.startsWith(it.scope) || scope == "" }
                 .filter { it.symType == symType }
                 .firstOrNull()
@@ -44,13 +42,4 @@ class SymbolTable {
      * @return a symbol with matching name, scope and type if its found
      */
     operator fun get(name: String, symType: SymType) = this[name, "", symType]
-
-    /**
-     * Inserts a symbol into the symbol table
-     *
-     * @param s The symbol to be added
-     */
-    operator fun plusAssign(s: Symbol): Unit {
-        symTab.add(s)
-    }
 }
