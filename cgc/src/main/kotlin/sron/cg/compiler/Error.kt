@@ -41,7 +41,7 @@ object Error {
     }
 
     fun badAssignment(location: Location, lhs: Type, rhs: Type): String {
-        return e(location, "can't use expression of type $lhs as type $rhs in assignment")
+        return e(location, "can't use expression of type $rhs as type $lhs in assignment")
     }
 
     fun badBinaryOp(location: Location, op: Operator, typ1: Type, typ2: Type): String {
