@@ -447,8 +447,8 @@ class ASTSimplifier : CGBaseListener() {
             result.get(stmtCtxs[i]) as Stmt
         }
 
-        val elifCtxs = ctx.stmt()
-        val elifs = Array(stmtCtxs.size) { i->
+        val elifCtxs = ctx.elifc()
+        val elifs = Array(elifCtxs.size) { i->
             result.get(elifCtxs[i]) as Elif
         }
 
