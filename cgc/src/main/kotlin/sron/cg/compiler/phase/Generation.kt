@@ -244,18 +244,18 @@ class Generation(private val s: State, private val init: Init) : Phase {
 
     private fun Graph.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
         if (gtype == GraphType.GRAPH) {
-            mv.visitTypeInsn(NEW, "sron/cg/lang/Graph")
+            mv.visitTypeInsn(NEW, GRAPH_CLASS)
         } else {
-            mv.visitTypeInsn(NEW, "sron/cg/lang/DiGraph");
+            mv.visitTypeInsn(NEW, DIGRAPH_CLASS);
         }
 
         mv.visitInsn(DUP)
         num.generate(s, mv, fd)
 
         if (gtype == GraphType.GRAPH) {
-            mv.visitMethodInsn(INVOKESPECIAL, "sron/cg/lang/Graph", "<init>", "(I)V", false);
+            mv.visitMethodInsn(INVOKESPECIAL, GRAPH_CLASS, "<init>", "(I)V", false);
         } else {
-            mv.visitMethodInsn(INVOKESPECIAL, "sron/cg/lang/DiGraph",
+            mv.visitMethodInsn(INVOKESPECIAL, DIGRAPH_CLASS,
                     "<init>", "(I)V", false);
         }
 
@@ -265,10 +265,10 @@ class Generation(private val s: State, private val init: Init) : Phase {
             edge.target.generate(s, mv, fd)
 
             if (gtype == GraphType.GRAPH) {
-                mv.visitMethodInsn(INVOKEVIRTUAL, "sron/cg/lang/Graph",
+                mv.visitMethodInsn(INVOKEVIRTUAL, GRAPH_CLASS,
                         "addEdge", "(II)V", false);
             } else {
-                mv.visitMethodInsn(INVOKEVIRTUAL, "sron/cg/lang/DiGraph",
+                mv.visitMethodInsn(INVOKEVIRTUAL, DIGRAPH_CLASS,
                         "addEdge", "(II)V", false);
             }
         }
@@ -497,14 +497,14 @@ class Generation(private val s: State, private val init: Init) : Phase {
         expr.generate(s, mv, fd)
 
         when (expr.type) {
-            Type.int -> mv.visitMethodInsn(INVOKESTATIC,
-                    "sron/cg/lang/rt/IO", "print", "(I)V", false)
-            Type.float -> mv.visitMethodInsn(INVOKESTATIC,
-                    "sron/cg/lang/rt/IO", "print", "(F)V", false)
-            Type.bool -> mv.visitMethodInsn(INVOKESTATIC,
-                    "sron/cg/lang/rt/IO", "print", "(Z)V", false)
-            else -> mv.visitMethodInsn(INVOKESTATIC,
-                    "sron/cg/lang/rt/IO", "print", "(Ljava/lang/Object;)V", false)
+            Type.int -> mv.visitMethodInsn(INVOKESTATIC, RT_IO_CLASS, "print",
+                    "(I)V", false)
+            Type.float -> mv.visitMethodInsn(INVOKESTATIC, RT_IO_CLASS, "print",
+                    "(F)V", false)
+            Type.bool -> mv.visitMethodInsn(INVOKESTATIC, RT_IO_CLASS, "print",
+                    "(Z)V", false)
+            else -> mv.visitMethodInsn(INVOKESTATIC, RT_IO_CLASS, "print",
+                    "(Ljava/lang/Object;)V", false)
         }
     }
 }
