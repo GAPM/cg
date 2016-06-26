@@ -75,6 +75,7 @@ fun createExec(ba: ByteArray, s: State) {
     dumpClass(GRAPH_CLASS)
     dumpClass(DIGRAPH_CLASS)
     dumpClass(RT_CLASS)
+    dumpClass(RT_ASSERT_CLASS)
     dumpClass(RT_GOPS_CLASS)
     dumpClass(RT_IO_CLASS)
     dumpClass(RT_STR_CLASS)

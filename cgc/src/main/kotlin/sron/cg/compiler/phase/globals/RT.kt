@@ -37,6 +37,8 @@ private fun function(name: String, type: Type, vararg pairs: Pair<String, Type>)
 val runtimeFunctions by lazy {
     val result = mutableListOf<Function>()
 
+    result += function("assert", Type.void,
+            "r" to Type.bool)
     result += function("read", Type.string)
 
     result += function("g_size", Type.int,

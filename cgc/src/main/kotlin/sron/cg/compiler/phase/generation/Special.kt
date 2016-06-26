@@ -21,6 +21,10 @@ import org.objectweb.asm.Opcodes.INVOKESTATIC
 import org.objectweb.asm.Opcodes.INVOKEVIRTUAL
 import sron.cg.compiler.symbol.Function
 
+private fun assert(mv: MethodVisitor) {
+    mv.visitMethodInsn(INVOKESTATIC, RT_ASSERT_CLASS, "assertF", "(Z)V", false)
+}
+
 private fun read(mv: MethodVisitor) {
     mv.visitMethodInsn(INVOKESTATIC, RT_IO_CLASS, "read",
             "()Ljava/lang/String;", false)
@@ -76,6 +80,7 @@ private fun dgRemoveLoops(mv: MethodVisitor) {
 
 fun handleSpecial(mv: MethodVisitor, function: Function) {
     when (function.name) {
+        "assert" -> assert(mv)
         "read" -> read(mv)
 
         "g_size" -> gSize(mv)
