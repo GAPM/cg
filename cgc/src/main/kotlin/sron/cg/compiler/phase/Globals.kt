@@ -44,15 +44,10 @@ class Globals(private val s: State, private val init: Init) : Phase {
             fd.globals(s)
         }
 
-        var noEntry = false
         val qry = s.symbolTable["main", SymType.FUNC]
-        when (qry) {
-            null -> noEntry = true
-            is Function -> {
-                if (qry.type != Type.void || qry.args.size != 0) {
-                    noEntry = true
-                }
-            }
+        val noEntry = when (qry) {
+            is Function -> (qry.type != Type.void && qry.args.size != 0)
+            else -> false
         }
 
         if (noEntry) {
