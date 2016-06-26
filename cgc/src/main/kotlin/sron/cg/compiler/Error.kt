@@ -40,6 +40,10 @@ object Error {
         return e(location, msg)
     }
 
+    fun badAssertionType(location: Location, type: Type): String {
+        return e(location, "can't use expression of type $type as type bool in assertion")
+    }
+
     fun badAssignment(location: Location, lhs: Type, rhs: Type): String {
         return e(location, "can't use expression of type $rhs as type $lhs in assignment")
     }

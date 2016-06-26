@@ -133,6 +133,7 @@ class ASTSimplifier : CGBaseListener() {
                     ?: stmt.printStmt()
                     ?: stmt.returnStmt()
                     ?: stmt.varDec()
+                    ?: stmt.assertStmt()
         } ?: ctx.compoundStmt()?.let { stmt ->
             stmt.forc()
                     ?: stmt.ifc()
@@ -435,6 +436,16 @@ class ASTSimplifier : CGBaseListener() {
         result.put(ctx, print)
     }
 
+    override fun exitAssertStmt(ctx: AssertStmtContext) {
+        super.exitAssertStmt(ctx)
+
+        val location = Location(ctx.start)
+        val expr = result.get(ctx.expr()) as Expr
+
+        val assertion = Assertion(expr, location)
+        result.put(ctx, assertion)
+    }
+
     override fun exitIfc(ctx: IfcContext) {
         super.exitIfc(ctx)
 
@@ -443,12 +454,12 @@ class ASTSimplifier : CGBaseListener() {
         val location = Location(ctx.start)
 
         val stmtCtxs = ctx.stmt()
-        val stmts = Array(stmtCtxs.size) { i->
+        val stmts = Array(stmtCtxs.size) { i ->
             result.get(stmtCtxs[i]) as Stmt
         }
 
         val elifCtxs = ctx.elifc()
-        val elifs = Array(elifCtxs.size) { i->
+        val elifs = Array(elifCtxs.size) { i ->
             result.get(elifCtxs[i]) as Elif
         }
 
@@ -510,7 +521,7 @@ class ASTSimplifier : CGBaseListener() {
         val location = Location(ctx.start)
 
         val stmtCxts = ctx.stmt()
-        val stmts = Array(stmtCxts.size) { i->
+        val stmts = Array(stmtCxts.size) { i ->
             result.get(stmtCxts[i]) as Stmt
         }
 
@@ -525,7 +536,7 @@ class ASTSimplifier : CGBaseListener() {
         val location = Location(ctx.start)
 
         val stmtCxts = ctx.stmt()
-        val stmts = Array(stmtCxts.size) { i->
+        val stmts = Array(stmtCxts.size) { i ->
             result.get(stmtCxts[i]) as Stmt
         }
 

@@ -142,6 +142,7 @@ class Generation(private val s: State, private val init: Init) : Phase {
             is For -> this.generate(s, mv, fd)
             is While -> this.generate(s, mv, fd)
             is Print -> this.generate(s, mv, fd)
+            is Assertion -> this.generate(s, mv, fd)
         }
     }
 
@@ -506,5 +507,13 @@ class Generation(private val s: State, private val init: Init) : Phase {
             else -> mv.visitMethodInsn(INVOKESTATIC, RT_IO_CLASS, "print",
                     "(Ljava/lang/Object;)V", false)
         }
+    }
+    
+    private fun Assertion.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
+        expr.generate(s, mv, fd)
+        mv.visitLdcInsn(this.location.line)
+
+        mv.visitMethodInsn(INVOKESTATIC, RT_ASSERT_CLASS, "assertF", "(ZI)V",
+                false)
     }
 }

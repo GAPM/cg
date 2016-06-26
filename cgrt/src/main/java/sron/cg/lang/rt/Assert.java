@@ -17,7 +17,9 @@
 package sron.cg.lang.rt;
 
 public class Assert {
-    public static void assertF(boolean res) {
-        assert res;
+    public static void assertF(boolean res, int line) {
+        if (!res) {
+            System.err.println("Line " + line + ": error");
+        }
     }
 }

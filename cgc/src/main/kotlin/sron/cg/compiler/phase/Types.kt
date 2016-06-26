@@ -85,6 +85,7 @@ class Types(private val s: State, private val init: Init) : Phase {
             is For -> this.types(s, funcDef, scope)
             is While -> this.types(s, funcDef, scope)
             is Print -> this.types(s, scope)
+            is Assertion -> this.types(s, scope)
         }
     }
 
@@ -354,5 +355,15 @@ class Types(private val s: State, private val init: Init) : Phase {
 
     private fun Print.types(s: State, scope: String) {
         expr.types(s, scope)
+    }
+
+    private fun Assertion.types(s: State, scope: String) {
+        expr.types(s, scope)
+
+        if (expr.type != Type.ERROR) {
+            if (expr.type != Type.bool) {
+                s.errors += Error.badAssertionType(expr.location, expr.type)
+            }
+        }
     }
 }

@@ -29,6 +29,8 @@ abstract class Stmt(location: Location) : ASTNode(location) {
     var scope = ""
 }
 
+class Assertion(val expr: Expr, location: Location): Stmt(location)
+
 class Assignment(val lhs: Expr, val rhs: Expr, location: Location) : Stmt(location)
 
 class Control(val type: ControlType, location: Location) : Stmt(location)

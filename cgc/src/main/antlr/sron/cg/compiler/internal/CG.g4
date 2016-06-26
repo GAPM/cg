@@ -149,6 +149,8 @@ returnStmt: 'return' expr? ;
 
 printStmt: 'print' expr;
 
+assertStmt: 'assert' expr;
+
 compoundStmt: ifc
             | forc
             | whilec
@@ -160,6 +162,7 @@ simpleStmt: varDec
           | returnStmt
           | controlStmt
           | printStmt
+          | assertStmt
           ;
 
 stmt: simpleStmt ';'
