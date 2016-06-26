@@ -431,7 +431,7 @@ class ASTSimplifier : CGBaseListener() {
         val location = Location(ctx.start)
         val expr = result.get(ctx.expr()) as Expr
 
-        val print = Print(location, expr)
+        val print = Print(expr, location)
         result.put(ctx, print)
     }
 

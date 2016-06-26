@@ -49,7 +49,7 @@ class For(val initial: Assignment, val cond: Expr, val mod: Assignment,
 class If(val cond: Expr, val stmts: Array<Stmt>, val elifs: Array<Elif>,
          val elsec: Else?, location: Location) : Stmt(location)
 
-class Print(location: Location, val expr: Expr) : Stmt(location)
+class Print(val expr: Expr, location: Location) : Stmt(location)
 
 class Return(val expr: Expr?, location: Location) : Stmt(location) {
     init {
