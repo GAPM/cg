@@ -222,12 +222,10 @@ class Generation(private val s: State, private val init: Init) : Phase {
     private fun Cast.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
         expr.generate(s, mv, fd)
 
-        // Trivial cast -> skip
+        // Trivial case
         if (expr.type == type) {
-            return
-        }
-
-        if (expr.type == Type.int && type == Type.float) {
+            // Do nothing
+        } else if (expr.type == Type.int && type == Type.float) {
             mv.visitInsn(I2F)
         } else if (expr.type == Type.float && type == Type.int) {
             mv.visitInsn(F2I)
@@ -240,6 +238,17 @@ class Generation(private val s: State, private val init: Init) : Phase {
         } else if (expr.type == Type.bool && type == Type.string) {
             mv.visitMethodInsn(INVOKESTATIC, "java/lang/Boolean", "toString",
                     "(Z)Ljava/lang/String;", false);
+        } else if (expr.type == Type.string && type == Type.int) {
+            mv.visitMethodInsn(INVOKESTATIC, RT_STR_CLASS, "toInt",
+                    "(Ljava/lang/String;)I", false)
+        } else if (expr.type == Type.string && type == Type.float) {
+            mv.visitMethodInsn(INVOKESTATIC, RT_STR_CLASS, "toFloat",
+                    "(Ljava/lang/String;)F", false)
+        } else if (expr.type == Type.string && type == Type.bool) {
+            mv.visitMethodInsn(INVOKESTATIC, RT_STR_CLASS, "toBool",
+                    "(Ljava/lang/String;)Z", false)
+        } else {
+            throw IllegalStateException()
         }
     }
 

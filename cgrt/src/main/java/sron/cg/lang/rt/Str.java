@@ -24,4 +24,48 @@ public class Str {
     public static boolean equal(String s1, String s2) {
         return s1.equals(s2);
     }
+
+    public static int toInt(String s) {
+        Error.setErr(ErrorType.NO_ERROR);
+        int result = 0;
+
+        try {
+            result = Integer.parseInt(s);
+        } catch (NumberFormatException e) {
+            Error.setErr(ErrorType.INVALID_STRING_CAST);
+        }
+
+        return result;
+    }
+
+    public static float toFloat(String s) {
+        Error.setErr(ErrorType.NO_ERROR);
+        float result = 0.0f;
+
+        try {
+            result = Float.parseFloat(s);
+        } catch (NumberFormatException e) {
+            Error.setErr(ErrorType.INVALID_STRING_CAST);
+        }
+
+        return result;
+    }
+
+    public static boolean toBool(String s) {
+        Error.setErr(ErrorType.NO_ERROR);
+        boolean result = false;
+
+        switch (s) {
+            case "true":
+                result = true;
+                break;
+            case "false":
+                result = false;
+                break;
+            default:
+                Error.setErr(ErrorType.INVALID_STRING_CAST);
+        }
+
+        return result;
+    }
 }
