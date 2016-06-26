@@ -71,6 +71,8 @@ private fun JarOutputStream.add(source: File) {
 fun createExec(ba: ByteArray, s: State) {
     dumpClass(BITARRAY_CLASS)
     dumpClass(BITMATRIX_CLASS)
+    dumpClass(ERROR_CLASS)
+    dumpClass(ERROR_ENUM)
     dumpClass(IGRAPH_CLASS)
     dumpClass(GRAPH_CLASS)
     dumpClass(DIGRAPH_CLASS)

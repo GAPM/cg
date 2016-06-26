@@ -46,12 +46,14 @@ public class DiGraph implements IGraph {
 
     @Override
     public boolean containsVertex(int idx) {
-        return idx < size;
+        return idx >= 0 && idx < size;
     }
 
     @Override
     public boolean containsEdge(int source, int target) {
-        return source < size && target < size && adj.get(source, target);
+        return source >= 0 && source < size &&
+                target >= 0 && target < size &&
+                adj.get(source, target);
     }
 
     @Override
@@ -71,16 +73,12 @@ public class DiGraph implements IGraph {
 
     @Override
     public void addEdge(int source, int target) {
-        if (source < size && target < size) {
-            adj.set(source, target, true);
-        }
+        adj.set(source, target, true);
     }
 
     @Override
     public void removeEdge(int source, int target) {
-        if (source < size && target < size) {
-            adj.set(source, target, false);
-        }
+        adj.set(source, target, false);
     }
 
     @Override

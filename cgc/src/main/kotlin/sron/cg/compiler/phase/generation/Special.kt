@@ -29,6 +29,18 @@ private fun read(mv: MethodVisitor) {
     mv.visitMethodInsn(INVOKESTATIC, RT_IO_CLASS, "read",
             "()Ljava/lang/String;", false)
 }
+private fun perror(mv: MethodVisitor) {
+    mv.visitMethodInsn(INVOKESTATIC, ERROR_CLASS, "perror", "()V", false)
+}
+
+private fun serror(mv: MethodVisitor) {
+    mv.visitMethodInsn(INVOKESTATIC, ERROR_CLASS, "serror",
+            "()Ljava/lang/String;", false)
+}
+
+private fun error(mv: MethodVisitor) {
+    mv.visitMethodInsn(INVOKESTATIC, ERROR_CLASS, "error", "()Z", false)
+}
 
 private fun gSize(mv: MethodVisitor) {
     mv.visitMethodInsn(INVOKEVIRTUAL, GRAPH_CLASS, "getSize", "()I", false)
@@ -82,6 +94,10 @@ fun handleSpecial(mv: MethodVisitor, function: Function) {
     when (function.name) {
         "assert" -> assert(mv)
         "read" -> read(mv)
+
+        "perror" -> perror(mv)
+        "serror" -> serror(mv)
+        "error" -> error(mv)
 
         "g_size" -> gSize(mv)
         "dg_size" -> dgSize(mv)

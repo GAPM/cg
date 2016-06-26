@@ -41,6 +41,10 @@ val runtimeFunctions by lazy {
             "r" to Type.bool)
     result += function("read", Type.string)
 
+    result += function("perror", Type.void)
+    result += function("serror", Type.string)
+    result += function("error", Type.bool)
+
     result += function("g_size", Type.int,
             "g" to Type.graph)
     result += function("dg_size", Type.int,

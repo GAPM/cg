@@ -29,33 +29,67 @@ public class RT {
     }
 
     public static void gAddEdge(Graph g, int a, int b) {
-        g.addEdge(a, b);
+        Error.setErr(ErrorType.NO_ERROR);
+
+        if (a >= 0 && a < g.getSize() &&
+                b >= 0 && b < g.getSize()) {
+            g.addEdge(a, b);
+        } else {
+            Error.setErr(ErrorType.NODE_NOT_IN_GRAPH);
+        }
     }
 
     public static void dgAddEdge(DiGraph g, int a, int b) {
-        g.addEdge(a, b);
+        Error.setErr(ErrorType.NO_ERROR);
+
+        if (a >= 0 && a < g.getSize() &&
+                b >= 0 && b < g.getSize()) {
+            g.addEdge(a, b);
+        } else {
+            Error.setErr(ErrorType.NODE_NOT_IN_GRAPH);
+        }
     }
 
     public static void gRemoveEdge(Graph g, int a, int b) {
-        g.removeEdge(a, b);
+        Error.setErr(ErrorType.NO_ERROR);
+
+        if (a >= 0 && a < g.getSize() &&
+                b >= 0 && b < g.getSize()) {
+            g.removeEdge(a, b);
+        } else {
+            Error.setErr(ErrorType.NODE_NOT_IN_GRAPH);
+        }
     }
 
     public static void dgRemoveEdge(DiGraph g, int a, int b) {
-        g.removeEdge(a, b);
+        Error.setErr(ErrorType.NO_ERROR);
+
+        if (a >= 0 && a < g.getSize() &&
+                b >= 0 && b < g.getSize()) {
+            g.removeEdge(a, b);
+        } else {
+            Error.setErr(ErrorType.NODE_NOT_IN_GRAPH);
+        }
     }
 
     public static Graph gShortestPath(Graph g, int node) {
+        Error.setErr(ErrorType.NO_ERROR);
+
         if (node >= 0 && node < g.getSize()) {
             return g.shortestPath(node);
         } else {
+            Error.setErr(ErrorType.NODE_NOT_IN_GRAPH);
             return new Graph(0);
         }
     }
 
     public static DiGraph dgShortestPath(DiGraph g, int node) {
+        Error.setErr(ErrorType.NO_ERROR);
+
         if (node >= 0 && node < g.getSize()) {
             return g.shortestPath(node);
         } else {
+            Error.setErr(ErrorType.NODE_NOT_IN_GRAPH);
             return new DiGraph(0);
         }
     }
