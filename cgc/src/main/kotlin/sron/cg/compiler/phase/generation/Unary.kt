@@ -53,11 +53,11 @@ fun not(mv: MethodVisitor, type: Type) {
         mv.visitInsn(ICONST_0)
         mv.visitLabel(end)
     } else if (type == Type.graph) {
-        mv.visitMethodInsn(INVOKEVIRTUAL, "sron/cg/lang/Graph", "negation",
-                "()Lsron/cg/lang/Graph;", false);
+        mv.visitMethodInsn(INVOKEVIRTUAL, GRAPH_CLASS, "negation",
+                "()L$GRAPH_CLASS;", false);
     } else {
-        mv.visitMethodInsn(INVOKEVIRTUAL, "sron/cg/lang/DiGraph", "negation",
-                "()Lsron/cg/lang/DiGraph;", false);
+        mv.visitMethodInsn(INVOKEVIRTUAL, DIGRAPH_CLASS, "negation",
+                "()L$DIGRAPH_CLASS;", false);
     }
 }
 

@@ -26,7 +26,7 @@ import java.util.jar.Manifest
 
 private fun classToByteArray(fullName: String): ByteArray {
     var result = ByteArray(0)
-    val realName = "${fullName.replace('.', '/')}.class"
+    val realName = "$fullName.class"
     ClassLoader.getSystemResourceAsStream(realName).use {
         result = it.readBytes()
     }
@@ -69,15 +69,15 @@ private fun JarOutputStream.add(source: File) {
 }
 
 fun createExec(ba: ByteArray, s: State) {
-    dumpClass("sron.cg.lang.collections.BitArray")
-    dumpClass("sron.cg.lang.collections.BitMatrix")
-    dumpClass("sron.cg.lang.rt.GOps")
-    dumpClass("sron.cg.lang.rt.IO")
-    dumpClass("sron.cg.lang.rt.RT")
-    dumpClass("sron.cg.lang.rt.Str")
-    dumpClass("sron.cg.lang.IGraph")
-    dumpClass("sron.cg.lang.Graph")
-    dumpClass("sron.cg.lang.DiGraph")
+    dumpClass(BITARRAY_CLASS)
+    dumpClass(BITMATRIX_CLASS)
+    dumpClass(IGRAPH_CLASS)
+    dumpClass(GRAPH_CLASS)
+    dumpClass(DIGRAPH_CLASS)
+    dumpClass(RT_CLASS)
+    dumpClass(RT_GOPS_CLASS)
+    dumpClass(RT_IO_CLASS)
+    dumpClass(RT_STR_CLASS)
 
     File("EntryPoint.class").outputStream().use {
         it.write(ba)

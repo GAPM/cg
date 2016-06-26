@@ -27,7 +27,7 @@ import sron.cg.compiler.type.Type
  * string)
  */
 private fun addString(mv: MethodVisitor) {
-    mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/Str", "concat",
+    mv.visitMethodInsn(INVOKESTATIC, RT_STR_CLASS, "concat",
             "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", false);
 }
 
@@ -52,14 +52,10 @@ private fun add(mv: MethodVisitor, type: Type) = when (type) {
 private fun sub(mv: MethodVisitor, type: Type) = when (type) {
     Type.int -> mv.visitInsn(ISUB)
     Type.float -> mv.visitInsn(FSUB)
-    Type.graph -> mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/GOps",
-            "gDifference",
-            "(Lsron/cg/lang/Graph;Lsron/cg/lang/Graph;)Lsron/cg/lang/Graph;",
-            false)
-    Type.digraph -> mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/GOps",
-            "dgDifference",
-            "(Lsron/cg/lang/DiGraph;Lsron/cg/lang/DiGraph;)Lsron/cg/lang/DiGraph;",
-            false)
+    Type.graph -> mv.visitMethodInsn(INVOKESTATIC, RT_GOPS_CLASS,
+            "gDifference", "(L$GRAPH_CLASS;L$GRAPH_CLASS;)L$GRAPH_CLASS;", false)
+    Type.digraph -> mv.visitMethodInsn(INVOKESTATIC, RT_GOPS_CLASS,
+            "dgDifference", "(L$DIGRAPH_CLASS;L$DIGRAPH_CLASS;)L$DIGRAPH_CLASS;", false)
     else -> error("Invalid type for operator SUB")
 }
 
@@ -142,27 +138,25 @@ private fun binaryAndOr(mv: MethodVisitor, op: Operator, operandType: Type) {
         }
         Type.graph -> {
             if (op == Operator.AND) {
-                mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/GOps",
-                        "gIntersection",
-                        "(Lsron/cg/lang/Graph;Lsron/cg/lang/Graph;)Lsron/cg/lang/Graph;",
+                mv.visitMethodInsn(INVOKESTATIC, RT_GOPS_CLASS,
+                        "gIntersection", "(L$GRAPH_CLASS;L$GRAPH_CLASS;)L$GRAPH_CLASS;",
                         false)
             } else {
-                mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/GOps",
-                        "gUnion",
-                        "(Lsron/cg/lang/Graph;Lsron/cg/lang/Graph;)Lsron/cg/lang/Graph;",
+                mv.visitMethodInsn(INVOKESTATIC, RT_GOPS_CLASS,
+                        "gUnion", "(L$GRAPH_CLASS;L$GRAPH_CLASS;)L$GRAPH_CLASS;",
                         false)
             }
         }
         Type.digraph -> {
             if (op == Operator.AND) {
-                mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/GOps",
+                mv.visitMethodInsn(INVOKESTATIC, RT_GOPS_CLASS,
                         "dgIntersection",
-                        "(Lsron/cg/lang/DiGraph;Lsron/cg/lang/DiGraph;)Lsron/cg/lang/DiGraph;",
+                        "(L$DIGRAPH_CLASS;L$DIGRAPH_CLASS;)L$DIGRAPH_CLASS;",
                         false)
             } else {
-                mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/GOps",
+                mv.visitMethodInsn(INVOKESTATIC, RT_GOPS_CLASS,
                         "dgUnion",
-                        "(Lsron/cg/lang/DiGraph;Lsron/cg/lang/DiGraph;)Lsron/cg/lang/DiGraph;",
+                        "(L$DIGRAPH_CLASS;L$DIGRAPH_CLASS;)L$DIGRAPH_CLASS;",
                         false)
             }
         }
@@ -272,7 +266,7 @@ private fun floatEquality(mv: MethodVisitor, op: Operator) {
  * @param op The operator
  */
 private fun stringEquality(mv: MethodVisitor, op: Operator) {
-    mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/Str", "equal",
+    mv.visitMethodInsn(INVOKESTATIC, RT_STR_CLASS, "equal",
             "(Ljava/lang/String;Ljava/lang/String;)Z", false)
     if (op == Operator.NOT_EQUAL) {
         not(mv, Type.bool)
@@ -448,7 +442,6 @@ fun binaryOp(mv: MethodVisitor, op: Operator, operandType: Type) {
         Operator.GREATER, Operator.LESS, Operator.GREATER_EQUAL, Operator.LESS_EQUAL -> {
             comparison(mv, op, operandType)
         }
-        else -> { // Non-binary operators
-        }
+        else -> throw IllegalStateException()
     }
 }

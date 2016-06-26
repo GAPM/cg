@@ -22,57 +22,55 @@ import org.objectweb.asm.Opcodes.INVOKEVIRTUAL
 import sron.cg.compiler.symbol.Function
 
 private fun read(mv: MethodVisitor) {
-    mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/IO", "read",
+    mv.visitMethodInsn(INVOKESTATIC, RT_IO_CLASS, "read",
             "()Ljava/lang/String;", false)
 }
 
 private fun gSize(mv: MethodVisitor) {
-    mv.visitMethodInsn(INVOKEVIRTUAL, "sron/cg/lang/Graph", "getSize", "()I",
-            false)
+    mv.visitMethodInsn(INVOKEVIRTUAL, GRAPH_CLASS, "getSize", "()I", false)
 }
 
 private fun dgSize(mv: MethodVisitor) {
-    mv.visitMethodInsn(INVOKEVIRTUAL, "sron/cg/lang/DiGraph", "getSize", "()I",
-            false)
+    mv.visitMethodInsn(INVOKEVIRTUAL, DIGRAPH_CLASS, "getSize", "()I", false)
 }
 
 private fun gAddNodes(mv: MethodVisitor) {
-    mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/RT", "gAddNodes",
-            "(Lsron/cg/lang/Graph;I)Lsron/cg/lang/Graph;", false)
+    mv.visitMethodInsn(INVOKESTATIC, RT_CLASS, "gAddNodes",
+            "(L$GRAPH_CLASS;I)L$GRAPH_CLASS;", false)
 }
 
 private fun dgAddNodes(mv: MethodVisitor) {
-    mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/RT", "dgAddNodes",
-            "(Lsron/cg/lang/DiGraph;I)Lsron/cg/lang/DiGraph;", false)
+    mv.visitMethodInsn(INVOKESTATIC, RT_CLASS, "dgAddNodes",
+            "(L$DIGRAPH_CLASS;I)L$DIGRAPH_CLASS;", false)
 }
 
 private fun gAddEdge(mv: MethodVisitor) {
-    mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/RT", "gAddEdge",
-            "(Lsron/cg/lang/Graph;II)V", false)
+    mv.visitMethodInsn(INVOKESTATIC, RT_CLASS, "gAddEdge",
+            "(L$GRAPH_CLASS;II)V", false)
 }
 
 private fun dgAddEdge(mv: MethodVisitor) {
-    mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/RT", "dgAddEdge",
-            "(Lsron/cg/lang/DiGraph;II)V", false)
+    mv.visitMethodInsn(INVOKESTATIC, RT_CLASS, "dgAddEdge",
+            "(L$DIGRAPH_CLASS;II)V", false)
 }
 
 private fun gRemoveEdge(mv: MethodVisitor) {
-    mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/RT", "gRemoveEdge",
-            "(Lsron/cg/lang/Graph;II)V", false)
+    mv.visitMethodInsn(INVOKESTATIC, RT_CLASS, "gRemoveEdge",
+            "(L$GRAPH_CLASS;II)V", false)
 }
 
 private fun dgRemoveEdge(mv: MethodVisitor) {
-    mv.visitMethodInsn(INVOKESTATIC, "sron/cg/lang/rt/RT", "dgRemoveEdge",
-            "(Lsron/cg/lang/DiGraph;II)V", false)
+    mv.visitMethodInsn(INVOKESTATIC, RT_CLASS, "dgRemoveEdge",
+            "(L$DIGRAPH_CLASS;II)V", false)
 }
 
 private fun gRemoveLoops(mv: MethodVisitor) {
-    mv.visitMethodInsn(INVOKEVIRTUAL, "sron/cg/lang/Graph", "removeLoops",
+    mv.visitMethodInsn(INVOKEVIRTUAL, GRAPH_CLASS, "removeLoops",
             "()V", false)
 }
 
 private fun dgRemoveLoops(mv: MethodVisitor) {
-    mv.visitMethodInsn(INVOKEVIRTUAL, "sron/cg/lang/DiGraph", "removeLoops",
+    mv.visitMethodInsn(INVOKEVIRTUAL, DIGRAPH_CLASS, "removeLoops",
             "()V", false)
 }
 
