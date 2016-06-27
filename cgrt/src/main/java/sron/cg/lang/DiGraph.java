@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class DiGraph implements IGraph {
+public class DiGraph {
     private int size;
     private BitMatrix adj;
 
@@ -39,24 +39,20 @@ public class DiGraph implements IGraph {
                 && adj.equals(((DiGraph) obj).adj);
     }
 
-    @Override
     public int getSize() {
         return size;
     }
 
-    @Override
     public boolean containsVertex(int idx) {
         return idx >= 0 && idx < size;
     }
 
-    @Override
     public boolean containsEdge(int source, int target) {
         return source >= 0 && source < size &&
                 target >= 0 && target < size &&
                 adj.get(source, target);
     }
 
-    @Override
     public DiGraph addVertex(int n) {
         DiGraph ng = new DiGraph(size + n);
 
@@ -71,22 +67,18 @@ public class DiGraph implements IGraph {
         return ng;
     }
 
-    @Override
     public void addEdge(int source, int target) {
         adj.set(source, target, true);
     }
 
-    @Override
     public void removeEdge(int source, int target) {
         adj.set(source, target, false);
     }
 
-    @Override
     public void removeAllEdges() {
         this.adj.reset();
     }
 
-    @Override
     public DiGraph negation() {
         DiGraph diGraph = new DiGraph(size);
 
@@ -103,9 +95,7 @@ public class DiGraph implements IGraph {
         return diGraph;
     }
 
-    @Override
-    public DiGraph edgeIntersection(IGraph other) {
-        assert other instanceof DiGraph;
+    public DiGraph edgeIntersection(DiGraph other) {
         DiGraph result = new DiGraph(size);
 
         for (int i = 0; i < size; i++) {
@@ -119,9 +109,7 @@ public class DiGraph implements IGraph {
         return result;
     }
 
-    @Override
-    public DiGraph edgeUnion(IGraph other) {
-        assert other instanceof DiGraph;
+    public DiGraph edgeUnion(DiGraph other) {
         DiGraph result = new DiGraph(size);
 
         for (int i = 0; i < size; i++) {
@@ -135,9 +123,7 @@ public class DiGraph implements IGraph {
         return result;
     }
 
-    @Override
-    public DiGraph edgeDifference(IGraph other) {
-        assert other instanceof DiGraph;
+    public DiGraph edgeDifference(DiGraph other) {
         DiGraph result = new DiGraph(size);
 
         for (int i = 0; i < size; i++) {
@@ -151,7 +137,6 @@ public class DiGraph implements IGraph {
         return result;
     }
 
-    @Override
     public DiGraph shortestPath(int node) {
         BitArray visited = new BitArray(size);
         LinkedList<Integer> queue = new LinkedList<>();
@@ -185,7 +170,6 @@ public class DiGraph implements IGraph {
         return result;
     }
 
-    @Override
     public void removeLoops() {
         for (int i = 0; i < size; i++) {
             adj.set(i, i, false);

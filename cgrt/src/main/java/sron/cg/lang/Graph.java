@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Graph implements IGraph {
+public class Graph {
     private int size;
     private BitMatrix adj;
 
@@ -39,24 +39,20 @@ public class Graph implements IGraph {
                 && adj.equals(((Graph) obj).adj);
     }
 
-    @Override
     public int getSize() {
         return size;
     }
 
-    @Override
     public boolean containsVertex(int idx) {
         return idx >= 0 && idx < size;
     }
 
-    @Override
     public boolean containsEdge(int source, int target) {
         return source >= 0 && source < size &&
                 target >= 0 && target < size &&
                 adj.get(source, target);
     }
 
-    @Override
     public Graph addVertex(int n) {
         Graph ng = new Graph(size + n);
 
@@ -71,24 +67,20 @@ public class Graph implements IGraph {
         return ng;
     }
 
-    @Override
     public void addEdge(int source, int target) {
         adj.set(source, target, true);
         adj.set(target, source, true);
     }
 
-    @Override
     public void removeEdge(int source, int target) {
         adj.set(source, target, false);
         adj.set(target, source, false);
     }
 
-    @Override
     public void removeAllEdges() {
         this.adj.reset();
     }
 
-    @Override
     public Graph negation() {
         Graph graph = new Graph(size);
 
@@ -105,9 +97,7 @@ public class Graph implements IGraph {
         return graph;
     }
 
-    @Override
-    public Graph edgeIntersection(IGraph other) {
-        assert other instanceof Graph;
+    public Graph edgeIntersection(Graph other) {
         Graph result = new Graph(size);
 
         for (int i = 0; i < size; i++) {
@@ -121,9 +111,7 @@ public class Graph implements IGraph {
         return result;
     }
 
-    @Override
-    public Graph edgeUnion(IGraph other) {
-        assert other instanceof Graph;
+    public Graph edgeUnion(Graph other) {
         Graph result = new Graph(size);
 
         for (int i = 0; i < size; i++) {
@@ -137,9 +125,7 @@ public class Graph implements IGraph {
         return result;
     }
 
-    @Override
-    public Graph edgeDifference(IGraph other) {
-        assert other instanceof Graph;
+    public Graph edgeDifference(Graph other) {
         Graph result = new Graph(size);
 
         for (int i = 0; i < size; i++) {
@@ -153,7 +139,6 @@ public class Graph implements IGraph {
         return result;
     }
 
-    @Override
     public Graph shortestPath(int node) {
         BitArray visited = new BitArray(size);
         LinkedList<Integer> queue = new LinkedList<>();
@@ -187,7 +172,6 @@ public class Graph implements IGraph {
         return result;
     }
 
-    @Override
     public void removeLoops() {
         for (int i = 0; i < size; i++) {
             adj.set(i, i, false);

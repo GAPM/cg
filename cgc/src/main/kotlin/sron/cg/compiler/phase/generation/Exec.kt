@@ -73,7 +73,6 @@ fun createExec(ba: ByteArray, s: State) {
     dumpClass(BITMATRIX_CLASS)
     dumpClass(ERROR_CLASS)
     dumpClass(ERROR_ENUM)
-    dumpClass(IGRAPH_CLASS)
     dumpClass(GRAPH_CLASS)
     dumpClass(DIGRAPH_CLASS)
     dumpClass(RT_CLASS)

@@ -18,7 +18,7 @@ apply plugin: 'antlr'
 apply plugin: 'application'
 apply plugin: 'kotlin'
 
-mainClassName = 'sron.cg.MainKt'
+mainClassName = 'sron.cg.compiler.MainKt'
 
 compileKotlin.dependsOn generateGrammarSource
 
