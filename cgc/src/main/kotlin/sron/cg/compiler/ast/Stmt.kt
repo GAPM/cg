@@ -59,7 +59,7 @@ class Return(val expr: Expr?, location: Location) : Stmt(location) {
     }
 }
 
-class VarDec(val name: String, val type: Type, val exp: Expr?,
+class VarDec(val name: String, var type: Type, val exp: Expr?,
              location: Location) : Stmt(location)
 
 class While(val cond: Expr, val stmts: Array<Stmt>, location: Location) : Stmt(location)

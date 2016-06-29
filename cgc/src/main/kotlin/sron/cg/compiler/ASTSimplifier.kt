@@ -148,7 +148,7 @@ class ASTSimplifier : CGBaseListener() {
         super.exitVarDec(ctx)
 
         val name = ctx.Identifier().text
-        val type = Type.toCGType(ctx.type())
+        val type = ctx.type()?.let { Type.toCGType(it) } ?: Type.ERROR
         val expr = result.get(ctx.expr()) as? Expr
         val location = Location(ctx.Identifier())
 

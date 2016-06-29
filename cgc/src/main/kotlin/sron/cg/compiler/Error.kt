@@ -52,6 +52,10 @@ object Error {
         return e(location, "invalid binary operation: $typ1 ${op.sign()} $typ2")
     }
 
+    fun badInference(location: Location, name: String): String {
+        return e(location, "can't infer type of variable $name")
+    }
+
     fun badUnaryOp(location: Location, op: Operator, typ: Type): String {
         return e(location, "invalid unary operation: ${op.sign()} $typ")
     }

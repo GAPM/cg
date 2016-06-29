@@ -257,14 +257,28 @@ class Types(private val s: State, private val init: Init) : Phase {
         val qry = s.symbolTable[name, scope, SymType.VAR]
 
         if (qry == null) {
-            val variable = Variable(name, type, scope, location)
-            s.symbolTable += variable
+            exp?.types(s, scope)
+            val variable = Variable(name, exp?.type ?: type, scope, location)
 
-            exp?.let {
-                exp.types(s, scope)
-                if (exp.type != Type.ERROR && type != exp.type) {
-                    s.errors += Error.badAssignment(location, type, exp.type)
-                }
+            // Both expression and type are present, but they differ.
+            if (exp != null && type != Type.ERROR &&
+                    exp.type != type && exp.type != Type.ERROR) {
+                s.errors += Error.badAssignment(location, type, exp.type)
+            }
+            // No expression or type. Can't infer.
+            else if (exp == null && type == Type.ERROR) {
+                s.errors += Error.badInference(location, name)
+            }
+            /*
+             * - Expression present but no type.
+             * - Both expression and type present.
+             */
+            else if (exp != null) {
+                type = exp.type
+                s.symbolTable += variable
+            } else {
+                // Only type, no expression
+                s.symbolTable += variable
             }
         } else {
             s.errors += Error.redeclaration(location, qry.location, name, SymType.VAR)

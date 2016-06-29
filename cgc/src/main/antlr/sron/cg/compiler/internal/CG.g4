@@ -128,7 +128,7 @@ exprList: (expr (',' expr)*)? ;
 
 glExpr: IntLit | FloatLit | BoolLit | StringLit ;
 glVarDec: 'var' Identifier type ('=' glExpr)? ;
-varDec: 'var' Identifier type ('=' expr)? ;
+varDec: 'var' Identifier type? ('=' expr)? ;
 
 funcDef: 'func' Identifier '(' argList ')' type? '{' stmt* '}' ;
 
