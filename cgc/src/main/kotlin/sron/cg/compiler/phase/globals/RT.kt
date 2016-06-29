@@ -96,5 +96,12 @@ val runtimeFunctions by lazy {
     result += function("dg_remove_loops", Type.void,
             "g" to Type.digraph)
 
+    result += function("g_shortest_path", Type.graph,
+            "g" to Type.graph,
+            "n" to Type.int)
+    result += function("dg_shortest_path", Type.digraph,
+            "g" to Type.digraph,
+            "n" to Type.int)
+
     result
 }

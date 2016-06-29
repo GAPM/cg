@@ -111,6 +111,16 @@ private fun dgRemoveLoops(mv: MethodVisitor) {
             "()V", false)
 }
 
+private fun gShortestPath(mv: MethodVisitor) {
+    mv.visitMethodInsn(INVOKEVIRTUAL, GRAPH_CLASS, "shortestPath",
+            "(I)L$GRAPH_CLASS;", false)
+}
+
+private fun dgShortestPath(mv: MethodVisitor) {
+    mv.visitMethodInsn(INVOKEVIRTUAL, DIGRAPH_CLASS, "shortestPath",
+            "(I)L$DIGRAPH_CLASS;", false)
+}
+
 fun handleSpecial(mv: MethodVisitor, function: Function) {
     when (function.name) {
         "assert" -> assert(mv)
@@ -140,6 +150,9 @@ fun handleSpecial(mv: MethodVisitor, function: Function) {
 
         "g_remove_loops" -> gRemoveLoops(mv)
         "dg_remove_loops" -> dgRemoveLoops(mv)
+
+        "g_shortest_path" -> gShortestPath(mv)
+        "dg_shortest_path" -> dgShortestPath(mv)
     }
 
 }
