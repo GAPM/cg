@@ -43,7 +43,7 @@ public class DiGraph {
         return size;
     }
 
-    public boolean containsVertex(int idx) {
+    public boolean containsNode(int idx) {
         return idx >= 0 && idx < size;
     }
 

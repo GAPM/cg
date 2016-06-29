@@ -29,6 +29,7 @@ private fun read(mv: MethodVisitor) {
     mv.visitMethodInsn(INVOKESTATIC, RT_IO_CLASS, "read",
             "()Ljava/lang/String;", false)
 }
+
 private fun perror(mv: MethodVisitor) {
     mv.visitMethodInsn(INVOKESTATIC, ERROR_CLASS, "perror", "()V", false)
 }
@@ -60,6 +61,16 @@ private fun dgAddNodes(mv: MethodVisitor) {
             "(L$DIGRAPH_CLASS;I)L$DIGRAPH_CLASS;", false)
 }
 
+private fun gContainsNode(mv: MethodVisitor) {
+    mv.visitMethodInsn(INVOKESTATIC, RT_CLASS, "gContainsNode",
+            "(L$GRAPH_CLASS;I)Z", false)
+}
+
+private fun dgContainsNode(mv: MethodVisitor) {
+    mv.visitMethodInsn(INVOKESTATIC, RT_CLASS, "dgContainsNode",
+            "(L$DIGRAPH_CLASS;I)Z", false)
+}
+
 private fun gAddEdge(mv: MethodVisitor) {
     mv.visitMethodInsn(INVOKESTATIC, RT_CLASS, "gAddEdge",
             "(L$GRAPH_CLASS;II)V", false)
@@ -78,6 +89,16 @@ private fun gRemoveEdge(mv: MethodVisitor) {
 private fun dgRemoveEdge(mv: MethodVisitor) {
     mv.visitMethodInsn(INVOKESTATIC, RT_CLASS, "dgRemoveEdge",
             "(L$DIGRAPH_CLASS;II)V", false)
+}
+
+private fun gContainsEdge(mv: MethodVisitor) {
+    mv.visitMethodInsn(INVOKESTATIC, RT_CLASS, "gContainsEdge",
+            "(L$GRAPH_CLASS;II)Z", false);
+}
+
+private fun dgContainsEdge(mv: MethodVisitor) {
+    mv.visitMethodInsn(INVOKESTATIC, RT_CLASS, "dgContainsEdge",
+            "(L$DIGRAPH_CLASS;II)Z", false);
 }
 
 private fun gRemoveLoops(mv: MethodVisitor) {
@@ -105,11 +126,17 @@ fun handleSpecial(mv: MethodVisitor, function: Function) {
         "g_add_nodes" -> gAddNodes(mv)
         "dg_add_nodes" -> dgAddNodes(mv)
 
+        "g_contains_node" -> gContainsNode(mv)
+        "dg_contains_node" -> dgContainsNode(mv)
+
         "g_add_edge" -> gAddEdge(mv)
         "dg_add_edge" -> dgAddEdge(mv)
 
         "g_remove_edge" -> gRemoveEdge(mv)
         "dg_remove_edge" -> dgRemoveEdge(mv)
+
+        "g_contains_edge" -> gContainsEdge(mv)
+        "dg_contains_edge" -> dgContainsEdge(mv)
 
         "g_remove_loops" -> gRemoveLoops(mv)
         "dg_remove_loops" -> dgRemoveLoops(mv)

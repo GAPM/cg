@@ -50,6 +50,13 @@ val runtimeFunctions by lazy {
     result += function("dg_size", Type.int,
             "g" to Type.digraph)
 
+    result += function("g_contains_vertex", Type.bool,
+            "g" to Type.graph,
+            "n" to Type.int)
+    result += function("dg_contains_vertex", Type.bool,
+            "g" to Type.digraph,
+            "n" to Type.int)
+
     result += function("g_add_nodes", Type.graph,
             "g" to Type.graph,
             "n" to Type.int)
@@ -71,6 +78,15 @@ val runtimeFunctions by lazy {
             "a" to Type.int,
             "b" to Type.int)
     result += function("dg_remove_edge", Type.void,
+            "g" to Type.digraph,
+            "a" to Type.int,
+            "b" to Type.int)
+
+    result += function("g_contains_edge", Type.bool,
+            "g" to Type.graph,
+            "a" to Type.int,
+            "b" to Type.int)
+    result += function("dg_contains_edge", Type.bool,
             "g" to Type.digraph,
             "a" to Type.int,
             "b" to Type.int)

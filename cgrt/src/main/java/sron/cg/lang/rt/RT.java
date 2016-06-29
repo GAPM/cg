@@ -19,6 +19,7 @@ package sron.cg.lang.rt;
 import sron.cg.lang.DiGraph;
 import sron.cg.lang.Graph;
 
+@SuppressWarnings("unused")
 public class RT {
     public static Graph gAddNodes(Graph g, int n) {
         return g.addVertex(n);
@@ -26,6 +27,14 @@ public class RT {
 
     public static DiGraph dgAddNodes(DiGraph g, int n) {
         return g.addVertex(n);
+    }
+
+    public static boolean gContainsNode(Graph g, int idx) {
+        return g.containsNode(idx);
+    }
+
+    public static boolean dgContainsNode(DiGraph g, int idx) {
+        return g.containsNode(idx);
     }
 
     public static void gAddEdge(Graph g, int a, int b) {
@@ -70,6 +79,14 @@ public class RT {
         } else {
             Error.setErr(ErrorType.NODE_NOT_IN_GRAPH);
         }
+    }
+
+    public static boolean gContainsEdge(Graph g, int source, int target) {
+        return g.containsEdge(source, target);
+    }
+
+    public static boolean dgContainsEdge(DiGraph g, int source, int target) {
+        return g.containsEdge(source, target);
     }
 
     public static Graph gShortestPath(Graph g, int node) {
