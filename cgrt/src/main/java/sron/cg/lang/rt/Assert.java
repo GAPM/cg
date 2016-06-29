@@ -16,10 +16,12 @@
 
 package sron.cg.lang.rt;
 
+@SuppressWarnings("unused")
 public class Assert {
     public static void assertF(boolean res, int line) {
         if (!res) {
-            System.err.println("Line " + line + ": error");
+            System.err.println("assertion error at line " + line);
+            System.exit(1);
         }
     }
 }
