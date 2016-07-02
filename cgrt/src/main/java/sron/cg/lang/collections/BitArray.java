@@ -17,12 +17,20 @@
 package sron.cg.lang.collections;
 
 public class BitArray {
+    static int BOX_SIZE = 32;
     private int[] array;
     private int size;
 
     public BitArray(int size) {
         this.size = size;
-        array = new int[(size + 32 - 1) / 32];
+        array = new int[(int)Math.ceil(size / (double)BOX_SIZE)];
+    }
+
+    static BitArray forMatrix(int size) {
+        BitArray ba = new BitArray(0);
+        ba.size = size;
+        ba.array = new int[size];
+        return ba;
     }
 
     @Override

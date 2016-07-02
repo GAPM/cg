@@ -24,7 +24,9 @@ public class BitMatrix {
     public BitMatrix(int rows, int columns) {
         this.rows = rows;
         this.columns = columns;
-        array = new BitArray(rows * columns);
+        double box = (double)BitArray.BOX_SIZE;
+        double size = (rows / box) * (columns / box) * box;
+        array = BitArray.forMatrix((int)Math.ceil(size));
     }
 
     @Override
