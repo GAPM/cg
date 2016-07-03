@@ -21,6 +21,8 @@ import sron.cg.compiler.symbol.Location
 import sron.cg.compiler.symbol.Variable
 import sron.cg.compiler.type.Type
 
+private fun arg(name: String, type: Type) = name to type
+
 private fun function(name: String, type: Type, vararg pairs: Pair<String, Type>): Function {
     val scope = "global.$name"
 
@@ -38,7 +40,7 @@ val runtimeFunctions by lazy {
     val result = mutableListOf<Function>()
 
     result += function("assert", Type.void,
-            "r" to Type.bool)
+            arg("r", Type.bool))
     result += function("read", Type.string)
 
     result += function("perror", Type.void)
@@ -46,62 +48,67 @@ val runtimeFunctions by lazy {
     result += function("error", Type.bool)
 
     result += function("g_size", Type.int,
-            "g" to Type.graph)
+            arg("g", Type.graph))
     result += function("dg_size", Type.int,
-            "g" to Type.digraph)
+            arg("g", Type.digraph))
 
     result += function("g_contains_vertex", Type.bool,
-            "g" to Type.graph,
-            "n" to Type.int)
+            arg("g", Type.graph),
+            arg("n", Type.int))
     result += function("dg_contains_vertex", Type.bool,
-            "g" to Type.digraph,
-            "n" to Type.int)
+            arg("g", Type.digraph),
+            arg("n", Type.int))
 
     result += function("g_add_nodes", Type.graph,
-            "g" to Type.graph,
-            "n" to Type.int)
+            arg("g", Type.graph),
+            arg("n", Type.int))
     result += function("dg_add_nodes", Type.digraph,
-            "g" to Type.digraph,
-            "n" to Type.int)
+            arg("g", Type.digraph),
+            arg("n", Type.int))
 
     result += function("g_add_edge", Type.void,
-            "g" to Type.graph,
-            "a" to Type.int,
-            "b" to Type.int)
+            arg("g", Type.graph),
+            arg("a", Type.int),
+            arg("b", Type.int))
     result += function("dg_add_edge", Type.void,
-            "g" to Type.digraph,
-            "a" to Type.int,
-            "b" to Type.int)
+            arg("g", Type.digraph),
+            arg("a", Type.int),
+            arg("b", Type.int))
 
     result += function("g_remove_edge", Type.void,
-            "g" to Type.graph,
-            "a" to Type.int,
-            "b" to Type.int)
+            arg("g", Type.graph),
+            arg("a", Type.int),
+            arg("b", Type.int))
     result += function("dg_remove_edge", Type.void,
-            "g" to Type.digraph,
-            "a" to Type.int,
-            "b" to Type.int)
+            arg("g", Type.digraph),
+            arg("a", Type.int),
+            arg("b", Type.int))
 
     result += function("g_contains_edge", Type.bool,
-            "g" to Type.graph,
-            "a" to Type.int,
-            "b" to Type.int)
+            arg("g", Type.graph),
+            arg("a", Type.int),
+            arg("b", Type.int))
     result += function("dg_contains_edge", Type.bool,
-            "g" to Type.digraph,
-            "a" to Type.int,
-            "b" to Type.int)
+            arg("g", Type.digraph),
+            arg("a", Type.int),
+            arg("b", Type.int))
 
     result += function("g_remove_loops", Type.void,
-            "g" to Type.graph)
+            arg("g", Type.graph))
     result += function("dg_remove_loops", Type.void,
-            "g" to Type.digraph)
+            arg("g", Type.digraph))
 
     result += function("g_shortest_path", Type.graph,
-            "g" to Type.graph,
-            "n" to Type.int)
+            arg("g", Type.graph),
+            arg("n", Type.int))
     result += function("dg_shortest_path", Type.digraph,
-            "g" to Type.digraph,
-            "n" to Type.int)
+            arg("g", Type.digraph),
+            arg("n", Type.int))
+
+    result += function("g_transitivity", Type.graph,
+            arg("g", Type.graph))
+    result += function("dg_transitivity", Type.digraph,
+            arg("g", Type.digraph))
 
     result
 }
