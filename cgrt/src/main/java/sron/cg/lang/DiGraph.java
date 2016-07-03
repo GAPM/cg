@@ -75,6 +75,13 @@ public class DiGraph {
         adj.set(source, target, false);
     }
 
+    public DiGraph copy() {
+        DiGraph r = new DiGraph(0);
+        r.size = size;
+        r.adj = adj.copy();
+        return r;
+    }
+
     public void removeAllEdges() {
         this.adj.reset();
     }
@@ -168,6 +175,22 @@ public class DiGraph {
             }
         }
         return result;
+    }
+
+    public DiGraph transitivityClosure() {
+        DiGraph r = copy();
+
+        for (int k = 0; k < size; k++) {
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                    if (r.containsEdge(i, j) || (r.containsEdge(i, k) && r.containsEdge(k, j))) {
+                        r.addEdge(i, j);
+                    }
+                }
+            }
+        }
+
+        return r;
     }
 
     public void removeLoops() {

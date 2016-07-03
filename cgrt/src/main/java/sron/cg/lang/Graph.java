@@ -77,6 +77,13 @@ public class Graph {
         adj.set(target, source, false);
     }
 
+    public Graph copy() {
+        Graph r = new Graph(0);
+        r.size = size;
+        r.adj = adj.copy();
+        return r;
+    }
+
     public void removeAllEdges() {
         this.adj.reset();
     }
@@ -170,6 +177,23 @@ public class Graph {
             }
         }
         return result;
+    }
+
+    public Graph transitivityClosure() {
+        Graph r = copy();
+
+        for (int k = 0; k < size; k++) {
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                    if (r.containsEdge(i, j) || (r.containsEdge(i, k) && r.containsEdge(k, j))) {
+                        r.addEdge(i, j);
+                        r.addEdge(j, i);
+                    }
+                }
+            }
+        }
+
+        return r;
     }
 
     public void removeLoops() {

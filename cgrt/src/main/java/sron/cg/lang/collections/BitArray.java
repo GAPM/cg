@@ -16,6 +16,8 @@
 
 package sron.cg.lang.collections;
 
+import java.util.Arrays;
+
 public class BitArray {
     static int BOX_SIZE = 32;
     private int[] array;
@@ -62,6 +64,13 @@ public class BitArray {
         } else {
             array[idx / 32] &= ~(1 << (idx % 32));
         }
+    }
+
+    public BitArray copy() {
+        BitArray r = new BitArray(0);
+        r.size = size;
+        r.array = Arrays.copyOf(array, array.length);
+        return r;
     }
 
     public void reset() {

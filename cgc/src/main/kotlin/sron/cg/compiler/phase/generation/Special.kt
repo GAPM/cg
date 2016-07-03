@@ -121,6 +121,16 @@ private fun dgShortestPath(mv: MethodVisitor) {
             "(I)L$DIGRAPH_CLASS;", false)
 }
 
+private fun gTransitivity(mv: MethodVisitor) {
+    mv.visitMethodInsn(INVOKEVIRTUAL, GRAPH_CLASS, "transitivityClosure",
+            "()L$GRAPH_CLASS;", false)
+}
+
+private fun dgTransitivity(mv: MethodVisitor) {
+    mv.visitMethodInsn(INVOKEVIRTUAL, DIGRAPH_CLASS, "transitivityClosure",
+            "()L$DIGRAPH_CLASS;", false)
+}
+
 fun handleSpecial(mv: MethodVisitor, function: Function) {
     when (function.name) {
         "assert" -> assert(mv)
@@ -153,6 +163,9 @@ fun handleSpecial(mv: MethodVisitor, function: Function) {
 
         "g_shortest_path" -> gShortestPath(mv)
         "dg_shortest_path" -> dgShortestPath(mv)
+
+        "g_transitivity" -> gTransitivity(mv)
+        "dg_transitivity" -> dgTransitivity(mv)
     }
 
 }

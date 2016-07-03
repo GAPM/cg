@@ -43,6 +43,14 @@ public class BitMatrix {
         array.set(r * rows + c, value);
     }
 
+    public BitMatrix copy() {
+        BitMatrix r = new BitMatrix(0, 0);
+        r.rows = rows;
+        r.columns = columns;
+        r.array = array.copy();
+        return r;
+    }
+
     public void reset() {
         array.reset();
     }
