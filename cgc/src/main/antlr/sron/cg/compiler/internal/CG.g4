@@ -20,6 +20,7 @@ ADD : '+' ;
 ADD_ASSIGN : '+=' ;
 AND : '&&' ;
 AND_ASSIGN : '&&=' ;
+ASSERT : 'assert' ;
 BOOL : 'bool' ;
 BREAK : 'break' ;
 COMMA : ',' ;
