@@ -18,7 +18,8 @@ package sron.cg.lang.rt;
 
 public enum ErrorType {
     NO_ERROR,
-    INVALID_STRING_CAST,
+    CAST_ERROR,
     GRAPH_SIZE_MISMATCH,
-    NODE_NOT_IN_GRAPH
+    NODE_NOT_IN_GRAPH,
+    READING_ERROR
 }

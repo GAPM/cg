@@ -38,14 +38,18 @@ public class IO {
     }
 
     public static String read() {
+        Error.setErr(ErrorType.NO_ERROR);
+
         String result;
         try (InputStreamReader isr = new InputStreamReader(System.in)) {
             try (BufferedReader br = new BufferedReader(isr)) {
                 result = br.readLine();
             } catch (IOException e) {
+                Error.setErr(ErrorType.READING_ERROR);
                 result = "";
             }
         } catch (IOException e) {
+            Error.setErr(ErrorType.READING_ERROR);
             result = "";
         }
 

@@ -32,7 +32,7 @@ public class Str {
         try {
             result = Integer.parseInt(s);
         } catch (NumberFormatException e) {
-            Error.setErr(ErrorType.INVALID_STRING_CAST);
+            Error.setErr(ErrorType.CAST_ERROR);
         }
 
         return result;
@@ -45,7 +45,7 @@ public class Str {
         try {
             result = Float.parseFloat(s);
         } catch (NumberFormatException e) {
-            Error.setErr(ErrorType.INVALID_STRING_CAST);
+            Error.setErr(ErrorType.CAST_ERROR);
         }
 
         return result;
@@ -63,7 +63,7 @@ public class Str {
                 result = false;
                 break;
             default:
-                Error.setErr(ErrorType.INVALID_STRING_CAST);
+                Error.setErr(ErrorType.CAST_ERROR);
         }
 
         return result;

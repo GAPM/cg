@@ -23,10 +23,10 @@ public class Error {
     static {
         msg = new String[]{
                 "No error",
-                "Invalid string to int cast",
-                "Invalid string to float cast",
-                "Invalid string to bool cast",
-                "Graphs hace different sizes"
+                "Invalid string format in cast",
+                "Graphs have different sizes",
+                "Node not in graph",
+                "Error while reading from standard input"
         };
     }
 
