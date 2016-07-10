@@ -21,10 +21,6 @@ import org.objectweb.asm.Opcodes.INVOKESTATIC
 import org.objectweb.asm.Opcodes.INVOKEVIRTUAL
 import sron.cg.compiler.symbol.Function
 
-private fun assert(mv: MethodVisitor) {
-    mv.visitMethodInsn(INVOKESTATIC, RT_ASSERT_CLASS, "assertF", "(Z)V", false)
-}
-
 private fun read(mv: MethodVisitor) {
     mv.visitMethodInsn(INVOKESTATIC, RT_IO_CLASS, "read",
             "()Ljava/lang/String;", false)
@@ -93,12 +89,12 @@ private fun dgRemoveEdge(mv: MethodVisitor) {
 
 private fun gContainsEdge(mv: MethodVisitor) {
     mv.visitMethodInsn(INVOKESTATIC, RT_CLASS, "gContainsEdge",
-            "(L$GRAPH_CLASS;II)Z", false);
+            "(L$GRAPH_CLASS;II)Z", false)
 }
 
 private fun dgContainsEdge(mv: MethodVisitor) {
     mv.visitMethodInsn(INVOKESTATIC, RT_CLASS, "dgContainsEdge",
-            "(L$DIGRAPH_CLASS;II)Z", false);
+            "(L$DIGRAPH_CLASS;II)Z", false)
 }
 
 private fun gRemoveLoops(mv: MethodVisitor) {
@@ -133,7 +129,6 @@ private fun dgTransitivity(mv: MethodVisitor) {
 
 fun handleSpecial(mv: MethodVisitor, function: Function) {
     when (function.name) {
-        "assert" -> assert(mv)
         "read" -> read(mv)
 
         "perror" -> perror(mv)

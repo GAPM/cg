@@ -126,7 +126,7 @@ object Types : Phase() {
             if (opType != Type.ERROR) {
                 this.type = opType
             } else {
-                type = Type.ERROR;
+                type = Type.ERROR
                 s.errors += Error.badUnaryOp(location, operator, expr.type)
             }
         }

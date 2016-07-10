@@ -39,8 +39,6 @@ private fun function(name: String, type: Type, vararg pairs: Pair<String, Type>)
 val runtimeFunctions by lazy {
     val result = mutableListOf<Function>()
 
-    result += function("assert", Type.void,
-            arg("r", Type.bool))
     result += function("read", Type.string)
 
     result += function("perror", Type.void)
@@ -52,10 +50,10 @@ val runtimeFunctions by lazy {
     result += function("dg_size", Type.int,
             arg("g", Type.digraph))
 
-    result += function("g_contains_vertex", Type.bool,
+    result += function("g_contains_node", Type.bool,
             arg("g", Type.graph),
             arg("n", Type.int))
-    result += function("dg_contains_vertex", Type.bool,
+    result += function("dg_contains_node", Type.bool,
             arg("g", Type.digraph),
             arg("n", Type.int))
 

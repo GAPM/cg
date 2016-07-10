@@ -28,7 +28,7 @@ import sron.cg.compiler.type.Type
  */
 private fun addString(mv: MethodVisitor) {
     mv.visitMethodInsn(INVOKESTATIC, RT_STR_CLASS, "concat",
-            "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", false);
+            "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", false)
 }
 
 /**
@@ -259,7 +259,7 @@ private fun floatEquality(mv: MethodVisitor, op: Operator) {
  *
  * Assuming that both string references to be compared are on top of the stack,
  * then the static method from the runtime `Str.equal` gets called and its
- * result is pushed to the stack. If operator is NOT_EQUAL the the result gets
+ * result is pushed to the stack. If operator is NOT_EQUAL then the result gets
  * inverted.
  *
  * @param mv The method visitor
@@ -274,20 +274,55 @@ private fun stringEquality(mv: MethodVisitor, op: Operator) {
 }
 
 /**
+ * Generates code for graph equality
+ *
+ * Assuming that both graph references to be compared are on top of the stack,
+ * then the method Graph.equal is called. If op is NOT_EQUAL then the result
+ * gets inverted
+ *
+ * @param mv The method visitor
+ * @param op The operator
+ */
+private fun graphEquality(mv: MethodVisitor, op: Operator) {
+    mv.visitMethodInsn(INVOKEVIRTUAL, GRAPH_CLASS, "equals",
+            "(Ljava/lang/Object;)Z", false)
+    if (op == Operator.NOT_EQUAL) {
+        not(mv, Type.bool)
+    }
+}
+
+/**
+ * Generates code for graph equality
+ *
+ * Assuming that both digraph references to be compared are on top of the stack,
+ * then the method Graph.equal is called. If op is NOT_EQUAL then the result
+ * gets inverted
+ *
+ * @param mv The method visitor
+ * @param op The operator
+ */
+private fun digraphEquality(mv: MethodVisitor, op: Operator) {
+    mv.visitMethodInsn(INVOKEVIRTUAL, DIGRAPH_CLASS, "equals",
+            "(Ljava/lang/Object;)Z", false)
+    if (op == Operator.NOT_EQUAL) {
+        not(mv, Type.bool)
+    }
+}
+
+/**
  * Generates equality check code for expressions
  *
  * @param mv The method visitor
  * @param type The type of the expression
  */
 private fun equal(mv: MethodVisitor, type: Type) {
-    if (type == Type.int) {
-        intEquality(mv, Operator.EQUAL)
-    } else if (type == Type.float) {
-        floatEquality(mv, Operator.EQUAL)
-    } else if (type == Type.bool) {
-        intEquality(mv, Operator.EQUAL)
-    } else if (type == Type.string) {
-        stringEquality(mv, Operator.EQUAL)
+    when (type) {
+        Type.int, Type.bool -> intEquality(mv, Operator.EQUAL)
+        Type.float -> floatEquality(mv, Operator.EQUAL)
+        Type.string -> stringEquality(mv, Operator.EQUAL)
+        Type.graph -> graphEquality(mv, Operator.EQUAL)
+        Type.digraph -> digraphEquality(mv, Operator.EQUAL)
+        else -> throw IllegalStateException()
     }
 }
 
@@ -298,14 +333,13 @@ private fun equal(mv: MethodVisitor, type: Type) {
  * @param type The type of the expression
  */
 private fun notEqual(mv: MethodVisitor, type: Type) {
-    if (type == Type.int) {
-        intEquality(mv, Operator.NOT_EQUAL)
-    } else if (type == Type.float) {
-        floatEquality(mv, Operator.NOT_EQUAL)
-    } else if (type == Type.bool) {
-        intEquality(mv, Operator.NOT_EQUAL)
-    } else if (type == Type.string) {
-        stringEquality(mv, Operator.NOT_EQUAL)
+    when (type) {
+        Type.int, Type.bool -> intEquality(mv, Operator.NOT_EQUAL)
+        Type.float -> floatEquality(mv, Operator.NOT_EQUAL)
+        Type.string -> stringEquality(mv, Operator.NOT_EQUAL)
+        Type.graph -> graphEquality(mv, Operator.NOT_EQUAL)
+        Type.digraph -> digraphEquality(mv, Operator.NOT_EQUAL)
+        else -> throw IllegalStateException()
     }
 }
 

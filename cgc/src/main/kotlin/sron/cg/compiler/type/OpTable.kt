@@ -34,13 +34,14 @@ object OpTable {
 
         constructor(ops: List<Operator>, type: Type) : this(ops, type, type, type)
 
-        constructor(ops: List<Operator>, type: Type, ret: Type) : this(ops, type, type, ret)
+        constructor(ops: List<Operator>, argsType: Type, ret: Type) : this(ops, argsType, argsType, ret)
 
         fun match(operation: Triple<Operator, Type, Type>): Boolean {
             val (op, lhs, rhs) = operation
 
             val opMatches = ops.contains(op)
-            val typesMatch = (lhs == this.lhs && rhs == this.rhs) || (lhs == this.rhs && rhs == this.lhs)
+            val typesMatch = (lhs == this.lhs && rhs == this.rhs) ||
+                    (lhs == this.rhs && rhs == this.lhs)
 
             return opMatches && typesMatch
         }
@@ -52,12 +53,7 @@ object OpTable {
 
         fun match(operation: Pair<Operator, Type>): Boolean {
             val (op, exp) = operation
-            var result = true
-
-            result = result && ops.contains(op)
-            result = result && this.exp == exp
-
-            return result
+            return ops.contains(op) && this.exp == exp
         }
     }
 
@@ -72,6 +68,8 @@ object OpTable {
             BinOp(comparison, Type.string, Type.bool),
             BinOp(comparison, Type.bool),
 
+            BinOp(listOf(Operator.EQUAL, Operator.NOT_EQUAL), Type.graph, Type.bool),
+            BinOp(listOf(Operator.EQUAL, Operator.NOT_EQUAL), Type.digraph, Type.bool),
             BinOp(listOf(Operator.AND, Operator.OR, Operator.SUB), Type.graph),
             BinOp(listOf(Operator.AND, Operator.OR, Operator.SUB), Type.digraph),
 

@@ -33,8 +33,8 @@ import java.util.*
 object Generation : Phase() {
     private val cw = ClassWriter(COMPUTE_FRAMES)
     private val varQueue = LinkedList<Triple<Variable, Label, Label>>()
-    private var loopStart: Label? = null
-    private var loopEnd: Label? = null
+    private var continueTargetLabel: Label? = null
+    private var breakTargetLabel: Label? = null
 
     override fun execute(s: State, init: Init) = init.generate(s)
 
@@ -231,13 +231,13 @@ object Generation : Phase() {
             mv.visitInsn(F2I)
         } else if (expr.type == Type.int && type == Type.string) {
             mv.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "toString",
-                    "(I)Ljava/lang/String;", false);
+                    "(I)Ljava/lang/String;", false)
         } else if (expr.type == Type.float && type == Type.string) {
             mv.visitMethodInsn(INVOKESTATIC, "java/lang/Float", "toString",
-                    "(F)Ljava/lang/String;", false);
+                    "(F)Ljava/lang/String;", false)
         } else if (expr.type == Type.bool && type == Type.string) {
             mv.visitMethodInsn(INVOKESTATIC, "java/lang/Boolean", "toString",
-                    "(Z)Ljava/lang/String;", false);
+                    "(Z)Ljava/lang/String;", false)
         } else if (expr.type == Type.string && type == Type.int) {
             mv.visitMethodInsn(INVOKESTATIC, RT_STR_CLASS, "toInt",
                     "(Ljava/lang/String;)I", false)
@@ -256,17 +256,17 @@ object Generation : Phase() {
         if (gtype == GraphType.GRAPH) {
             mv.visitTypeInsn(NEW, GRAPH_CLASS)
         } else {
-            mv.visitTypeInsn(NEW, DIGRAPH_CLASS);
+            mv.visitTypeInsn(NEW, DIGRAPH_CLASS)
         }
 
         mv.visitInsn(DUP)
         num.generate(s, mv, fd)
 
         if (gtype == GraphType.GRAPH) {
-            mv.visitMethodInsn(INVOKESPECIAL, GRAPH_CLASS, "<init>", "(I)V", false);
+            mv.visitMethodInsn(INVOKESPECIAL, GRAPH_CLASS, "<init>", "(I)V", false)
         } else {
             mv.visitMethodInsn(INVOKESPECIAL, DIGRAPH_CLASS,
-                    "<init>", "(I)V", false);
+                    "<init>", "(I)V", false)
         }
 
         for (edge in edges) {
@@ -276,10 +276,10 @@ object Generation : Phase() {
 
             if (gtype == GraphType.GRAPH) {
                 mv.visitMethodInsn(INVOKEVIRTUAL, GRAPH_CLASS,
-                        "addEdge", "(II)V", false);
+                        "addEdge", "(II)V", false)
             } else {
                 mv.visitMethodInsn(INVOKEVIRTUAL, DIGRAPH_CLASS,
-                        "addEdge", "(II)V", false);
+                        "addEdge", "(II)V", false)
             }
         }
     }
@@ -336,8 +336,8 @@ object Generation : Phase() {
 
     private fun Control.generate(mv: MethodVisitor) {
         when (type) {
-            ControlType.CONTINUE -> mv.visitJumpInsn(GOTO, loopStart)
-            ControlType.BREAK -> mv.visitJumpInsn(GOTO, loopEnd)
+            ControlType.CONTINUE -> mv.visitJumpInsn(GOTO, continueTargetLabel)
+            ControlType.BREAK -> mv.visitJumpInsn(GOTO, breakTargetLabel)
         }
     }
 
@@ -433,10 +433,11 @@ object Generation : Phase() {
 
     private fun For.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
         val start = Label()
+        val modifier = Label()
         val end = Label()
 
-        loopStart = start
-        loopEnd = end
+        continueTargetLabel = modifier
+        breakTargetLabel = end
 
         initial.generate(s, mv, fd)
 
@@ -461,20 +462,21 @@ object Generation : Phase() {
             }
         }
 
+        mv.visitLabel(modifier)
         mod.generate(s, mv, fd)
         mv.visitJumpInsn(GOTO, start)
         mv.visitLabel(end)
 
-        loopStart = null
-        loopEnd = null
+        continueTargetLabel = null
+        breakTargetLabel = null
     }
 
     private fun While.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
         val start = Label()
         val end = Label()
 
-        loopStart = start
-        loopEnd = end
+        continueTargetLabel = start
+        breakTargetLabel = end
 
         mv.visitLabel(start)
         cond.generate(s, mv, fd)
@@ -499,8 +501,8 @@ object Generation : Phase() {
         mv.visitJumpInsn(GOTO, start)
         mv.visitLabel(end)
 
-        loopStart = null
-        loopEnd = null
+        continueTargetLabel = null
+        breakTargetLabel = null
     }
 
     private fun Print.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
@@ -517,7 +519,7 @@ object Generation : Phase() {
                     "(Ljava/lang/Object;)V", false)
         }
     }
-    
+
     private fun Assertion.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
         expr.generate(s, mv, fd)
         mv.visitLdcInsn(this.location.line)
