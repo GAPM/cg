@@ -61,11 +61,9 @@ class Compiler(fileName: String, val parameters: Parameters) {
         return astGenerator.getInit()
     }
 
-    private fun <T : Phase> executePhase(constructor: (State, Init) -> T, init: Init) {
-        val phase = constructor(state, init)
-
+    private fun executePhase(phase: Phase, init: Init) {
         val ms = measureTimeMillis {
-            phase.execute()
+            phase.execute(state, init)
         }
 
         Logger.debug("${phase.javaClass.simpleName}: $ms ms")
@@ -86,12 +84,12 @@ class Compiler(fileName: String, val parameters: Parameters) {
         }
 
         start = System.currentTimeMillis()
-        val ast = buildAST(tree);
+        val ast = buildAST(tree)
         Logger.debug("AST: ${System.currentTimeMillis() - start} ms")
 
-        executePhase(::Globals, ast)
-        executePhase(::Structure, ast)
-        executePhase(::Types, ast)
+        executePhase(Globals, ast)
+        executePhase(Structure, ast)
+        executePhase(Types, ast)
 
         if (parameters.justCheck) {
             val msg = if (state.errors.size == 0) {
@@ -106,8 +104,8 @@ class Compiler(fileName: String, val parameters: Parameters) {
                 throw ErrorsInCodeException()
             }
 
-            executePhase(::Preparation, ast)
-            executePhase(::Generation, ast)
+            executePhase(Preparation, ast)
+            executePhase(Generation, ast)
         }
     }
 }

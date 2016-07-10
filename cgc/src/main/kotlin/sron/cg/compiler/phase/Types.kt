@@ -27,8 +27,8 @@ import sron.cg.compiler.type.CastTable
 import sron.cg.compiler.type.OpTable
 import sron.cg.compiler.type.Type
 
-class Types(private val s: State, private val init: Init) : Phase {
-    override fun execute() = init.types(s)
+object Types : Phase() {
+    override fun execute(s: State, init: Init) = init.types(s)
 
     private fun Init.types(s: State) {
         for (fd in funcDef) {

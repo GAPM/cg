@@ -27,9 +27,9 @@ import sron.cg.compiler.symbol.SymType
 import sron.cg.compiler.symbol.Variable
 import sron.cg.compiler.type.Type
 
-class Globals(private val s: State, private val init: Init) : Phase {
+object Globals : Phase() {
 
-    override fun execute() = init.globals(s)
+    override fun execute(s: State, init: Init) = init.globals(s)
 
     private fun Init.globals(s: sron.cg.compiler.State) {
         for (f in runtimeFunctions) {

@@ -1,5 +1,8 @@
 package sron.cg.compiler.phase
 
-interface Phase {
-    fun execute()
+import sron.cg.compiler.State
+import sron.cg.compiler.ast.Init
+
+abstract class Phase {
+    abstract fun execute(s: State, init: Init)
 }

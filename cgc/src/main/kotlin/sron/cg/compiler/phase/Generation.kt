@@ -30,13 +30,13 @@ import sron.cg.compiler.symbol.Variable
 import sron.cg.compiler.type.Type
 import java.util.*
 
-class Generation(private val s: State, private val init: Init) : Phase {
+object Generation : Phase() {
     private val cw = ClassWriter(COMPUTE_FRAMES)
     private val varQueue = LinkedList<Triple<Variable, Label, Label>>()
     private var loopStart: Label? = null
     private var loopEnd: Label? = null
 
-    override fun execute() = init.generate(s)
+    override fun execute(s: State, init: Init) = init.generate(s)
 
     private fun Init.generate(s: State) {
         cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, "EntryPoint", null,

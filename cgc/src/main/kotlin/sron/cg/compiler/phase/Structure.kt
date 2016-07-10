@@ -21,10 +21,10 @@ import sron.cg.compiler.State
 import sron.cg.compiler.ast.*
 import sron.cg.compiler.type.Type
 
-class Structure(private val s: State, private val init: Init) : Phase {
+object Structure : Phase() {
     private var insideLoop = false
 
-    override fun execute() = init.structure(s)
+    override fun execute(s: State, init: Init) = init.structure(s)
 
     private fun Init.structure(state: State) {
         for (fd in funcDef) {

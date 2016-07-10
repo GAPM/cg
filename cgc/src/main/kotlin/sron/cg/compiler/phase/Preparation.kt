@@ -19,10 +19,10 @@ package sron.cg.compiler.phase
 import sron.cg.compiler.State
 import sron.cg.compiler.ast.*
 
-class Preparation(private val s: State, private val init: Init) : Phase {
+object Preparation : Phase() {
     private var varId = 0
 
-    override fun execute() = init.prepare(s)
+    override fun execute(s: State, init: Init) = init.prepare(s)
 
     private fun Init.prepare(s: State) {
         for (fd in funcDef) {
