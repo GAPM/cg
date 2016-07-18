@@ -55,14 +55,14 @@ public class BitArray {
     }
 
     public boolean get(int idx) {
-        return (array[idx / 32] & (1 << (idx % 32))) != 0;
+        return (array[idx / BOX_SIZE] & (1 << (idx % BOX_SIZE))) != 0;
     }
 
     public void set(int idx, boolean value) {
         if (value) {
-            array[idx / 32] |= (1 << (idx % 32));
+            array[idx / BOX_SIZE] |= (1 << (idx % BOX_SIZE));
         } else {
-            array[idx / 32] &= ~(1 << (idx % 32));
+            array[idx / BOX_SIZE] &= ~(1 << (idx % BOX_SIZE));
         }
     }
 
