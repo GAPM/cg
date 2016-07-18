@@ -1,5 +1,7 @@
 # cg
 
+[![codebeat badge](https://codebeat.co/badges/6127d066-2bdf-437c-a3cc-503725af11a1)](https://codebeat.co/projects/github-com-simonorono-cg)
+
 Compact Graph Programming Language
 
 cg is a programming language for manipulation of directed and undirected graphs (only non-weighted).
