@@ -36,6 +36,27 @@ object Generation : Phase() {
     private var continueTargetLabel: Label? = null
     private var breakTargetLabel: Label? = null
 
+    private fun handleStmts(mv: MethodVisitor, s: State, scope: String, fd: FuncDef, stmt: List<Stmt>, range: Pair<Label, Label>) {
+        val (start, end) = range
+        stmt.forEach {
+            when (it) {
+                is VarDec -> {
+                    val variable = s.symbolTable[it.name, scope, SymType.VAR] as Variable
+                    varQueue += Triple(variable, start, end)
+
+                    it.generate(s, mv, fd)
+                }
+                is FunctionCall -> {
+                    it.generate(s, mv, fd)
+                    if (it.type != Type.void) {
+                        mv.visitInsn(POP)
+                    }
+                }
+                else -> it.generate(s, mv, fd)
+            }
+        }
+    }
+
     override fun execute(s: State, init: Init) = init.generate(s)
 
     private fun Init.generate(s: State) {
@@ -44,16 +65,12 @@ object Generation : Phase() {
 
         constructor(cw)
 
-        for (gvd in glVarDec) {
-            gvd.generate()
-        }
+        glVarDec.map { it.generate() }
 
         // Generate default values for graphs and digraphs
         initializer(cw, glVarDec)
 
-        for (fd in funcDef) {
-            fd.generate(s)
-        }
+        funcDef.map { it.generate(s) }
 
         main(cw)
         cw.visitEnd()
@@ -90,21 +107,7 @@ object Generation : Phase() {
         mv.visitCode()
         mv.visitLabel(start)
 
-        for (stmt in stmts) {
-            if (stmt is VarDec) {
-                val variable = s.symbolTable[stmt.name, scope, SymType.VAR] as Variable
-                varQueue += Triple(variable, start, end)
-
-                stmt.generate(s, mv, this)
-            } else if (stmt is FunctionCall) {
-                stmt.generate(s, mv, this)
-                if (stmt.type != Type.void) {
-                    mv.visitInsn(POP)
-                }
-            } else {
-                stmt.generate(s, mv, this)
-            }
-        }
+        handleStmts(mv, s, scope, this, stmts, start to end)
 
         mv.visitInsn(RETURN)
         mv.visitLabel(end)
@@ -350,21 +353,8 @@ object Generation : Phase() {
         cond.generate(s, mv, fd)
         mv.visitJumpInsn(IFEQ, end)
 
-        for (stmt in stmts) {
-            if (stmt is VarDec) {
-                val variable = s.symbolTable[stmt.name, scope, SymType.VAR] as Variable
-                varQueue += Triple(variable, start, end)
+        handleStmts(mv, s, scope, fd, stmts, start to end)
 
-                stmt.generate(s, mv, fd)
-            } else if (stmt is FunctionCall) {
-                stmt.generate(s, mv, fd)
-                if (stmt.type != Type.void) {
-                    mv.visitInsn(POP)
-                }
-            } else {
-                stmt.generate(s, mv, fd)
-            }
-        }
         mv.visitJumpInsn(GOTO, finish)
         mv.visitLabel(end)
 
@@ -385,21 +375,7 @@ object Generation : Phase() {
         cond.generate(s, mv, fd)
         mv.visitJumpInsn(IFEQ, end)
 
-        for (stmt in stmts) {
-            if (stmt is VarDec) {
-                val variable = s.symbolTable[stmt.name, scope, SymType.VAR] as Variable
-                varQueue += Triple(variable, start, end)
-
-                stmt.generate(s, mv, fd)
-            } else if (stmt is FunctionCall) {
-                stmt.generate(s, mv, fd)
-                if (stmt.type != Type.void) {
-                    mv.visitInsn(POP)
-                }
-            } else {
-                stmt.generate(s, mv, fd)
-            }
-        }
+        handleStmts(mv, s, scope, fd, stmts, start to end)
 
         mv.visitJumpInsn(GOTO, finish)
         mv.visitLabel(end)
@@ -411,21 +387,7 @@ object Generation : Phase() {
 
         mv.visitLabel(start)
 
-        for (stmt in stmts) {
-            if (stmt is VarDec) {
-                val variable = s.symbolTable[stmt.name, scope, SymType.VAR] as Variable
-                varQueue += Triple(variable, start, end)
-
-                stmt.generate(s, mv, fd)
-            } else if (stmt is FunctionCall) {
-                stmt.generate(s, mv, fd)
-                if (stmt.type != Type.void) {
-                    mv.visitInsn(POP)
-                }
-            } else {
-                stmt.generate(s, mv, fd)
-            }
-        }
+        handleStmts(mv, s, scope, fd, stmts, start to end)
 
         mv.visitJumpInsn(GOTO, finish)
         mv.visitLabel(end)
@@ -446,21 +408,7 @@ object Generation : Phase() {
         cond.generate(s, mv, fd)
         mv.visitJumpInsn(IFEQ, end)
 
-        for (stmt in stmts) {
-            if (stmt is VarDec) {
-                val variable = s.symbolTable[stmt.name, scope, SymType.VAR] as Variable
-                varQueue += Triple(variable, start, end)
-
-                stmt.generate(s, mv, fd)
-            } else if (stmt is FunctionCall) {
-                stmt.generate(s, mv, fd)
-                if (stmt.type != Type.void) {
-                    mv.visitInsn(POP)
-                }
-            } else {
-                stmt.generate(s, mv, fd)
-            }
-        }
+        handleStmts(mv, s, scope, fd, stmts, start to end)
 
         mv.visitLabel(modifier)
         mod.generate(s, mv, fd)
@@ -482,21 +430,7 @@ object Generation : Phase() {
         cond.generate(s, mv, fd)
         mv.visitJumpInsn(IFEQ, end)
 
-        for (stmt in stmts) {
-            if (stmt is VarDec) {
-                val variable = s.symbolTable[stmt.name, scope, SymType.VAR] as Variable
-                varQueue += Triple(variable, start, end)
-
-                stmt.generate(s, mv, fd)
-            } else if (stmt is FunctionCall) {
-                stmt.generate(s, mv, fd)
-                if (stmt.type != Type.void) {
-                    mv.visitInsn(POP)
-                }
-            } else {
-                stmt.generate(s, mv, fd)
-            }
-        }
+        handleStmts(mv, s, scope, fd, stmts, start to end)
 
         mv.visitJumpInsn(GOTO, start)
         mv.visitLabel(end)

@@ -37,18 +37,16 @@ fun constructor(cw: ClassWriter) {
     mv.visitEnd()
 }
 
-fun initializer(cw: ClassWriter, glVarDec: Array<GlVarDec>) {
+fun initializer(cw: ClassWriter, glVarDec: List<GlVarDec>) {
     val mv = cw.visitMethod(ACC_STATIC, "<clinit>", "()V", null, null)
     mv.visitCode()
 
     val ls = Label()
     mv.visitLabel(ls)
 
-    for (gvd in glVarDec) {
-        if (gvd.type == Type.graph || gvd.type == Type.digraph) {
-            pushDefaultToStack(mv, gvd.type)
-            mv.visitFieldInsn(PUTSTATIC, "EntryPoint", gvd.name, gvd.type.descriptor())
-        }
+    glVarDec.filter { it.type == Type.graph || it.type == Type.digraph }.map {
+        pushDefaultToStack(mv, it.type)
+        mv.visitFieldInsn(PUTSTATIC, "EntryPoint", it.name, it.type.descriptor())
     }
 
     val le = Label()
