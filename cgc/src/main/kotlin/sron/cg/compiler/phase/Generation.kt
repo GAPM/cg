@@ -35,31 +35,35 @@ object Generation : Phase() {
     private val varQueue = LinkedList<Triple<Variable, Label, Label>>()
     private var continueTargetLabel: Label? = null
     private var breakTargetLabel: Label? = null
+    lateinit private var state: State
 
-    private fun handleStmts(mv: MethodVisitor, s: State, scope: String, fd: FuncDef, stmt: List<Stmt>, range: Pair<Label, Label>) {
+    private fun handleStmts(mv: MethodVisitor, scope: String, fd: FuncDef, stmt: List<Stmt>, range: Pair<Label, Label>) {
         val (start, end) = range
         stmt.forEach {
             when (it) {
                 is VarDec -> {
-                    val variable = s.symbolTable[it.name, scope, SymType.VAR] as Variable
+                    val variable = state.symbolTable[it.name, scope, SymType.VAR] as Variable
                     varQueue += Triple(variable, start, end)
 
-                    it.generate(s, mv, fd)
+                    it.generate(mv, fd)
                 }
                 is FunctionCall -> {
-                    it.generate(s, mv, fd)
+                    it.generate(mv, fd)
                     if (it.type != Type.void) {
                         mv.visitInsn(POP)
                     }
                 }
-                else -> it.generate(s, mv, fd)
+                else -> it.generate(mv, fd)
             }
         }
     }
 
-    override fun execute(s: State, init: Init) = init.generate(s)
+    override fun execute(s: State, init: Init) {
+        state = s
+        init.generate()
+    }
 
-    private fun Init.generate(s: State) {
+    private fun Init.generate() {
         cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, "EntryPoint", null,
                 "java/lang/Object", null)
 
@@ -70,13 +74,13 @@ object Generation : Phase() {
         // Generate default values for graphs and digraphs
         initializer(cw, glVarDec)
 
-        funcDef.map { it.generate(s) }
+        funcDef.map { it.generate() }
 
         main(cw)
         cw.visitEnd()
 
         val classBytes = cw.toByteArray()
-        createExec(classBytes, s)
+        createExec(classBytes, state)
     }
 
     private fun GlVarDec.generate() {
@@ -96,8 +100,8 @@ object Generation : Phase() {
         fv.visitEnd()
     }
 
-    private fun FuncDef.generate(s: State) {
-        val function = s.symbolTable[name, SymType.FUNC] as Function
+    private fun FuncDef.generate() {
+        val function = state.symbolTable[name, SymType.FUNC] as Function
         val desc = function.signatureString()
         val mv = cw.visitMethod(ACC_PUBLIC + ACC_STATIC, name, desc, null, null)
 
@@ -107,7 +111,7 @@ object Generation : Phase() {
         mv.visitCode()
         mv.visitLabel(start)
 
-        handleStmts(mv, s, scope, this, stmts, start to end)
+        handleStmts(mv, scope, this, stmts, start to end)
 
         mv.visitInsn(RETURN)
         mv.visitLabel(end)
@@ -115,14 +119,14 @@ object Generation : Phase() {
         while (varQueue.size > 0) {
             val (variable, ls, le) = varQueue.remove()
             val varDesc = variable.type.descriptor()
-            val idx = getVarIndex(s, name, variable.name)
+            val idx = getVarIndex(state, name, variable.name)
             mv.visitLocalVariable(variable.name, varDesc, null, ls, le, idx)
         }
 
         args.map {
-            val arg = s.symbolTable[it.name, scope, SymType.VAR]!!
+            val arg = state.symbolTable[it.name, scope, SymType.VAR]!!
             val argDesc = it.type.descriptor()
-            val idx = getVarIndex(s, name, arg.name)
+            val idx = getVarIndex(state, name, arg.name)
             mv.visitLocalVariable(arg.name, argDesc, null, start, end, idx)
         }
 
@@ -134,30 +138,30 @@ object Generation : Phase() {
         mv.visitEnd()
     }
 
-    private fun Stmt.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
+    private fun Stmt.generate(mv: MethodVisitor, fd: FuncDef) {
         when (this) {
-            is Expr -> this.generate(s, mv, fd)
-            is VarDec -> this.generate(s, mv, fd)
-            is Assignment -> this.generate(s, mv, fd)
-            is Return -> this.generate(s, mv, fd)
+            is Expr -> this.generate(mv, fd)
+            is VarDec -> this.generate(mv, fd)
+            is Assignment -> this.generate(mv, fd)
+            is Return -> this.generate(mv, fd)
             is Control -> this.generate(mv)
-            is If -> this.generate(s, mv, fd)
-            is For -> this.generate(s, mv, fd)
-            is While -> this.generate(s, mv, fd)
-            is Print -> this.generate(s, mv, fd)
-            is Assertion -> this.generate(s, mv, fd)
+            is If -> this.generate(mv, fd)
+            is For -> this.generate(mv, fd)
+            is While -> this.generate(mv, fd)
+            is Print -> this.generate(mv, fd)
+            is Assertion -> this.generate(mv, fd)
         }
     }
 
-    private fun Expr.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
+    private fun Expr.generate(mv: MethodVisitor, fd: FuncDef) {
         when (this) {
             is Literal -> this.generate(mv)
-            is UnaryExpr -> this.generate(s, mv, fd)
-            is BinaryExpr -> this.generate(s, mv, fd)
-            is Identifier -> this.generate(s, mv, fd)
-            is FunctionCall -> this.generate(s, mv, fd)
-            is Cast -> this.generate(s, mv, fd)
-            is Graph -> this.generate(s, mv, fd)
+            is UnaryExpr -> this.generate(mv, fd)
+            is BinaryExpr -> this.generate(mv, fd)
+            is Identifier -> this.generate(mv, fd)
+            is FunctionCall -> this.generate(mv, fd)
+            is Cast -> this.generate(mv, fd)
+            is Graph -> this.generate(mv, fd)
         }
     }
 
@@ -173,8 +177,8 @@ object Generation : Phase() {
         }
     }
 
-    private fun UnaryExpr.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
-        expr.generate(s, mv, fd)
+    private fun UnaryExpr.generate(mv: MethodVisitor, fd: FuncDef) {
+        expr.generate(mv, fd)
 
         if (operator == Operator.NOT) {
             not(mv, expr.type)
@@ -183,20 +187,20 @@ object Generation : Phase() {
         }
     }
 
-    private fun BinaryExpr.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
-        lhs.generate(s, mv, fd)
-        rhs.generate(s, mv, fd)
+    private fun BinaryExpr.generate(mv: MethodVisitor, fd: FuncDef) {
+        lhs.generate(mv, fd)
+        rhs.generate(mv, fd)
 
         binaryOp(mv, operator, lhs.type)
     }
 
-    private fun Identifier.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
-        val variable = s.symbolTable[name, "global", SymType.VAR] as Variable?
+    private fun Identifier.generate(mv: MethodVisitor, fd: FuncDef) {
+        val variable = state.symbolTable[name, "global", SymType.VAR] as Variable?
         if (variable != null) {
             mv.visitFieldInsn(GETSTATIC, "EntryPoint", variable.name,
                     variable.type.descriptor())
         } else {
-            val idx = getVarIndex(s, fd.name, name)
+            val idx = getVarIndex(state, fd.name, name)
 
             when (type) {
                 Type.int -> mv.visitVarInsn(ILOAD, idx)
@@ -207,12 +211,12 @@ object Generation : Phase() {
         }
     }
 
-    private fun FunctionCall.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
+    private fun FunctionCall.generate(mv: MethodVisitor, fd: FuncDef) {
         for (e in expr) {
-            e.generate(s, mv, fd)
+            e.generate(mv, fd)
         }
 
-        val function = s.symbolTable[name, SymType.FUNC] as Function
+        val function = state.symbolTable[name, SymType.FUNC] as Function
 
         if (function.isSpecial) {
             handleSpecial(mv, function)
@@ -222,8 +226,8 @@ object Generation : Phase() {
         }
     }
 
-    private fun Cast.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
-        expr.generate(s, mv, fd)
+    private fun Cast.generate(mv: MethodVisitor, fd: FuncDef) {
+        expr.generate(mv, fd)
 
         // Trivial case
         if (expr.type == type) {
@@ -255,7 +259,7 @@ object Generation : Phase() {
         }
     }
 
-    private fun Graph.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
+    private fun Graph.generate(mv: MethodVisitor, fd: FuncDef) {
         if (gtype == GraphType.GRAPH) {
             mv.visitTypeInsn(NEW, GRAPH_CLASS)
         } else {
@@ -263,7 +267,7 @@ object Generation : Phase() {
         }
 
         mv.visitInsn(DUP)
-        num.generate(s, mv, fd)
+        num.generate(mv, fd)
 
         if (gtype == GraphType.GRAPH) {
             mv.visitMethodInsn(INVOKESPECIAL, GRAPH_CLASS, "<init>", "(I)V", false)
@@ -274,8 +278,8 @@ object Generation : Phase() {
 
         for (edge in edges) {
             mv.visitInsn(DUP)
-            edge.source.generate(s, mv, fd)
-            edge.target.generate(s, mv, fd)
+            edge.source.generate(mv, fd)
+            edge.target.generate(mv, fd)
 
             if (gtype == GraphType.GRAPH) {
                 mv.visitMethodInsn(INVOKEVIRTUAL, GRAPH_CLASS,
@@ -287,13 +291,13 @@ object Generation : Phase() {
         }
     }
 
-    private fun VarDec.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
-        val idx = getVarIndex(s, fd.name, name)
+    private fun VarDec.generate(mv: MethodVisitor, fd: FuncDef) {
+        val idx = getVarIndex(state, fd.name, name)
 
         if (exp == null) {
             pushDefaultToStack(mv, type)
         } else {
-            exp.generate(s, mv, fd)
+            exp.generate(mv, fd)
         }
 
         when (type) {
@@ -304,14 +308,14 @@ object Generation : Phase() {
         }
     }
 
-    private fun Assignment.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
+    private fun Assignment.generate(mv: MethodVisitor, fd: FuncDef) {
         val variable = lhs.referencedVar!!
-        rhs.generate(s, mv, fd)
+        rhs.generate(mv, fd)
 
         if (variable.scope == "global") {
             mv.visitFieldInsn(PUTSTATIC, "EntryPoint", variable.name, variable.type.descriptor())
         } else {
-            val idx = getVarIndex(s, fd.name, variable.name)
+            val idx = getVarIndex(state, fd.name, variable.name)
 
             when (lhs.type) {
                 Type.int -> mv.visitVarInsn(ISTORE, idx)
@@ -322,9 +326,9 @@ object Generation : Phase() {
         }
     }
 
-    private fun Return.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
+    private fun Return.generate(mv: MethodVisitor, fd: FuncDef) {
         if (fd.type != Type.void) {
-            expr?.generate(s, mv, fd)
+            expr?.generate(mv, fd)
 
             when (fd.type) {
                 Type.int -> mv.visitInsn(IRETURN)
@@ -344,56 +348,56 @@ object Generation : Phase() {
         }
     }
 
-    private fun If.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
+    private fun If.generate(mv: MethodVisitor, fd: FuncDef) {
         val start = Label()
         val end = Label()
         val finish = Label()
 
         mv.visitLabel(start)
-        cond.generate(s, mv, fd)
+        cond.generate(mv, fd)
         mv.visitJumpInsn(IFEQ, end)
 
-        handleStmts(mv, s, scope, fd, stmts, start to end)
+        handleStmts(mv, scope, fd, stmts, start to end)
 
         mv.visitJumpInsn(GOTO, finish)
         mv.visitLabel(end)
 
         for (elif in elifs) {
-            elif.generate(s, mv, fd, finish)
+            elif.generate(mv, fd, finish)
         }
 
-        elsec?.generate(s, mv, fd, finish)
+        elsec?.generate(mv, fd, finish)
 
         mv.visitLabel(finish)
     }
 
-    private fun Elif.generate(s: State, mv: MethodVisitor, fd: FuncDef, finish: Label) {
+    private fun Elif.generate(mv: MethodVisitor, fd: FuncDef, finish: Label) {
         val start = Label()
         val end = Label()
 
         mv.visitLabel(start)
-        cond.generate(s, mv, fd)
+        cond.generate(mv, fd)
         mv.visitJumpInsn(IFEQ, end)
 
-        handleStmts(mv, s, scope, fd, stmts, start to end)
+        handleStmts(mv, scope, fd, stmts, start to end)
 
         mv.visitJumpInsn(GOTO, finish)
         mv.visitLabel(end)
     }
 
-    private fun Else.generate(s: State, mv: MethodVisitor, fd: FuncDef, finish: Label) {
+    private fun Else.generate(mv: MethodVisitor, fd: FuncDef, finish: Label) {
         val start = Label()
         val end = Label()
 
         mv.visitLabel(start)
 
-        handleStmts(mv, s, scope, fd, stmts, start to end)
+        handleStmts(mv, scope, fd, stmts, start to end)
 
         mv.visitJumpInsn(GOTO, finish)
         mv.visitLabel(end)
     }
 
-    private fun For.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
+    private fun For.generate(mv: MethodVisitor, fd: FuncDef) {
         val start = Label()
         val modifier = Label()
         val end = Label()
@@ -401,17 +405,17 @@ object Generation : Phase() {
         continueTargetLabel = modifier
         breakTargetLabel = end
 
-        initial.generate(s, mv, fd)
+        initial.generate(mv, fd)
 
         mv.visitLabel(start)
 
-        cond.generate(s, mv, fd)
+        cond.generate(mv, fd)
         mv.visitJumpInsn(IFEQ, end)
 
-        handleStmts(mv, s, scope, fd, stmts, start to end)
+        handleStmts(mv, scope, fd, stmts, start to end)
 
         mv.visitLabel(modifier)
-        mod.generate(s, mv, fd)
+        mod.generate(mv, fd)
         mv.visitJumpInsn(GOTO, start)
         mv.visitLabel(end)
 
@@ -419,7 +423,7 @@ object Generation : Phase() {
         breakTargetLabel = null
     }
 
-    private fun While.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
+    private fun While.generate(mv: MethodVisitor, fd: FuncDef) {
         val start = Label()
         val end = Label()
 
@@ -427,10 +431,10 @@ object Generation : Phase() {
         breakTargetLabel = end
 
         mv.visitLabel(start)
-        cond.generate(s, mv, fd)
+        cond.generate(mv, fd)
         mv.visitJumpInsn(IFEQ, end)
 
-        handleStmts(mv, s, scope, fd, stmts, start to end)
+        handleStmts(mv, scope, fd, stmts, start to end)
 
         mv.visitJumpInsn(GOTO, start)
         mv.visitLabel(end)
@@ -439,8 +443,8 @@ object Generation : Phase() {
         breakTargetLabel = null
     }
 
-    private fun Print.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
-        expr.generate(s, mv, fd)
+    private fun Print.generate(mv: MethodVisitor, fd: FuncDef) {
+        expr.generate(mv, fd)
 
         when (expr.type) {
             Type.int -> mv.visitMethodInsn(INVOKESTATIC, RT_IO_CLASS, "print",
@@ -454,8 +458,8 @@ object Generation : Phase() {
         }
     }
 
-    private fun Assertion.generate(s: State, mv: MethodVisitor, fd: FuncDef) {
-        expr.generate(s, mv, fd)
+    private fun Assertion.generate(mv: MethodVisitor, fd: FuncDef) {
+        expr.generate(mv, fd)
         mv.visitLdcInsn(this.location.line)
 
         mv.visitMethodInsn(INVOKESTATIC, RT_ASSERT_CLASS, "assertF", "(ZI)V",
