@@ -29,7 +29,7 @@ abstract class Stmt(location: Location) : ASTNode(location) {
     var scope = ""
 }
 
-class Assertion(val expr: Expr, location: Location): Stmt(location)
+class Assertion(val expr: Expr, location: Location) : Stmt(location)
 
 class Assignment(val lhs: Expr, val rhs: Expr, location: Location) : Stmt(location)
 
@@ -46,9 +46,9 @@ class Else(val stmts: List<Stmt>, location: Location) : ASTNode(location) {
 }
 
 class For(val initial: Assignment, val cond: Expr, val mod: Assignment,
-          val stmts: Array<Stmt>, location: Location) : Stmt(location)
+          val stmts: List<Stmt>, location: Location) : Stmt(location)
 
-class If(val cond: Expr, val stmts: Array<Stmt>, val elifs: Array<Elif>,
+class If(val cond: Expr, val stmts: List<Stmt>, val elifs: List<Elif>,
          val elsec: Else?, location: Location) : Stmt(location)
 
 class Print(val expr: Expr, location: Location) : Stmt(location)
@@ -62,4 +62,4 @@ class Return(val expr: Expr?, location: Location) : Stmt(location) {
 class VarDec(val name: String, var type: Type, val exp: Expr?,
              location: Location) : Stmt(location)
 
-class While(val cond: Expr, val stmts: Array<Stmt>, location: Location) : Stmt(location)
+class While(val cond: Expr, val stmts: List<Stmt>, location: Location) : Stmt(location)

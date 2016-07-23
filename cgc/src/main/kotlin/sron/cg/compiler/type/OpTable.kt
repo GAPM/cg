@@ -76,7 +76,7 @@ object OpTable {
             BinOp(logic, Type.bool)
     )
 
-    private val unaryOps = listOf (
+    private val unaryOps = listOf(
             UnaryOp(sign, Type.int),
             UnaryOp(sign, Type.float),
 

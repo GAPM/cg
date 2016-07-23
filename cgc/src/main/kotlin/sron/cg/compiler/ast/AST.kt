@@ -25,8 +25,8 @@ class Arg(val name: String, val type: Type, location: Location) : ASTNode(locati
 
 class Edge(val source: Expr, val target: Expr, location: Location) : ASTNode(location)
 
-class FuncDef(val name: String, val type: Type, val args: Array<Arg>,
-              val stmts: Array<Stmt>, location: Location) : ASTNode(location) {
+class FuncDef(val name: String, val type: Type, val args: List<Arg>,
+              val stmts: List<Stmt>, location: Location) : ASTNode(location) {
     var scope: String = ""
 }
 
@@ -35,4 +35,4 @@ class GlExpr(val type: Type, val text: String, location: Location) : ASTNode(loc
 class GlVarDec(val name: String, val type: Type, val exp: GlExpr?,
                location: Location) : ASTNode(location)
 
-class Init(val glVarDec: Array<GlVarDec>, val funcDef: Array<FuncDef>) : ASTNode(Location(0))
+class Init(val glVarDec: List<GlVarDec>, val funcDef: List<FuncDef>) : ASTNode(Location(0))

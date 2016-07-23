@@ -72,9 +72,9 @@ abstract class Atom(location: Location) : Expr(location)
 
 class Cast(override var type: Type, val expr: Expr, location: Location) : Atom(location)
 
-class FunctionCall(val name: String, val expr: Array<Expr>, location: Location) : Atom(location)
+class FunctionCall(val name: String, val expr: List<Expr>, location: Location) : Atom(location)
 
-class Graph(val gtype: GraphType, val num: Expr, val edges: Array<Edge>,
+class Graph(val gtype: GraphType, val num: Expr, val edges: List<Edge>,
             location: Location) : Atom(location)
 
 class Identifier(val name: String, location: Location) : Atom(location)
