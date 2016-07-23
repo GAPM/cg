@@ -44,9 +44,11 @@ fun initializer(cw: ClassWriter, glVarDec: List<GlVarDec>) {
     val ls = Label()
     mv.visitLabel(ls)
 
-    glVarDec.filter { it.type == Type.graph || it.type == Type.digraph }.map {
-        pushDefaultToStack(mv, it.type)
-        mv.visitFieldInsn(PUTSTATIC, "EntryPoint", it.name, it.type.descriptor())
+    for (gvd in glVarDec) {
+        if (gvd.type == Type.graph || gvd.type == Type.digraph) {
+            pushDefaultToStack(mv, gvd.type)
+            mv.visitFieldInsn(PUTSTATIC, "EntryPoint", gvd.name, gvd.type.descriptor())
+        }
     }
 
     val le = Label()

@@ -25,7 +25,7 @@ public class BitArray {
 
     public BitArray(int size) {
         this.size = size;
-        array = new int[(int)Math.ceil(size / (double)BOX_SIZE)];
+        array = new int[(int) Math.ceil(size / (double) BOX_SIZE)];
     }
 
     static BitArray forMatrix(int size) {

@@ -37,23 +37,23 @@ object Generation : Phase() {
     private var breakTargetLabel: Label? = null
     lateinit private var state: State
 
-    private fun handleStmts(mv: MethodVisitor, scope: String, fd: FuncDef, stmt: List<Stmt>, range: Pair<Label, Label>) {
+    private fun handleStmts(mv: MethodVisitor, scope: String, fd: FuncDef, stmts: List<Stmt>, range: Pair<Label, Label>) {
         val (start, end) = range
-        stmt.forEach {
-            when (it) {
+        for (stmt in stmts) {
+            when (stmt) {
                 is VarDec -> {
-                    val variable = state.symbolTable[it.name, scope, SymType.VAR] as Variable
+                    val variable = state.symbolTable[stmt.name, scope, SymType.VAR] as Variable
                     varQueue += Triple(variable, start, end)
 
-                    it.generate(mv, fd)
+                    stmt.generate(mv, fd)
                 }
                 is FunctionCall -> {
-                    it.generate(mv, fd)
-                    if (it.type != Type.void) {
+                    stmt.generate(mv, fd)
+                    if (stmt.type != Type.void) {
                         mv.visitInsn(POP)
                     }
                 }
-                else -> it.generate(mv, fd)
+                else -> stmt.generate(mv, fd)
             }
         }
     }
@@ -69,12 +69,16 @@ object Generation : Phase() {
 
         constructor(cw)
 
-        glVarDec.map { it.generate() }
+        for (gvd in glVarDec) {
+            gvd.generate()
+        }
 
         // Generate default values for graphs and digraphs
         initializer(cw, glVarDec)
 
-        funcDef.map { it.generate() }
+        for (fd in funcDef) {
+            fd.generate()
+        }
 
         main(cw)
         cw.visitEnd()
