@@ -28,35 +28,39 @@ import sron.cg.compiler.symbol.Variable
 import sron.cg.compiler.type.Type
 
 object Globals : Phase() {
+    private lateinit var state: State
 
-    override fun execute(s: State, init: Init) = init.globals(s)
+    override fun execute(s: State, init: Init) {
+        state = s
+        init.globals()
+    }
 
-    private fun Init.globals(s: sron.cg.compiler.State) {
+    private fun Init.globals() {
         for (f in runtimeFunctions) {
-            s.symbolTable += f
+            state.symbolTable += f
         }
 
         for (gvd in glVarDec) {
-            gvd.globals(s)
+            gvd.globals()
         }
 
         for (fd in funcDef) {
-            fd.globals(s)
+            fd.globals()
         }
 
-        val qry = s.symbolTable["main", SymType.FUNC]
+        val qry = state.symbolTable["main", SymType.FUNC]
         val noEntry = when (qry) {
             is Function -> (qry.type != Type.void && qry.args.size != 0)
             else -> false
         }
 
         if (noEntry) {
-            s.errors += Error.noEntryPoint(location)
+            state.errors += Error.noEntryPoint(location)
         }
     }
 
-    private fun FuncDef.globals(s: State) {
-        val qry = s.symbolTable[name, SymType.FUNC]
+    private fun FuncDef.globals() {
+        val qry = state.symbolTable[name, SymType.FUNC]
 
         if (qry == null) {
             val args = Array(args.size) { i ->
@@ -64,23 +68,23 @@ object Globals : Phase() {
             }
 
             val func = Function(name, "global", type, location, *args)
-            s.symbolTable += func
+            state.symbolTable += func
             args.map {
-                s.symbolTable += it
+                state.symbolTable += it
             }
         } else {
-            s.errors += Error.redeclaration(location, qry.location, name, SymType.FUNC)
+            state.errors += Error.redeclaration(location, qry.location, name, SymType.FUNC)
         }
     }
 
-    private fun GlVarDec.globals(s: State) {
-        val qry = s.symbolTable[this.name, SymType.FUNC]
+    private fun GlVarDec.globals() {
+        val qry = state.symbolTable[this.name, SymType.FUNC]
 
         if (qry == null) {
             val glVar = Variable(this.name, this.type, "global", this.location)
-            s.symbolTable += glVar
+            state.symbolTable += glVar
         } else {
-            s.errors += Error.redeclaration(this.location, qry.location, this.name, SymType.VAR)
+            state.errors += Error.redeclaration(this.location, qry.location, this.name, SymType.VAR)
         }
     }
 }

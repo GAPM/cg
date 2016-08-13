@@ -22,105 +22,110 @@ import sron.cg.compiler.ast.*
 import sron.cg.compiler.type.Type
 
 object Structure : Phase() {
+    private lateinit var state: State
+
     private var insideLoop = false
 
-    override fun execute(s: State, init: Init) = init.structure(s)
+    override fun execute(s: State, init: Init) {
+        state = s
+        init.structure()
+    }
 
-    private fun Init.structure(state: State) {
+    private fun Init.structure() {
         for (fd in funcDef) {
-            fd.structure(state)
+            fd.structure()
         }
     }
 
-    private fun FuncDef.structure(s: State) {
+    private fun FuncDef.structure() {
         var returns = false
 
         for (stmt in stmts) {
-            stmt.structure(s, this)
+            stmt.structure(this)
             returns = returns || stmt.returns
         }
 
         if (type != Type.void && !returns) {
-            s.errors += Error.notAllPathsReturn(location, name)
+            state.errors += Error.notAllPathsReturn(location, name)
         }
     }
 
-    private fun Stmt.structure(s: State, func: FuncDef) {
+    private fun Stmt.structure(func: FuncDef) {
         when (this) {
-            is If -> this.structure(s, func)
-            is Return -> this.structure(s, func)
-            is Control -> this.structure(s)
-            is For -> this.structure(s, func)
-            is While -> this.structure(s, func)
+            is If -> this.structure(func)
+            is Return -> this.structure(func)
+            is Control -> this.structure()
+            is For -> this.structure(func)
+            is While -> this.structure(func)
         }
     }
 
-    private fun If.structure(s: State, func: FuncDef) {
+    private fun If.structure(func: FuncDef) {
         var ifReturns = false
         var allElifsReturns = true
         val elseReturns: Boolean
 
         for (stmt in stmts) {
-            stmt.structure(s, func)
+            stmt.structure(func)
             ifReturns = ifReturns || stmt.returns
         }
 
         for (elif in elifs) {
-            elif.structure(s, func)
+            elif.structure(func)
             allElifsReturns = allElifsReturns && elif.returns
         }
 
-        elsec?.structure(s, func)
+        elsec?.structure(func)
         elseReturns = elsec?.returns ?: false
 
         returns = ifReturns && allElifsReturns && elseReturns
     }
 
-    private fun Elif.structure(s: State, func: FuncDef) {
+    private fun Elif.structure(func: FuncDef) {
         for (stmt in stmts) {
-            stmt.structure(s, func)
+            stmt.structure(func)
             returns = returns || stmt.returns
         }
     }
 
-    private fun Else.structure(s: State, func: FuncDef) {
+    private fun Else.structure(func: FuncDef) {
         for (stmt in stmts) {
-            stmt.structure(s, func)
+            stmt.structure(func)
             returns = returns || stmt.returns
         }
     }
 
-    private fun Return.structure(s: State, func: FuncDef) {
+    private fun Return.structure(func: FuncDef) {
         if (func.type != Type.void && expr == null) {
-            s.errors += Error.emptyReturn(location, func.name)
+            state.errors += Error.emptyReturn(location, func.name)
         }
 
         if (func.type == Type.void && expr != null) {
-            s.errors += Error.nonEmptyReturn(location, func.name)
+            state.errors += Error.nonEmptyReturn(location, func.name)
         }
     }
 
-    private fun Control.structure(s: State) {
+    private fun Control.structure() {
         if (!insideLoop) {
-            s.errors += Error.controlNotInLoop(location, type)
+            state.errors += Error.controlNotInLoop(location, type)
         }
     }
 
-    private fun For.structure(s: State, func: FuncDef) {
+    private fun For.structure(func: FuncDef) {
         insideLoop = true
 
         for (stmt in stmts) {
-            stmt.structure(s, func)
+            stmt.structure(func)
         }
 
         insideLoop = false
     }
 
-    private fun While.structure(s: State, func: FuncDef) {
+    private fun While.structure(func: FuncDef) {
         insideLoop = true
 
         for (stmt in stmts) {
-            stmt.structure(s, func)
+            stmt.structure(func)
         }
 
         insideLoop = false

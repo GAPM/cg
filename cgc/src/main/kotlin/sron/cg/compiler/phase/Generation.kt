@@ -31,11 +31,12 @@ import sron.cg.compiler.type.Type
 import java.util.*
 
 object Generation : Phase() {
+    private lateinit var state: State
+
     private val cw = ClassWriter(COMPUTE_FRAMES)
     private val varQueue = LinkedList<Triple<Variable, Label, Label>>()
     private var continueTargetLabel: Label? = null
     private var breakTargetLabel: Label? = null
-    lateinit private var state: State
 
     private fun handleStmts(mv: MethodVisitor, scope: String, fd: FuncDef, stmts: List<Stmt>, range: Pair<Label, Label>) {
         val (start, end) = range

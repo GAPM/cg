@@ -28,97 +28,102 @@ import sron.cg.compiler.type.OpTable
 import sron.cg.compiler.type.Type
 
 object Types : Phase() {
-    override fun execute(s: State, init: Init) = init.types(s)
+    private lateinit var state: State
 
-    private fun Init.types(s: State) {
+    override fun execute(s: State, init: Init) {
+        state = s
+        init.types()
+    }
+
+    private fun Init.types() {
         for (fd in funcDef) {
-            fd.types(s)
+            fd.types()
         }
 
         for (gvd in glVarDec) {
-            gvd.types(s)
+            gvd.types()
         }
     }
 
-    private fun FuncDef.types(s: State) {
+    private fun FuncDef.types() {
         scope = "global.$name"
         for (stmt in stmts) {
-            stmt.types(s, this, scope)
+            stmt.types(this, scope)
         }
     }
 
-    private fun GlVarDec.types(s: State) {
+    private fun GlVarDec.types() {
         if (type == Type.void) {
-            s.errors += Error.voidVar(location, name)
+            state.errors += Error.voidVar(location, name)
             return
         }
 
         // Initial value handling
         if (exp != null) {
             if (exp.type != type) {
-                s.errors += Error.badAssignment(location, exp.type, type)
+                state.errors += Error.badAssignment(location, exp.type, type)
             }
 
             if (exp.type == Type.int) {
                 try {
                     exp.text.toInt()
                 } catch (e: NumberFormatException) {
-                    s.errors += Error.outOfRange(exp.location, exp.text)
+                    state.errors += Error.outOfRange(exp.location, exp.text)
                 }
             } else if (exp.type == Type.float) {
                 try {
                     exp.text.toFloat()
                 } catch (e: NumberFormatException) {
-                    s.errors += Error.outOfRange(exp.location, exp.text)
+                    state.errors += Error.outOfRange(exp.location, exp.text)
                 }
             }
         }
     }
 
-    private fun Stmt.types(s: State, funcDef: FuncDef, scope: String) {
+    private fun Stmt.types(funcDef: FuncDef, scope: String) {
         when (this) {
-            is Expr -> this.types(s, scope)
-            is Assignment -> this.types(s, scope)
-            is VarDec -> this.types(s, scope)
-            is Return -> this.types(s, funcDef, scope)
-            is If -> this.types(s, funcDef, scope)
-            is For -> this.types(s, funcDef, scope)
-            is While -> this.types(s, funcDef, scope)
-            is Print -> this.types(s, scope)
-            is Assertion -> this.types(s, scope)
+            is Expr -> this.types(scope)
+            is Assignment -> this.types(scope)
+            is VarDec -> this.types(scope)
+            is Return -> this.types(funcDef, scope)
+            is If -> this.types(funcDef, scope)
+            is For -> this.types(funcDef, scope)
+            is While -> this.types(funcDef, scope)
+            is Print -> this.types(scope)
+            is Assertion -> this.types(scope)
         }
     }
 
-    private fun Expr.types(s: State, scope: String) {
+    private fun Expr.types(scope: String) {
         when (this) {
-            is Literal -> this.types(s)
-            is UnaryExpr -> this.types(s, scope)
-            is BinaryExpr -> this.types(s, scope)
-            is Identifier -> this.types(s, scope)
-            is FunctionCall -> this.types(s, scope)
-            is Cast -> this.types(s, scope)
-            is Graph -> this.types(s, scope)
+            is Literal -> this.types()
+            is UnaryExpr -> this.types(scope)
+            is BinaryExpr -> this.types(scope)
+            is Identifier -> this.types(scope)
+            is FunctionCall -> this.types(scope)
+            is Cast -> this.types(scope)
+            is Graph -> this.types(scope)
         }
     }
 
-    private fun Literal.types(s: State) {
+    private fun Literal.types() {
         if (type == Type.int) {
             try {
                 text.toInt()
             } catch (e: NumberFormatException) {
-                s.errors += Error.outOfRange(location, text)
+                state.errors += Error.outOfRange(location, text)
             }
         } else if (type == Type.float) {
             try {
                 text.toFloat()
             } catch (e: NumberFormatException) {
-                s.errors += Error.outOfRange(location, text)
+                state.errors += Error.outOfRange(location, text)
             }
         }
     }
 
-    private fun UnaryExpr.types(s: State, scope: String) {
-        expr.types(s, scope)
+    private fun UnaryExpr.types(scope: String) {
+        expr.types(scope)
 
         if (expr.type != Type.ERROR) {
             val opType = OpTable.checkUnaryOp(operator, expr.type)
@@ -127,14 +132,14 @@ object Types : Phase() {
                 this.type = opType
             } else {
                 type = Type.ERROR
-                s.errors += Error.badUnaryOp(location, operator, expr.type)
+                state.errors += Error.badUnaryOp(location, operator, expr.type)
             }
         }
     }
 
-    private fun BinaryExpr.types(s: State, scope: String) {
-        lhs.types(s, scope)
-        rhs.types(s, scope)
+    private fun BinaryExpr.types(scope: String) {
+        lhs.types(scope)
+        rhs.types(scope)
 
         if (lhs.type != Type.ERROR && rhs.type != Type.ERROR) {
             val opType = OpTable.checkBinaryOp(operator, lhs.type, rhs.type)
@@ -143,13 +148,13 @@ object Types : Phase() {
                 this.type = opType
             } else {
                 type = Type.ERROR
-                s.errors += Error.badBinaryOp(location, operator, lhs.type, rhs.type)
+                state.errors += Error.badBinaryOp(location, operator, lhs.type, rhs.type)
             }
         }
     }
 
-    private fun Identifier.types(s: State, scope: String) {
-        val qry = s.symbolTable[name, scope, SymType.VAR]
+    private fun Identifier.types(scope: String) {
+        val qry = state.symbolTable[name, scope, SymType.VAR]
 
         if (qry != null) {
             val variable = qry as Variable
@@ -158,28 +163,28 @@ object Types : Phase() {
             referencedVar = variable
         } else {
             type = Type.ERROR
-            s.errors += Error.notFound(location, name, SymType.VAR)
+            state.errors += Error.notFound(location, name, SymType.VAR)
         }
     }
 
-    private fun FunctionCall.types(s: State, scope: String) {
-        expr.map { it.types(s, scope) }
-        val qry = s.symbolTable[name, SymType.FUNC]
+    private fun FunctionCall.types(scope: String) {
+        expr.map { it.types(scope) }
+        val qry = state.symbolTable[name, SymType.FUNC]
 
         if (qry != null) {
             val function = qry as Function
 
             if (function.name == "main" && function.args.size == 0) {
-                s.errors += Error.callingEntryPoint(location)
+                state.errors += Error.callingEntryPoint(location)
             }
 
             if (function.args.size > expr.size) {
                 type = Type.ERROR
-                s.errors += Error.argumentNumber(location, '-', name)
+                state.errors += Error.argumentNumber(location, '-', name)
                 return
             } else if (function.args.size < expr.size) {
                 type = Type.ERROR
-                s.errors += Error.argumentNumber(location, '+', name)
+                state.errors += Error.argumentNumber(location, '+', name)
                 return
             } else {
                 for (i in expr.indices) {
@@ -188,7 +193,7 @@ object Types : Phase() {
 
                     if (eType != Type.ERROR && (eType != aType)) {
                         type = Type.ERROR
-                        s.errors += Error.argument(location, eType, aType, name)
+                        state.errors += Error.argument(location, eType, aType, name)
                         return
                     }
                 }
@@ -197,77 +202,77 @@ object Types : Phase() {
             type = function.type
         } else {
             type = Type.ERROR
-            s.errors += Error.notFound(location, name, SymType.FUNC)
+            state.errors += Error.notFound(location, name, SymType.FUNC)
         }
     }
 
-    private fun Cast.types(s: State, scope: String) {
-        expr.types(s, scope)
+    private fun Cast.types(scope: String) {
+        expr.types(scope)
 
         if (!CastTable.check(expr.type, type)) {
-            s.errors += Error.cast(location, type, expr.type)
+            state.errors += Error.cast(location, type, expr.type)
             type = Type.ERROR
             return
         }
     }
 
-    private fun Graph.types(s: State, scope: String) {
+    private fun Graph.types(scope: String) {
         type = when (gtype) {
             GraphType.GRAPH -> Type.graph
             GraphType.DIGRAPH -> Type.digraph
         }
 
-        num.types(s, scope)
+        num.types(scope)
         if (num.type != Type.int) {
-            s.errors += Error.nonIntegerSize(location)
+            state.errors += Error.nonIntegerSize(location)
         }
 
         for (edge in edges) {
-            edge.source.types(s, scope)
-            edge.target.types(s, scope)
+            edge.source.types(scope)
+            edge.target.types(scope)
 
             if (edge.source.type != Type.int) {
-                s.errors += Error.nonIntegerNode(edge.location)
+                state.errors += Error.nonIntegerNode(edge.location)
             }
 
             if (edge.target.type != Type.int) {
-                s.errors += Error.nonIntegerNode(edge.location)
+                state.errors += Error.nonIntegerNode(edge.location)
             }
         }
     }
 
-    private fun Assignment.types(s: State, scope: String) {
-        lhs.types(s, scope)
-        rhs.types(s, scope)
+    private fun Assignment.types(scope: String) {
+        lhs.types(scope)
+        rhs.types(scope)
 
         if (lhs.type != Type.ERROR && rhs.type != Type.ERROR) {
             if (!lhs.assignable) {
-                s.errors += Error.nonAssignable(location)
+                state.errors += Error.nonAssignable(location)
                 return
             }
 
             if (lhs.type != rhs.type) {
-                s.errors += Error.badAssignment(location, lhs.type, rhs.type)
+                state.errors += Error.badAssignment(location, lhs.type, rhs.type)
                 return
             }
         }
     }
 
-    private fun VarDec.types(s: State, scope: String) {
-        val qry = s.symbolTable[name, scope, SymType.VAR]
+    private fun VarDec.types(scope: String) {
+        val qry = state.symbolTable[name, scope, SymType.VAR]
 
         if (qry == null) {
-            exp?.types(s, scope)
+            exp?.types(scope)
             val variable = Variable(name, exp?.type ?: type, scope, location)
 
             // Both expression and type are present, but they differ.
             if (exp != null && type != Type.ERROR &&
                     exp.type != type && exp.type != Type.ERROR) {
-                s.errors += Error.badAssignment(location, type, exp.type)
+                state.errors += Error.badAssignment(location, type, exp.type)
             }
             // No expression or type. Can't infer.
             else if (exp == null && type == Type.ERROR) {
-                s.errors += Error.badInference(location, name)
+                state.errors += Error.badInference(location, name)
             }
             /*
              * - Expression present but no type.
@@ -275,108 +280,108 @@ object Types : Phase() {
              */
             else if (exp != null) {
                 type = exp.type
-                s.symbolTable += variable
+                this@Types.state.symbolTable += variable
             } else {
                 // Only type, no expression
-                s.symbolTable += variable
+                this@Types.state.symbolTable += variable
             }
         } else {
-            s.errors += Error.redeclaration(location, qry.location, name, SymType.VAR)
+            state.errors += Error.redeclaration(location, qry.location, name, SymType.VAR)
         }
     }
 
-    private fun Return.types(s: State, funcDef: FuncDef, scope: String) {
+    private fun Return.types(funcDef: FuncDef, scope: String) {
         expr?.let {
-            it.types(s, scope)
+            it.types(scope)
 
             if (it.type != Type.ERROR && it.type != funcDef.type) {
-                s.errors += Error.badReturn(location, it.type, funcDef.type, funcDef.name)
+                state.errors += Error.badReturn(location, it.type, funcDef.type, funcDef.name)
             }
         }
     }
 
-    private fun If.types(s: State, funcDef: FuncDef, scope: String) {
-        cond.types(s, scope)
+    private fun If.types(funcDef: FuncDef, scope: String) {
+        cond.types(scope)
 
         if (cond.type != Type.ERROR && cond.type != Type.bool) {
-            s.errors += Error.nonBoolCondition(cond.location, cond.type)
+            state.errors += Error.nonBoolCondition(cond.location, cond.type)
         }
 
         this.scope = "$scope.if${nextID()}"
 
         for (stmt in stmts) {
-            stmt.types(s, funcDef, this.scope)
+            stmt.types(funcDef, this.scope)
         }
 
         for (elif in elifs) {
-            elif.types(s, funcDef, scope)
+            elif.types(funcDef, scope)
         }
 
-        elsec?.types(s, funcDef, scope)
+        elsec?.types(funcDef, scope)
     }
 
-    private fun Elif.types(s: State, funcDef: FuncDef, scope: String) {
-        cond.types(s, scope)
+    private fun Elif.types(funcDef: FuncDef, scope: String) {
+        cond.types(scope)
 
         if (cond.type != Type.ERROR && cond.type != Type.bool) {
-            s.errors += Error.nonBoolCondition(cond.location, cond.type)
+            state.errors += Error.nonBoolCondition(cond.location, cond.type)
         }
 
         this.scope = "$scope.elif${nextID()}"
 
         for (stmt in stmts) {
-            stmt.types(s, funcDef, this.scope)
+            stmt.types(funcDef, this.scope)
         }
     }
 
-    private fun Else.types(s: State, funcDef: FuncDef, scope: String) {
+    private fun Else.types(funcDef: FuncDef, scope: String) {
         this.scope = "$scope.else${nextID()}"
 
         for (stmt in stmts) {
-            stmt.types(s, funcDef, this.scope)
+            stmt.types(funcDef, this.scope)
         }
     }
 
-    private fun For.types(s: State, funcDef: FuncDef, scope: String) {
-        initial.types(s, scope)
-        cond.types(s, scope)
-        mod.types(s, scope)
+    private fun For.types(funcDef: FuncDef, scope: String) {
+        initial.types(scope)
+        cond.types(scope)
+        mod.types(scope)
 
         if (cond.type != Type.ERROR && cond.type != Type.bool) {
-            s.errors += Error.nonBoolCondition(cond.location, cond.type)
+            state.errors += Error.nonBoolCondition(cond.location, cond.type)
         }
 
         this.scope = "$scope.for${nextID()}"
 
         for (stmt in stmts) {
-            stmt.types(s, funcDef, this.scope)
+            stmt.types(funcDef, this.scope)
         }
     }
 
-    private fun While.types(s: State, funcDef: FuncDef, scope: String) {
-        cond.types(s, scope)
+    private fun While.types(funcDef: FuncDef, scope: String) {
+        cond.types(scope)
 
         if (cond.type != Type.ERROR && cond.type != Type.bool) {
-            s.errors += Error.nonBoolCondition(cond.location, cond.type)
+            state.errors += Error.nonBoolCondition(cond.location, cond.type)
         }
 
         this.scope = "$scope.while${nextID()}"
 
         for (stmt in stmts) {
-            stmt.types(s, funcDef, this.scope)
+            stmt.types(funcDef, this.scope)
         }
     }
 
-    private fun Print.types(s: State, scope: String) {
-        expr.types(s, scope)
+    private fun Print.types(scope: String) {
+        expr.types(scope)
     }
 
-    private fun Assertion.types(s: State, scope: String) {
-        expr.types(s, scope)
+    private fun Assertion.types(scope: String) {
+        expr.types(scope)
 
         if (expr.type != Type.ERROR) {
             if (expr.type != Type.bool) {
-                s.errors += Error.badAssertionType(expr.location, expr.type)
+                state.errors += Error.badAssertionType(expr.location, expr.type)
             }
         }
     }

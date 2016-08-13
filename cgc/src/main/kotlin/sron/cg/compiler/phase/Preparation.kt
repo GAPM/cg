@@ -20,17 +20,22 @@ import sron.cg.compiler.State
 import sron.cg.compiler.ast.*
 
 object Preparation : Phase() {
+    private lateinit var state: State
+
     private var varId = 0
 
-    override fun execute(s: State, init: Init) = init.prepare(s)
+    override fun execute(s: State, init: Init) {
+        state = s
+        init.prepare()
+    }
 
-    private fun Init.prepare(s: State) {
+    private fun Init.prepare() {
         for (fd in funcDef) {
-            fd.prepare(s)
+            fd.prepare()
         }
     }
 
-    private fun FuncDef.prepare(s: State) {
+    private fun FuncDef.prepare() {
         val map = mutableMapOf<String, Int>()
 
         for (arg in args) {
@@ -38,58 +43,58 @@ object Preparation : Phase() {
         }
 
         for (stmt in stmts) {
-            stmt.prepare(s, map)
+            stmt.prepare(map)
         }
 
-        s.varIndex[name] = map
+        state.varIndex[name] = map
         varId = 0
     }
 
-    private fun Stmt.prepare(s: State, map: MutableMap<String, Int>) {
+    private fun Stmt.prepare(map: MutableMap<String, Int>) {
         if (this is VarDec) {
             map[name] = varId++
         }
 
         when (this) {
-            is For -> this.prepare(s, map)
-            is While -> this.prepare(s, map)
-            is If -> this.prepare(s, map)
+            is For -> this.prepare(map)
+            is While -> this.prepare(map)
+            is If -> this.prepare(map)
         }
     }
 
-    private fun For.prepare(s: State, map: MutableMap<String, Int>) {
+    private fun For.prepare(map: MutableMap<String, Int>) {
         for (stmt in stmts) {
-            stmt.prepare(s, map)
+            stmt.prepare(map)
         }
     }
 
-    private fun While.prepare(s: State, map: MutableMap<String, Int>) {
+    private fun While.prepare(map: MutableMap<String, Int>) {
         for (stmt in stmts) {
-            stmt.prepare(s, map)
+            stmt.prepare(map)
         }
     }
 
-    private fun If.prepare(s: State, map: MutableMap<String, Int>) {
+    private fun If.prepare(map: MutableMap<String, Int>) {
         for (stmt in stmts) {
-            stmt.prepare(s, map)
+            stmt.prepare(map)
         }
 
         for (elif in elifs) {
-            elif.prepare(s, map)
+            elif.prepare(map)
         }
 
-        elsec?.prepare(s, map)
+        elsec?.prepare(map)
     }
 
-    private fun Elif.prepare(s: State, map: MutableMap<String, Int>) {
+    private fun Elif.prepare(map: MutableMap<String, Int>) {
         for (stmt in stmts) {
-            stmt.prepare(s, map)
+            stmt.prepare(map)
         }
     }
 
-    private fun Else.prepare(s: State, map: MutableMap<String, Int>) {
+    private fun Else.prepare(map: MutableMap<String, Int>) {
         for (stmt in stmts) {
-            stmt.prepare(s, map)
+            stmt.prepare(map)
         }
     }
 }
