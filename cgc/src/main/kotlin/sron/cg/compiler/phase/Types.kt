@@ -263,28 +263,27 @@ object Types : Phase() {
 
         if (qry == null) {
             exp?.types(scope)
-            val variable = Variable(name, exp?.type ?: type, scope, location)
 
-            // Both expression and type are present, but they differ.
-            if (exp != null && type != Type.ERROR &&
-                    exp.type != type && exp.type != Type.ERROR) {
-                state.errors += Error.badAssignment(location, type, exp.type)
-            }
-            // No expression or type. Can't infer.
-            else if (exp == null && type == Type.ERROR) {
+            val finalType = if (type == Type.ERROR && exp == null) {
                 state.errors += Error.badInference(location, name)
-            }
-            /*
-             * - Expression present but no type.
-             * - Both expression and type present.
-             */
-            else if (exp != null) {
-                type = exp.type
-                this@Types.state.symbolTable += variable
+                Type.ERROR
+            } else if (type == Type.ERROR && exp != null) {
+                exp.type
+            } else if (type != Type.ERROR && exp == null) {
+                type
+            } else if (type != Type.ERROR && exp != null && type != exp.type) {
+                state.errors += Error.badAssignment(location, type, exp.type)
+                Type.ERROR
             } else {
-                // Only type, no expression
-                this@Types.state.symbolTable += variable
+                type
             }
+
+            if (finalType != Type.ERROR) {
+                type = finalType
+                val variable = Variable(name, finalType, scope, location)
+                state.symbolTable += variable
+            }
+
         } else {
             state.errors += Error.redeclaration(location, qry.location, name, SymType.VAR)
         }
