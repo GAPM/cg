@@ -20,12 +20,9 @@ import sron.cg.compiler.Compiler.Companion.nextID
 import sron.cg.compiler.Error
 import sron.cg.compiler.State
 import sron.cg.compiler.ast.*
+import sron.cg.compiler.symbol.*
 import sron.cg.compiler.symbol.Function
-import sron.cg.compiler.symbol.SymType
-import sron.cg.compiler.symbol.Variable
-import sron.cg.compiler.type.CastTable
-import sron.cg.compiler.type.OpTable
-import sron.cg.compiler.type.Type
+import sron.cg.compiler.type.*
 
 object Types : Phase() {
     private lateinit var state: State
@@ -310,7 +307,7 @@ object Types : Phase() {
             state.errors += Error.nonBoolCondition(cond.location, cond.type)
         }
 
-        this.scope = "$scope.if${nextID()}"
+        this.scope = "$scope.if$nextID"
 
         for (stmt in stmts) {
             stmt.types(funcDef, this.scope)
@@ -330,7 +327,7 @@ object Types : Phase() {
             state.errors += Error.nonBoolCondition(cond.location, cond.type)
         }
 
-        this.scope = "$scope.elif${nextID()}"
+        this.scope = "$scope.elif$nextID"
 
         for (stmt in stmts) {
             stmt.types(funcDef, this.scope)
@@ -338,7 +335,7 @@ object Types : Phase() {
     }
 
     private fun Else.types(funcDef: FuncDef, scope: String) {
-        this.scope = "$scope.else${nextID()}"
+        this.scope = "$scope.else$nextID"
 
         for (stmt in stmts) {
             stmt.types(funcDef, this.scope)
@@ -354,7 +351,7 @@ object Types : Phase() {
             state.errors += Error.nonBoolCondition(cond.location, cond.type)
         }
 
-        this.scope = "$scope.for${nextID()}"
+        this.scope = "$scope.for$nextID"
 
         for (stmt in stmts) {
             stmt.types(funcDef, this.scope)
@@ -368,7 +365,7 @@ object Types : Phase() {
             state.errors += Error.nonBoolCondition(cond.location, cond.type)
         }
 
-        this.scope = "$scope.while${nextID()}"
+        this.scope = "$scope.while$nextID"
 
         for (stmt in stmts) {
             stmt.types(funcDef, this.scope)

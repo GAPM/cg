@@ -32,8 +32,9 @@ import kotlin.system.measureTimeMillis
 
 class Compiler(fileName: String, val parameters: Parameters) {
     companion object {
-        private var id = 0
-        fun nextID() = id++
+        private var _id = 0
+        val nextID: Int
+            get() = _id++
     }
 
     private val file = File(fileName)
