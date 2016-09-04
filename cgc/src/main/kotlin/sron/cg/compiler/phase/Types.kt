@@ -278,7 +278,11 @@ object Types : Phase() {
                 type
             }
 
-            if (finalType != Type.ERROR) {
+            if (finalType == Type.void) {
+                state.errors += Error.voidVar(location, name)
+            }
+
+            if (finalType != Type.ERROR && finalType != Type.void) {
                 type = finalType
                 val variable = Variable(name, finalType, scope, location)
                 state.symbolTable += variable
