@@ -18,17 +18,10 @@ package sron.cg.compiler
 
 import org.antlr.v4.runtime.ANTLRInputStream
 import org.antlr.v4.runtime.CommonTokenStream
-import org.antlr.v4.runtime.tree.ParseTree
-import org.antlr.v4.runtime.tree.ParseTreeWalker
-import sron.cg.compiler.ast.Init
-import sron.cg.compiler.exception.ErrorsInCodeException
 import sron.cg.compiler.exception.ParsingException
 import sron.cg.compiler.internal.CGLexer
 import sron.cg.compiler.internal.CGParserCustom
-import sron.cg.compiler.phase.*
-import sron.cg.compiler.util.Logger
 import java.io.File
-import kotlin.system.measureTimeMillis
 
 class Compiler(fileName: String, val parameters: Parameters) {
     companion object {
@@ -55,58 +48,14 @@ class Compiler(fileName: String, val parameters: Parameters) {
         }
     }
 
-    private fun buildAST(tree: ParseTree): Init {
-        val walker = ParseTreeWalker()
-        val astGenerator = ASTSimplifier()
-        walker.walk(astGenerator, tree)
-        return astGenerator.getInit()
-    }
-
-    private fun executePhase(phase: Phase, init: Init) {
-        val ms = measureTimeMillis {
-            phase.execute(state, init)
-        }
-
-        Logger.debug("${phase.javaClass.simpleName}: $ms ms")
-    }
-
     /**
      * Handles the compilation process.
      */
     fun compile() {
-        var start: Long
-
-        start = System.currentTimeMillis()
-        val tree = parser.init()
-        Logger.debug("Parse: ${System.currentTimeMillis() - start} ms")
+        val parseTree = parser.unit()
 
         if (parser.numberOfSyntaxErrors > 0) {
             throw ParsingException()
-        }
-
-        start = System.currentTimeMillis()
-        val ast = buildAST(tree)
-        Logger.debug("AST: ${System.currentTimeMillis() - start} ms")
-
-        executePhase(Globals, ast)
-        executePhase(Structure, ast)
-        executePhase(Types, ast)
-
-        if (parameters.justCheck) {
-            val msg = if (state.errors.size == 0) {
-                "No errors found."
-            } else {
-                "${state.errors.size} error(s) found."
-            }
-            Logger.info("Check done. $msg")
-        } else {
-            if (state.errors.size > 0) {
-                state.errors.forEach { Logger.error(it) }
-                throw ErrorsInCodeException()
-            }
-
-            executePhase(Preparation, ast)
-            executePhase(Generation, ast)
         }
     }
 }
