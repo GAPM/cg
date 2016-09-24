@@ -18,7 +18,7 @@ package sron.cg.compiler.internal
 
 import org.antlr.v4.runtime.CommonTokenStream
 
-class CGParserCustom(fileName: String, tokens: CommonTokenStream) : CGParser(tokens) {
+class CGParserExec(fileName: String, tokens: CommonTokenStream) : CGParser(tokens) {
     init {
         removeErrorListeners()
         addErrorListener(CGErrorListener(fileName))

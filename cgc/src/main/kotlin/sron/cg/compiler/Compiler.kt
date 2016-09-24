@@ -19,21 +19,14 @@ package sron.cg.compiler
 import org.antlr.v4.runtime.ANTLRInputStream
 import org.antlr.v4.runtime.CommonTokenStream
 import sron.cg.compiler.exception.ParsingException
-import sron.cg.compiler.internal.CGLexer
-import sron.cg.compiler.internal.CGParserCustom
+import sron.cg.compiler.internal.*
 import java.io.File
 
-class Compiler(fileName: String, val parameters: Parameters) {
-    companion object {
-        private var _id = 0
-        val nextID: Int
-            get() = _id++
-    }
-
+class Compiler(fileName: String, parameters: Parameters) {
     private val file = File(fileName)
     private val state = State(parameters)
 
-    lateinit private var parser: CGParserCustom
+    lateinit private var parser: CGParser
 
     init {
         if (parameters.output == "") {
@@ -44,7 +37,7 @@ class Compiler(fileName: String, val parameters: Parameters) {
             val input = ANTLRInputStream(it)
             val lexer = CGLexer(input)
             val tokens = CommonTokenStream(lexer)
-            parser = CGParserCustom(file.name, tokens)
+            parser = CGParserExec(file.name, tokens)
         }
     }
 
