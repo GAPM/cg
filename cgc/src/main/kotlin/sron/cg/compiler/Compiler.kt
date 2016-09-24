@@ -50,5 +50,7 @@ class Compiler(fileName: String, parameters: Parameters) {
         if (parser.numberOfSyntaxErrors > 0) {
             throw ParsingException()
         }
+
+        val ast = ASTfromParseTree(parseTree)
     }
 }
