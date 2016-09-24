@@ -16,7 +16,7 @@
 
 package sron.cg.compiler.symbol
 
-import sron.cg.compiler.type.Type
+import sron.cg.compiler.lang.Type
 
 /**
  * Represents a function in the symbol table
