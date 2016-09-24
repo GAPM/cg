@@ -16,23 +16,35 @@
 
 package sron.cg.compiler.ast
 
-import sron.cg.compiler.symbol.Location
-import sron.cg.compiler.type.Type
+import sron.cg.compiler.lang.Type
 
-abstract class ASTNode(val location: Location)
-
-class Arg(val name: String, val type: Type, location: Location) : ASTNode(location)
-
-class Edge(val source: Expr, val target: Expr, location: Location) : ASTNode(location)
-
-class FuncDef(val name: String, val type: Type, val args: List<Arg>,
-              val stmts: List<Stmt>, location: Location) : ASTNode(location) {
-    var scope: String = ""
+data class Point(val line: Int, val column: Int) {
+    override fun toString() = "$line:$column"
 }
 
-class GlExpr(val type: Type, val text: String, location: Location) : ASTNode(location)
+data class Location(val start: Point, val end: Point) {
+    override fun toString() = "$start - $end"
+}
 
-class GlVarDec(val name: String, val type: Type, val exp: GlExpr?,
-               location: Location) : ASTNode(location)
+abstract class Node(val location: Location) {
+    var parent: Node? = null
+}
 
-class Init(val glVarDec: List<GlVarDec>, val funcDef: List<FuncDef>) : ASTNode(Location(0))
+class Parameter(val id: String, val type: Type, location: Location) :
+        Node(location)
+
+class FuncDef(val id: String, val type: Type, val params: List<Parameter>,
+              val body: List<Stmt>, location: Location) : Node(location) {
+    init {
+        params.forEach { it.parent = this }
+        body.forEach { it.parent = this }
+    }
+}
+
+class Unit(val funcDef: List<FuncDef>, val varDec: List<VarDec>,
+           location: Location) : Node(location) {
+    init {
+        funcDef.forEach { it.parent = this }
+        varDec.forEach { it.parent = this }
+    }
+}

@@ -16,12 +16,10 @@
 
 package sron.cg.compiler.internal
 
-import org.antlr.v4.runtime.BaseErrorListener
-import org.antlr.v4.runtime.RecognitionException
-import org.antlr.v4.runtime.Recognizer
+import org.antlr.v4.runtime.*
 import sron.cg.compiler.util.Logger
 
-class CGErrorListener(val fileName: String) : BaseErrorListener() {
+class CGErrorListener(private val fileName: String) : BaseErrorListener() {
     override fun syntaxError(recognizer: Recognizer<*, *>, offendingSymbol: Any,
                              line: Int, charPositionInLine: Int, msg: String,
                              e: RecognitionException?) {

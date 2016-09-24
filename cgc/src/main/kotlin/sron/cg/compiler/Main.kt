@@ -16,10 +16,7 @@
 
 package sron.cg.compiler
 
-import org.apache.commons.cli.DefaultParser
-import org.apache.commons.cli.HelpFormatter
-import org.apache.commons.cli.Options
-import org.apache.commons.cli.UnrecognizedOptionException
+import org.apache.commons.cli.*
 import sron.cg.compiler.exception.CompilerException
 import sron.cg.compiler.util.Logger
 import java.io.IOException

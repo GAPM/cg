@@ -16,67 +16,76 @@
 
 package sron.cg.compiler.ast
 
-import sron.cg.compiler.symbol.Location
-import sron.cg.compiler.symbol.Variable
-import sron.cg.compiler.type.Type
+import sron.cg.compiler.lang.Operator
+import sron.cg.compiler.lang.Type
 
 enum class GraphType {
     GRAPH,
     DIGRAPH
 }
 
-enum class Operator {
-    ADD, SUB, MUL, DIV, MOD,
-
-    AND, OR,
-
-    NOT, MINUS, PLUS,
-
-    LESS, LESS_EQUAL, GREATER, GREATER_EQUAL,
-
-    EQUAL,
-    NOT_EQUAL;
-
-    fun sign(): String = when (this) {
-        Operator.ADD -> "+"
-        Operator.SUB -> "-"
-        Operator.MUL -> "*"
-        Operator.DIV -> "/"
-        Operator.MOD -> "%"
-        Operator.AND -> "&&"
-        Operator.OR -> "||"
-        Operator.NOT -> "!"
-        Operator.MINUS -> "-"
-        Operator.PLUS -> "+"
-        Operator.LESS -> "<"
-        Operator.LESS_EQUAL -> "<="
-        Operator.GREATER -> ">"
-        Operator.GREATER_EQUAL -> ">="
-        Operator.EQUAL -> "=="
-        Operator.NOT_EQUAL -> "!="
-    }
-}
-
-abstract class Expr(location: Location) : Stmt(location) {
-    open var type = Type.ERROR
-    open var assignable = false
-    open var referencedVar: Variable? = null
-}
-
-class BinaryExpr(val operator: Operator, val lhs: Expr, val rhs: Expr,
-                 location: Location) : Expr(location)
-
-class UnaryExpr(val operator: Operator, val expr: Expr, location: Location) : Expr(location)
+abstract class Expr(location: Location) : Stmt(location)
 
 abstract class Atom(location: Location) : Expr(location)
 
-class Cast(override var type: Type, val expr: Expr, location: Location) : Atom(location)
+class Literal(val text: String, val type: Type, location: Location) : Atom(location)
 
-class FunctionCall(val name: String, val expr: List<Expr>, location: Location) : Atom(location)
+class VarName(val id: String, location: Location) : Atom(location)
 
-class Graph(val gtype: GraphType, val num: Expr, val edges: List<Edge>,
-            location: Location) : Atom(location)
+/**
+ * Class used to store edges as seen in the source code. Edge is not a
+ * CG type, but might be in a future.
+ */
+class Edge(val source: Expr, val target: Expr)
 
-class Identifier(val name: String, location: Location) : Atom(location)
+class GraphLit(val type: GraphType, val size: Expr, val edges: List<Edge>, location: Location) : Atom(location) {
+    init {
+        size.parent = this
+        for (edge in edges) {
+            edge.source.parent = this
+            edge.target.parent = this
+        }
+    }
+}
 
-class Literal(override var type: Type, val text: String, location: Location) : Atom(location)
+class FunctionCall(val id: String, args: List<Expr>, location: Location) : Atom(location) {
+    init {
+        for (arg in args) {
+            arg.parent = this
+        }
+    }
+}
+
+class Cast(val type: Type, val expr: Expr, location: Location) : Atom(location) {
+    init {
+        expr.parent = this
+    }
+}
+
+class ArrayLit(val elems: List<Expr>, location: Location) : Atom(location) {
+    init {
+        for (elem in elems) {
+            elem.parent = this
+        }
+    }
+}
+
+class ArrayAccess(val array: Expr, val subscript: Expr, location: Location) : Atom(location) {
+    init {
+        array.parent = this
+        subscript.parent = this
+    }
+}
+
+class UnaryExpr(val op: Operator, val expr: Expr, location: Location) : Expr(location) {
+    init {
+        expr.parent = this
+    }
+}
+
+class BinaryExpr(val op: Operator, val lhs: Expr, val rhs: Expr, location: Location) : Expr(location) {
+    init {
+        lhs.parent = this
+        rhs.parent = this
+    }
+}

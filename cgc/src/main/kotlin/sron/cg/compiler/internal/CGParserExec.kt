@@ -14,16 +14,13 @@
  * limitations under the License.
  */
 
-package sron.cg.compiler.type
+package sron.cg.compiler.internal
 
-object CastTable {
+import org.antlr.v4.runtime.CommonTokenStream
 
-    private val tab = mapOf(
-            Type.int to listOf(Type.int, Type.float, Type.string),
-            Type.float to listOf(Type.int, Type.float, Type.string),
-            Type.bool to listOf(Type.string),
-            Type.string to listOf(Type.int, Type.float, Type.bool)
-    )
-
-    fun check(type1: Type, type2: Type) = tab[type1]?.contains(type2) ?: false
+class CGParserExec(fileName: String, tokens: CommonTokenStream) : CGParser(tokens) {
+    init {
+        removeErrorListeners()
+        addErrorListener(CGErrorListener(fileName))
+    }
 }

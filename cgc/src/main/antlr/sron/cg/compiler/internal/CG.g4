@@ -16,15 +16,16 @@
 
 grammar CG;
 
+/* Naming purpose only */
 ADD : '+' ;
 ADD_ASSIGN : '+=' ;
 AND : '&&' ;
-AND_ASSIGN : '&&=' ;
 ASSERT : 'assert' ;
+BANG : '!' ;
 BOOL : 'bool' ;
 BREAK : 'break' ;
+CHAR : 'char' ;
 COMMA : ',' ;
-COMMENT : '//' (.)*? '\n' -> skip;
 CONTINUE : 'continue' ;
 DIGRAPH : 'digraph' ;
 DIV : '/' ;
@@ -46,15 +47,12 @@ LBRACK : '[' ;
 LE : '<=' ;
 LPAREN : '(' ;
 LT : '<' ;
-ML_COMMENT : '/*' (.)*? '*/' -> skip ;
 MOD : '%' ;
 MOD_ASSIGN : '%=' ;
 MUL : '*' ;
 MUL_ASSIGN : '*=' ;
-NOT : '!' ;
 NOT_EQUAL : '!=' ;
 OR : '||' ;
-OR_ASSIGN : '||=' ;
 PRINT : 'print' ;
 RBRACE : '}' ;
 RBRACK : ']' ;
@@ -67,81 +65,69 @@ SUB_ASSIGN : '-=' ;
 VAR : 'var' ;
 VOID : 'void' ;
 WHILE : 'while' ;
-WS: [ \t\r\n] -> skip;
 
-BoolLit: 'true' | 'false';
-
-fragment Letter: [a-zA-Z_];
-fragment DecimalDigit: [0-9];
-
-Identifier: Letter (Letter | DecimalDigit)*;
-
-fragment DecimalLit: DecimalDigit+;
-IntLit: DecimalLit;
-
-fragment Exponent: [eE] [+-]? DecimalLit;
-FloatLit: DecimalLit '.' DecimalLit Exponent?
-                 | DecimalLit Exponent
-                 | '.' DecimalLit Exponent?
-                 ;
-
-fragment Escape: '\\' [tbnr"'\\];
-fragment Char: ~[\\'"];
-
-StringLit: '"' (Escape|Char)*? '"';
-
-type: 'int'
-    | 'float'
-    | 'string'
-    | 'void'
-    | 'bool'
-    | 'graph'
-    | 'digraph'
+primitiveType: 'int'
+             | 'float'
+             | 'bool'
+             | 'char'
+             | 'string'
+             | 'graph'
+             | 'digraph'
+             | 'void'
+             ;
+type: primitiveType
+    | '[' type ']'
     ;
 
 edge: '[' source=expr ',' target=expr ']';
 graphLit: gtype=('graph'|'digraph') '[' num=expr ']' ('{' (edge (',' edge)*)? '}')?;
 
-arg: Identifier type;
-argList: (arg (',' arg)*)?;
+param: IDENTIFIER type;
+paramList: (param (',' param)*)?;
 
-atom: IntLit            #Integer
-    | FloatLit          #Float
-    | BoolLit           #Boolean
-    | StringLit         #String
-    | Identifier        #VarName
+lit: INT_LIT    #IntLit
+   | FLOAT_LIT  #FloatLit
+   | BOOL_LIT   #BoolLit
+   | CHAR_LIT   #CharLit
+   | STRING_LIT #StringLit
+   ;
+
+atom: lit               #Literal
+    | IDENTIFIER        #VarName
     | graphLit          #Graph
     | funcCall          #FunctionCall
     | type '(' expr ')' #Cast
+    | arrayLit          #Array
     ;
 
 expr: atom                                #Atomic
+    | array=expr '[' subscript=expr ']'   #ArrayAccess
     | <assoc=right> op=('-'|'+'|'!') expr #Unary
     | '(' expr ')'                        #Assoc
     | expr op=('*'|'/'|'%') expr          #MulDivMod
     | expr op=('+'|'-') expr              #AddSub
     | expr op=('>'|'<'|'>='|'<=') expr    #Comparison
     | expr op=('=='|'!=') expr            #Equality
-    | expr '&&' expr                      #LogicAnd
-    | expr '||' expr                      #LogicOr
+    | expr op='&&' expr                   #LogicAnd
+    | expr op='||' expr                   #LogicOr
     ;
+
 exprList: (expr (',' expr)*)? ;
+arrayLit: '{' exprList '}';
 
-glExpr: IntLit | FloatLit | BoolLit | StringLit ;
-glVarDec: 'var' Identifier type ('=' glExpr)? ;
-varDec: 'var' Identifier type? ('=' expr)? ;
+varDec: 'var' IDENTIFIER type? ('=' expr)? ;
 
-funcDef: 'func' Identifier '(' argList ')' type? '{' stmt* '}' ;
+funcDef: 'func' IDENTIFIER '(' paramList ')' type? '{' stmt* '}' ;
 
-funcCall: Identifier '(' exprList ')' ;
+funcCall: IDENTIFIER '(' exprList ')' ;
 
-assignment: expr op=('='|'+='|'-='|'*='|'/='|'%='|'&&='|'||=') expr ;
+assignmentStmt: lhs=expr op=('='|'+='|'-='|'*='|'/='|'%=') rhs=expr ;
 
 ifc: 'if' '(' expr ')' '{' stmt* '}' elifc* elsec? ;
 elifc: 'elif' '(' expr ')' '{' stmt* '}' ;
 elsec: 'else' '{' stmt* '}' ;
 
-forc: 'for' '(' initial=assignment ';' cond=expr ';' mod=assignment ')' '{' stmt* '}' ;
+forc: 'for' '(' initial=assignmentStmt ';' cond=expr ';' mod=assignmentStmt ')' '{' stmt* '}' ;
 whilec: 'while' '(' expr ')' '{' stmt* '}' ;
 
 controlStmt: wr=('continue'|'break') ;
@@ -157,9 +143,9 @@ compoundStmt: ifc
             | whilec
             ;
 
-simpleStmt: varDec
-          | assignment
-          | expr
+simpleStmt: expr
+          | assignmentStmt
+          | varDec
           | returnStmt
           | controlStmt
           | printStmt
@@ -170,4 +156,28 @@ stmt: simpleStmt ';'
     | compoundStmt
     ;
 
-init: (funcDef | glVarDec ';')+;
+unit: (funcDef | varDec ';')+;
+
+/* Non-visible */
+WHITESPACE: [ \t\r\n] -> skip;
+COMMENT : '//' (.)*? '\n' -> skip;
+ML_COMMENT : '/*' (.)*? '*/' -> skip ;
+
+/* Literals */
+BOOL_LIT: 'true' | 'false';
+
+fragment LETTER: [a-zA-Z_];
+fragment DIGIT: [0-9];
+
+IDENTIFIER: LETTER (LETTER | DIGIT)*;
+
+INT_LIT: DIGIT+;
+
+fragment EXPONENT: [eE] [+-]? INT_LIT;
+FLOAT_LIT: INT_LIT? '.' INT_LIT EXPONENT?;
+
+fragment ESC: '\\' [tbnr"'\\];
+fragment CHR: ~[\\'"];
+
+CHAR_LIT: '\'' (ESC|CHR) '\'';
+STRING_LIT: '"' (ESC|CHR)*? '"';
