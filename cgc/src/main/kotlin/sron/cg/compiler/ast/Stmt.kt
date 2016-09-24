@@ -16,50 +16,119 @@
 
 package sron.cg.compiler.ast
 
-import sron.cg.compiler.symbol.Location
-import sron.cg.compiler.type.Type
+import org.antlr.v4.runtime.Token
+import sron.cg.compiler.internal.CGLexer
+import sron.cg.compiler.lang.Type
 
 enum class ControlType {
     CONTINUE,
-    BREAK
-}
+    BREAK;
 
-abstract class Stmt(location: Location) : ASTNode(location) {
-    var returns = false
-    var scope = ""
-}
+    companion object {
+        fun fromToken(tok: Token): ControlType = when (tok.type) {
+            CGLexer.CONTINUE -> CONTINUE
+            CGLexer.BREAK -> BREAK
 
-class Assertion(val expr: Expr, location: Location) : Stmt(location)
-
-class Assignment(val lhs: Expr, val rhs: Expr, location: Location) : Stmt(location)
-
-class Control(val type: ControlType, location: Location) : Stmt(location)
-
-class Elif(val cond: Expr, val stmts: List<Stmt>, location: Location) : ASTNode(location) {
-    var returns = false
-    var scope = ""
-}
-
-class Else(val stmts: List<Stmt>, location: Location) : ASTNode(location) {
-    var returns = false
-    var scope = ""
-}
-
-class For(val initial: Assignment, val cond: Expr, val mod: Assignment,
-          val stmts: List<Stmt>, location: Location) : Stmt(location)
-
-class If(val cond: Expr, val stmts: List<Stmt>, val elifs: List<Elif>,
-         val elsec: Else?, location: Location) : Stmt(location)
-
-class Print(val expr: Expr, location: Location) : Stmt(location)
-
-class Return(val expr: Expr?, location: Location) : Stmt(location) {
-    init {
-        returns = true
+            else -> throw IllegalStateException()
+        }
     }
 }
 
-class VarDec(val name: String, var type: Type, val exp: Expr?,
-             location: Location) : Stmt(location)
+abstract class Stmt(location: Location) : Node(location)
 
-class While(val cond: Expr, val stmts: List<Stmt>, location: Location) : Stmt(location)
+class VarDec(val id: String, val type: Type, val expr: Expr?,
+             location: Location) : Stmt(location) {
+    init {
+        expr?.parent = this
+    }
+}
+
+class Assignment(val lhs: Expr, val rhs: Expr, location: Location) :
+        Stmt(location) {
+    init {
+        lhs.parent = this
+        rhs.parent = this
+    }
+}
+
+class Return(val expr: Expr, location: Location) : Stmt(location) {
+    init {
+        expr.parent = this
+    }
+}
+
+class Control(val type: ControlType, location: Location) : Stmt(location)
+
+class Print(val expr: Expr, location: Location) : Stmt(location) {
+    init {
+        expr.parent = this
+    }
+}
+
+class Assert(val expr: Expr, location: Location) : Stmt(location) {
+    init {
+        expr.parent = this
+    }
+}
+
+class IfBlock(val ifc: If, val elif: List<Elif>, val elsec: Else,
+              location: Location) : Stmt(location) {
+    init {
+        ifc.parent = this
+        for (ei in elif) {
+            ei.parent = this
+        }
+        elsec.parent = this
+    }
+}
+
+class If(val expr: Expr, val body: List<Stmt>, location: Location) :
+        Stmt(location) {
+    init {
+        expr.parent = this
+        for (stmt in body) {
+            stmt.parent = this
+        }
+    }
+}
+
+class Elif(val expr: Expr, val body: List<Stmt>, location: Location) :
+        Stmt(location) {
+    init {
+        expr.parent = this
+        for (stmt in body) {
+            stmt.parent = this
+        }
+    }
+}
+
+class Else(val body: List<Stmt>, location: Location) : Stmt(location) {
+    init {
+        for (stmt in body) {
+            stmt.parent = this
+        }
+    }
+}
+
+class For(val initial: Assignment, val condition: Expr,
+          val modifier: Assignment, val body: List<Stmt>, location: Location) :
+        Stmt(location) {
+    init {
+        initial.parent = this
+        condition.parent = this
+        modifier.parent = this
+        for (stmt in body) {
+            stmt.parent = this
+        }
+    }
+}
+
+class While(val condition: Expr, val body: List<Stmt>, location: Location) :
+        Stmt(location) {
+    init {
+        condition.parent = this
+        for (stmt in body) {
+            stmt.parent = this
+        }
+    }
+}
