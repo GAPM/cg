@@ -27,11 +27,16 @@ class SymbolTable : LinkedList<Symbol>() {
      * @param symType  the type to be matched
      * @return a symbol with matching name, scope and type if its found
      */
-    operator fun get(name: String, scope: String, symType: SymType): Symbol? {
-        return filter { it.name == name }
-                .filter { scope.startsWith(it.scope) || scope == "" }
-                .filter { it.symType == symType }
-                .firstOrNull()
+    operator fun get(id: String, scope: Scope?, symType: SymType): Symbol? {
+        val tmp = filter { symType == it.symType }
+                .filter { id == it.id }
+
+        if (scope != null) {
+            return tmp.filter { it.scope.isPrefix(it.scope) }
+                    .maxBy { it.scope.size }
+        } else {
+            return tmp.firstOrNull()
+        }
     }
 
     /**
@@ -41,5 +46,5 @@ class SymbolTable : LinkedList<Symbol>() {
      * @param symType  the type to be matched
      * @return a symbol with matching name, scope and type if its found
      */
-    operator fun get(name: String, symType: SymType) = this[name, "", symType]
+    operator fun get(name: String, symType: SymType) = this[name, null, symType]
 }

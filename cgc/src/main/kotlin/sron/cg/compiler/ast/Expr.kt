@@ -18,6 +18,7 @@ package sron.cg.compiler.ast
 
 import sron.cg.compiler.lang.Operator
 import sron.cg.compiler.lang.Type
+import sron.cg.compiler.symbol.Scope
 
 enum class GraphType {
     GRAPH,
@@ -28,9 +29,20 @@ abstract class Expr(location: Location) : Stmt(location)
 
 abstract class Atom(location: Location) : Expr(location)
 
-class Literal(val text: String, val type: Type, location: Location) : Atom(location)
+class Literal(val text: String, val type: Type, location: Location) :
+        Atom(location) {
 
-class VarName(val id: String, location: Location) : Atom(location)
+    override val scope by lazy {
+        Scope(parent.scope, null)
+    }
+}
+
+class VarName(val id: String, location: Location) : Atom(location) {
+
+    override val scope by lazy {
+        Scope(parent.scope, null)
+    }
+}
 
 /**
  * Class used to store edges as seen in the source code. Edge is not a
@@ -38,7 +50,13 @@ class VarName(val id: String, location: Location) : Atom(location)
  */
 class Edge(val source: Expr, val target: Expr)
 
-class GraphLit(val type: GraphType, val size: Expr, val edges: List<Edge>, location: Location) : Atom(location) {
+class GraphLit(val type: GraphType, val size: Expr, val edges: List<Edge>,
+               location: Location) : Atom(location) {
+
+    override val scope by lazy {
+        Scope(parent.scope, null)
+    }
+
     init {
         size.parent = this
         for (edge in edges) {
@@ -48,7 +66,13 @@ class GraphLit(val type: GraphType, val size: Expr, val edges: List<Edge>, locat
     }
 }
 
-class FunctionCall(val id: String, args: List<Expr>, location: Location) : Atom(location) {
+class FunctionCall(val id: String, args: List<Expr>, location: Location) :
+        Atom(location) {
+
+    override val scope by lazy {
+        Scope(parent.scope, null)
+    }
+
     init {
         for (arg in args) {
             arg.parent = this
@@ -56,13 +80,24 @@ class FunctionCall(val id: String, args: List<Expr>, location: Location) : Atom(
     }
 }
 
-class Cast(val type: Type, val expr: Expr, location: Location) : Atom(location) {
+class Cast(val type: Type, val expr: Expr, location: Location) :
+        Atom(location) {
+
+    override val scope by lazy {
+        Scope(parent.scope, null)
+    }
+
     init {
         expr.parent = this
     }
 }
 
 class ArrayLit(val elems: List<Expr>, location: Location) : Atom(location) {
+
+    override val scope by lazy {
+        Scope(parent.scope, null)
+    }
+
     init {
         for (elem in elems) {
             elem.parent = this
@@ -70,20 +105,38 @@ class ArrayLit(val elems: List<Expr>, location: Location) : Atom(location) {
     }
 }
 
-class ArrayAccess(val array: Expr, val subscript: Expr, location: Location) : Atom(location) {
+class ArrayAccess(val array: Expr, val subscript: Expr, location: Location) :
+        Atom(location) {
+
+    override val scope by lazy {
+        Scope(parent.scope, null)
+    }
+
     init {
         array.parent = this
         subscript.parent = this
     }
 }
 
-class UnaryExpr(val op: Operator, val expr: Expr, location: Location) : Expr(location) {
+class UnaryExpr(val op: Operator, val expr: Expr, location: Location) :
+        Expr(location) {
+
+    override val scope by lazy {
+        Scope(parent.scope, null)
+    }
+
     init {
         expr.parent = this
     }
 }
 
-class BinaryExpr(val op: Operator, val lhs: Expr, val rhs: Expr, location: Location) : Expr(location) {
+class BinaryExpr(val op: Operator, val lhs: Expr, val rhs: Expr,
+                 location: Location) : Expr(location) {
+
+    override val scope by lazy {
+        Scope(parent.scope, null)
+    }
+
     init {
         lhs.parent = this
         rhs.parent = this

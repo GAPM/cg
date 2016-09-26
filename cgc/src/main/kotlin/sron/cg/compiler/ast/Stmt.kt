@@ -19,6 +19,7 @@ package sron.cg.compiler.ast
 import org.antlr.v4.runtime.Token
 import sron.cg.compiler.internal.CGLexer
 import sron.cg.compiler.lang.Type
+import sron.cg.compiler.symbol.Scope
 
 enum class ControlType {
     CONTINUE,
@@ -38,6 +39,11 @@ abstract class Stmt(location: Location) : Node(location)
 
 class VarDec(val id: String, val type: Type, val expr: Expr?,
              location: Location) : Stmt(location) {
+
+    override val scope by lazy {
+        Scope(parent.scope, null)
+    }
+
     init {
         expr?.parent = this
     }
@@ -45,6 +51,11 @@ class VarDec(val id: String, val type: Type, val expr: Expr?,
 
 class Assignment(val lhs: Expr, val rhs: Expr, location: Location) :
         Stmt(location) {
+
+    override val scope by lazy {
+        Scope(parent.scope, null)
+    }
+
     init {
         lhs.parent = this
         rhs.parent = this
@@ -52,20 +63,40 @@ class Assignment(val lhs: Expr, val rhs: Expr, location: Location) :
 }
 
 class Return(val expr: Expr, location: Location) : Stmt(location) {
+
+    override val scope by lazy {
+        Scope(parent.scope, null)
+    }
+
     init {
         expr.parent = this
     }
 }
 
-class Control(val type: ControlType, location: Location) : Stmt(location)
+class Control(val type: ControlType, location: Location) : Stmt(location) {
+
+    override val scope by lazy {
+        Scope(parent.scope, null)
+    }
+}
 
 class Print(val expr: Expr, location: Location) : Stmt(location) {
+
+    override val scope by lazy {
+        Scope(parent.scope, null)
+    }
+
     init {
         expr.parent = this
     }
 }
 
 class Assert(val expr: Expr, location: Location) : Stmt(location) {
+
+    override val scope by lazy {
+        Scope(parent.scope, null)
+    }
+
     init {
         expr.parent = this
     }
@@ -73,6 +104,11 @@ class Assert(val expr: Expr, location: Location) : Stmt(location) {
 
 class IfBlock(val ifc: If, val elif: List<Elif>, val elsec: Else,
               location: Location) : Stmt(location) {
+
+    override val scope by lazy {
+        Scope(parent.scope, null)
+    }
+
     init {
         ifc.parent = this
         for (ei in elif) {
@@ -84,6 +120,11 @@ class IfBlock(val ifc: If, val elif: List<Elif>, val elsec: Else,
 
 class If(val expr: Expr, val body: List<Stmt>, location: Location) :
         Stmt(location) {
+
+    override val scope by lazy {
+        Scope(parent.scope, this.toString())
+    }
+
     init {
         expr.parent = this
         for (stmt in body) {
@@ -94,6 +135,11 @@ class If(val expr: Expr, val body: List<Stmt>, location: Location) :
 
 class Elif(val expr: Expr, val body: List<Stmt>, location: Location) :
         Stmt(location) {
+
+    override val scope by lazy {
+        Scope(parent.scope, this.toString())
+    }
+
     init {
         expr.parent = this
         for (stmt in body) {
@@ -103,6 +149,11 @@ class Elif(val expr: Expr, val body: List<Stmt>, location: Location) :
 }
 
 class Else(val body: List<Stmt>, location: Location) : Stmt(location) {
+
+    override val scope by lazy {
+        Scope(parent.scope, this.toString())
+    }
+
     init {
         for (stmt in body) {
             stmt.parent = this
@@ -113,6 +164,11 @@ class Else(val body: List<Stmt>, location: Location) : Stmt(location) {
 class For(val initial: Assignment, val condition: Expr,
           val modifier: Assignment, val body: List<Stmt>, location: Location) :
         Stmt(location) {
+
+    override val scope by lazy {
+        Scope(parent.scope, this.toString())
+    }
+
     init {
         initial.parent = this
         condition.parent = this
@@ -125,6 +181,11 @@ class For(val initial: Assignment, val condition: Expr,
 
 class While(val condition: Expr, val body: List<Stmt>, location: Location) :
         Stmt(location) {
+
+    override val scope by lazy {
+        Scope(parent.scope, this.toString())
+    }
+
     init {
         condition.parent = this
         for (stmt in body) {

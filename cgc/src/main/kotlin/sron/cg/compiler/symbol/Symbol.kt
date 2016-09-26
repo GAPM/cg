@@ -16,10 +16,42 @@
 
 package sron.cg.compiler.symbol
 
+import sron.cg.compiler.lang.Type
+
+/**
+ * Contains all types a symbol can be
+ */
+enum class SymType {
+    VAR,
+    FUNC
+}
+
 /**
  * Abstract class of all the symbols in the symbol table
  */
-abstract class Symbol(val name: String, val scope: String,
-                      val location: Location) {
-    abstract val symType: SymType
+abstract class Symbol(val id: String, val symType: SymType, val scope: Scope)
+
+/**
+ * Represents a variable in the symbol table
+ */
+class Variable(id: String, val type: Type, scope: Scope) :
+        Symbol(id, SymType.VAR, scope)
+
+/**
+ * Represents a function in the symbol table
+ */
+class Function(id: String, val type: Type, scope: Scope,
+               val params: List<Variable>) : Symbol(id, SymType.FUNC, scope) {
+
+    /**
+     * Retrieves the JVM signature for the function
+     *
+     * @return The signature as a String
+     */
+    fun signatureString(): String {
+        val sig = params.map {
+            it.type.descriptor()
+        }.joinToString(separator = "")
+        return "($sig)${type.descriptor()}"
+    }
 }

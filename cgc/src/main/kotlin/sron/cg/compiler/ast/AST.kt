@@ -17,6 +17,7 @@
 package sron.cg.compiler.ast
 
 import sron.cg.compiler.lang.Type
+import sron.cg.compiler.symbol.Scope
 
 data class Point(val line: Int, val column: Int) {
     override fun toString() = "$line:$column"
@@ -27,14 +28,29 @@ data class Location(val start: Point, val end: Point) {
 }
 
 abstract class Node(val location: Location) {
-    var parent: Node? = null
+    var parent: Node = VoidNode
+    abstract val scope: Scope
+}
+
+object VoidNode : Node(Location(Point(0, 0), Point(0, 0))) {
+    override val scope = Scope(null, null)
 }
 
 class Parameter(val id: String, val type: Type, location: Location) :
-        Node(location)
+        Node(location) {
+
+    override val scope by lazy {
+        Scope(parent.scope, null)
+    }
+}
 
 class FuncDef(val id: String, val type: Type, val params: List<Parameter>,
               val body: List<Stmt>, location: Location) : Node(location) {
+
+    override val scope by lazy {
+        Scope(parent.scope, this.toString())
+    }
+
     init {
         params.forEach { it.parent = this }
         body.forEach { it.parent = this }
@@ -43,6 +59,11 @@ class FuncDef(val id: String, val type: Type, val params: List<Parameter>,
 
 class Unit(val funcDef: List<FuncDef>, val varDec: List<VarDec>,
            location: Location) : Node(location) {
+
+    override val scope by lazy {
+        Scope(null, this.toString())
+    }
+
     init {
         funcDef.forEach { it.parent = this }
         varDec.forEach { it.parent = this }

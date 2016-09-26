@@ -16,12 +16,25 @@
 
 package sron.cg.compiler.symbol
 
-import sron.cg.compiler.lang.Type
+import java.util.*
 
-/**
- * Represents a variable in the symbol table
- */
-class Variable(name: String, val type: Type, scope: String,
-               location: Location) : Symbol(name, scope, location) {
-    override val symType: SymType = SymType.VAR
+class Scope(parent: Scope? = null, own: String? = null) : ArrayList<String>() {
+    init {
+        parent?.forEach { this.add(it) }
+        own?.let { this.add(it) }
+    }
+
+    fun isPrefix(other: Scope): Boolean {
+        if (size <= other.size) {
+            for (i in indices) {
+                if (this[i] != other[i]) {
+                    return false
+                }
+            }
+
+            return true
+        }
+
+        return false
+    }
 }
