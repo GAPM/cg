@@ -20,7 +20,7 @@ import sron.cg.compiler.symbol.SymbolTable
 import java.util.*
 
 class State(val parameters: Parameters) {
-    val errors = ArrayList<String>()
+    val errors = ArrayList<Error>()
     val symbolTable = SymbolTable()
     val varIndex = mutableMapOf<String, MutableMap<String, Int>>()
 }
