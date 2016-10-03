@@ -16,6 +16,7 @@
 
 package sron.cg.compiler.symbol
 
+import sron.cg.compiler.ast.Location
 import sron.cg.compiler.lang.Type
 
 /**
@@ -29,18 +30,21 @@ enum class SymType {
 /**
  * Abstract class of all the symbols in the symbol table
  */
-abstract class Symbol(val id: String, val symType: SymType, val scope: Scope)
+abstract class Symbol(val id: String, val symType: SymType, val scope: Scope, val location: Location)
 
 /**
  * Represents a variable in the symbol table
  */
-class Variable(id: String, val type: Type, scope: Scope) :
-        Symbol(id, SymType.VAR, scope)
+class Variable(id: String, val type: Type, scope: Scope, location: Location) :
+        Symbol(id, SymType.VAR, scope, location)
 
 /**
  * Represents a function in the symbol table
  */
-class Function(id: String, val type: Type, scope: Scope,
-               val params: List<Variable>) : Symbol(id, SymType.FUNC, scope) {
+class Function(id: String, val type: Type, val params: List<Variable>,
+               scope: Scope, location: Location) :
+        Symbol(id, SymType.FUNC, scope, location) {
+    val signature by lazy {
+        Signature(params.map { it.type }, type)
     }
 }
