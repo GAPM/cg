@@ -24,7 +24,7 @@ import java.io.File
 
 class Compiler(fileName: String, parameters: Parameters) {
     private val file = File(fileName)
-    private val state = State(parameters)
+    private val state = State(fileName, parameters)
 
     lateinit private var parser: CGParser
 
