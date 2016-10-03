@@ -23,11 +23,11 @@ object Logger {
         debug = true
     }
 
-    fun info(msg: String) = println(msg)
+    fun info(msg: String) = System.out.println(msg)
 
     fun debug(msg: String) {
         if (debug) {
-            println("DEBUG: $msg")
+            info("DEBUG: $msg")
         }
     }
 
