@@ -18,6 +18,7 @@ package sron.cg.compiler.ast
 
 import sron.cg.compiler.lang.Type
 import sron.cg.compiler.symbol.Scope
+import sron.cg.compiler.symbol.Signature
 
 data class Point(val line: Int, val column: Int) {
     override fun toString() = "$line:$column"
@@ -50,6 +51,8 @@ class FuncDef(val id: String, val type: Type, val params: List<Parameter>,
     override val scope by lazy {
         Scope(parent.scope, this.toString())
     }
+
+    val signature = Signature(params.map { it.type }, type)
 
     init {
         params.forEach { it.parent = this }
