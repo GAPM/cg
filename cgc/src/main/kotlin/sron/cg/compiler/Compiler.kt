@@ -18,8 +18,11 @@ package sron.cg.compiler
 
 import org.antlr.v4.runtime.ANTLRInputStream
 import org.antlr.v4.runtime.CommonTokenStream
+import sron.cg.compiler.exception.ErrorsInCodeException
 import sron.cg.compiler.exception.ParsingException
 import sron.cg.compiler.internal.*
+import sron.cg.compiler.pass.Globals
+import sron.cg.compiler.util.Logger
 import java.io.File
 
 class Compiler(fileName: String, parameters: Parameters) {
@@ -52,5 +55,16 @@ class Compiler(fileName: String, parameters: Parameters) {
         }
 
         val ast = ASTfromParseTree(parseTree)
+
+        // Verifying phase
+        Globals(state).exec(ast)
+
+        if (state.errors.size > 0) {
+            for (error in state.errors) {
+                Logger.error("${state.fileName}:${error.msg}\n")
+            }
+
+            throw ErrorsInCodeException()
+        }
     }
 }
