@@ -16,9 +16,7 @@
 
 package sron.cg.compiler.lang
 
-interface Type {
-    fun descriptor(): String
-}
+interface Type
 
 enum class AtomType : Type {
     int,
@@ -31,30 +29,9 @@ enum class AtomType : Type {
     void,
 
     UNKNOWN,
-    ERROR;
-
-    override fun descriptor() = when (this) {
-        int -> "I"
-        float -> "F"
-        bool -> "Z"
-        char -> "C"
-        string, graph, digraph -> "L${fullName()};"
-        void -> "V"
-
-        else -> throw IllegalStateException()
-    }
-
-    fun fullName() = when (this) {
-        graph -> "sron/cg/lang/Graph"
-        digraph -> "sron/cg/lang/DiGraph"
-        string -> "java/lang/String"
-
-        else -> throw IllegalStateException()
-    }
+    ERROR
 }
 
 data class ArrayType(private val type: Type) : Type {
-    override fun descriptor() = "[${type.descriptor()}"
-
     override fun toString() = "[$type]"
 }

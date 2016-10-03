@@ -42,16 +42,5 @@ class Variable(id: String, val type: Type, scope: Scope) :
  */
 class Function(id: String, val type: Type, scope: Scope,
                val params: List<Variable>) : Symbol(id, SymType.FUNC, scope) {
-
-    /**
-     * Retrieves the JVM signature for the function
-     *
-     * @return The signature as a String
-     */
-    fun signatureString(): String {
-        val sig = params.map {
-            it.type.descriptor()
-        }.joinToString(separator = "")
-        return "($sig)${type.descriptor()}"
     }
 }

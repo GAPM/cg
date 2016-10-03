@@ -22,5 +22,4 @@ import java.util.*
 class State(val fileName: String, val parameters: Parameters) {
     val errors = ArrayList<Error>()
     val symbolTable = SymbolTable()
-    val varIndex = mutableMapOf<String, MutableMap<String, Int>>()
 }
