@@ -19,32 +19,17 @@ package sron.cg.compiler.symbol
 import java.util.*
 
 class SymbolTable : LinkedList<Symbol>() {
-    /**
-     * Gets a symbol with matching name, scope and type.
-     *
-     * @param name  the name to be matched
-     * @param scope the scope to be matched
-     * @param symType  the type to be matched
-     * @return a symbol with matching name, scope and type if its found
-     */
-    operator fun get(id: String, scope: Scope?, symType: SymType): Symbol? {
-        val tmp = filter { symType == it.symType }
-                .filter { id == it.id }
-
-        if (scope != null) {
-            return tmp.filter { it.scope.isPrefix(it.scope) }
-                    .maxBy { it.scope.size }
-        } else {
-            return tmp.firstOrNull()
-        }
+    fun findVariable(id: String, scope: Scope): Variable? {
+        return filter { it.symType == SymType.VAR }
+                .filter { it.id == id }
+                .filter { it.scope.isPrefix(scope) }
+                .maxBy { it.scope.size } as? Variable
     }
 
-    /**
-     * Gets a symbol with matching name and type.
-     *
-     * @param name  the name to be matched
-     * @param symType  the type to be matched
-     * @return a symbol with matching name, scope and type if its found
-     */
-    operator fun get(name: String, symType: SymType) = this[name, null, symType]
+    fun findFunction(id: String, signature: Signature): Function? {
+        return filter { it.symType == SymType.FUNC }
+                .filter { it.id == id }
+                .filter { (it as Function).signature == signature }
+                .firstOrNull() as? Function
+    }
 }
