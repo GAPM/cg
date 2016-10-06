@@ -18,9 +18,9 @@ package sron.cg.lang;
 
 abstract class AGraph {
     private int size;
-    protected BitMatrix adj;
+    BitMatrix adj;
 
-    public AGraph(int size) {
+    AGraph(int size) {
         this.size = size;
         this.adj = new BitMatrix(size, size);
     }

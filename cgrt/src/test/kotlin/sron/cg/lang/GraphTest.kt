@@ -27,6 +27,10 @@ class GraphTest {
 
         assertTrue(g.size == 3)
 
+        for (i in 0 until 2) {
+            assertTrue(g.hasNode(i))
+        }
+
         for (i in 0 until g.size) {
             for (j in 0 until g.size) {
                 assertFalse(g.hasEdge(i, j))
