@@ -54,15 +54,20 @@ public class BitArray implements Iterable<Boolean> {
 
     @Override
     public Iterator<Boolean> iterator() {
-        return new BitArrayIterator();
+        return new BitArrayIterator(this);
     }
 
     private class BitArrayIterator implements Iterator<Boolean> {
+        private BitArray bitArray;
         private int current = 0;
+
+        public BitArrayIterator(BitArray bitArray) {
+            this.bitArray = bitArray;
+        }
 
         @Override
         public boolean hasNext() {
-            return current != size;
+            return current != bitArray.size;
         }
 
         @Override
