@@ -61,7 +61,7 @@ public class BitArray implements Iterable<Boolean> {
         private BitArray bitArray;
         private int current = 0;
 
-        public BitArrayIterator(BitArray bitArray) {
+        BitArrayIterator(BitArray bitArray) {
             this.bitArray = bitArray;
         }
 

@@ -70,7 +70,7 @@ public class BitMatrix implements Iterable<BitArray> {
         private BitMatrix bitMatrix;
         private int current = 0;
 
-        public BitMatrixIterator(BitMatrix bitMatrix) {
+        BitMatrixIterator(BitMatrix bitMatrix) {
             this.bitMatrix = bitMatrix;
         }
 
