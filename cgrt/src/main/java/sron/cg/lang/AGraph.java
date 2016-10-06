@@ -16,31 +16,28 @@
 
 package sron.cg.lang;
 
-public class Graph extends AGraph {
-    public Graph(int size) {
-        super(size);
+abstract class AGraph {
+    private int size;
+    protected BitMatrix adj;
+
+    public AGraph(int size) {
+        this.size = size;
+        this.adj = new BitMatrix(size, size);
     }
 
-    public Graph(int size, Edge... edges) {
-        super(size);
-        for (Edge e : edges) {
-            addEdge(e.getSource(), e.getTarget());
-        }
+    public int getSize() {
+        return size;
     }
 
-    @Override
-    public void addEdge(int source, int target) {
-        if (hasNode(source) && hasNode(target)) {
-            adj.set(source, target, true);
-            adj.set(target, source, true);
-        }
+    public boolean hasNode(int i) {
+        return i >= 0 || i < size;
     }
 
-    @Override
-    public void removeEdge(int source, int target) {
-        if (hasNode(source) && hasNode(target)) {
-            adj.set(source, target, false);
-            adj.set(target, source, false);
-        }
+    public boolean hasEdge(int source, int target) {
+        return hasNode(source) && hasNode(target) && adj.get(source, target);
     }
+
+    public abstract void addEdge(int source, int target);
+
+    public abstract void removeEdge(int source, int target);
 }

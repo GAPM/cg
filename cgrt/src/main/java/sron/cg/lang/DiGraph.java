@@ -16,208 +16,29 @@
 
 package sron.cg.lang;
 
-import sron.cg.lang.collections.BitArray;
-import sron.cg.lang.collections.BitMatrix;
-
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
-public class DiGraph {
-    private int size;
-    private BitMatrix adj;
-
+public class DiGraph extends AGraph {
     public DiGraph(int size) {
-        this.size = size;
-        adj = new BitMatrix(size, size);
+        super(size);
+    }
+
+    public DiGraph(int size, Edge... edges) {
+        super(size);
+        for (Edge e : edges) {
+            addEdge(e.getSource(), e.getTarget());
+        }
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return obj instanceof DiGraph
-                && size == ((DiGraph) obj).size
-                && adj.equals(((DiGraph) obj).adj);
-    }
-
-    public int getSize() {
-        return size;
-    }
-
-    public boolean containsNode(int idx) {
-        return idx >= 0 && idx < size;
-    }
-
-    public boolean containsEdge(int source, int target) {
-        return source >= 0 && source < size &&
-                target >= 0 && target < size &&
-                adj.get(source, target);
-    }
-
-    public DiGraph addVertex(int n) {
-        DiGraph ng = new DiGraph(size + n);
-
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                if (adj.get(i, j)) {
-                    ng.adj.set(i, j, true);
-                }
-            }
-        }
-
-        return ng;
-    }
-
     public void addEdge(int source, int target) {
-        adj.set(source, target, true);
-    }
-
-    public void removeEdge(int source, int target) {
-        adj.set(source, target, false);
-    }
-
-    public DiGraph copy() {
-        DiGraph r = new DiGraph(0);
-        r.size = size;
-        r.adj = adj.copy();
-        return r;
-    }
-
-    public void removeAllEdges() {
-        this.adj.reset();
-    }
-
-    public DiGraph negation() {
-        DiGraph diGraph = new DiGraph(size);
-
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                if (adj.get(i, j)) {
-                    diGraph.adj.set(i, j, false);
-                } else {
-                    diGraph.adj.set(i, j, true);
-                }
-            }
-        }
-
-        return diGraph;
-    }
-
-    public DiGraph edgeIntersection(DiGraph other) {
-        DiGraph result = new DiGraph(size);
-
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                if (containsEdge(i, j) && other.containsEdge(i, j)) {
-                    result.addEdge(i, j);
-                }
-            }
-        }
-
-        return result;
-    }
-
-    public DiGraph edgeUnion(DiGraph other) {
-        DiGraph result = new DiGraph(size);
-
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                if (containsEdge(i, j) || other.containsEdge(i, j)) {
-                    result.addEdge(i, j);
-                }
-            }
-        }
-
-        return result;
-    }
-
-    public DiGraph edgeDifference(DiGraph other) {
-        DiGraph result = new DiGraph(size);
-
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                if (containsEdge(i, j) && !other.containsEdge(i, j)) {
-                    result.addEdge(i, j);
-                }
-            }
-        }
-
-        return result;
-    }
-
-    public DiGraph shortestPath(int node) {
-        BitArray visited = new BitArray(size);
-        LinkedList<Integer> queue = new LinkedList<>();
-
-        int parent[] = new int[size];
-        for (int i = 0; i < size; i++) {
-            parent[i] = -1;
-        }
-
-        queue.addLast(node);
-        visited.set(node, true);
-
-        while (!queue.isEmpty()) {
-            int current = queue.removeFirst();
-
-            for (int i = 0; i < size; i++) {
-                if (!visited.get(i) && adj.get(current, i)) {
-                    parent[i] = current;
-                    queue.addLast(i);
-                    visited.set(i, true);
-                }
-            }
-        }
-
-        DiGraph result = new DiGraph(size);
-        for (int i = 0; i < size; i++) {
-            if (parent[i] != -1) {
-                result.addEdge(parent[i], i);
-            }
-        }
-        return result;
-    }
-
-    public DiGraph transitivityClosure() {
-        DiGraph r = copy();
-
-        for (int k = 0; k < size; k++) {
-            for (int i = 0; i < size; i++) {
-                for (int j = 0; j < size; j++) {
-                    if (r.containsEdge(i, j) || (r.containsEdge(i, k) && r.containsEdge(k, j))) {
-                        r.addEdge(i, j);
-                    }
-                }
-            }
-        }
-
-        return r;
-    }
-
-    public void removeLoops() {
-        for (int i = 0; i < size; i++) {
-            adj.set(i, i, false);
+        if (hasNode(source) && hasNode(target)) {
+            adj.set(source, target, true);
         }
     }
 
     @Override
-    public String toString() {
-        List<String> edges = new ArrayList<>();
-
-        String res = "digraph [";
-        res += Integer.toString(size);
-        res += "] {";
-
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                if (containsEdge(i, j)) {
-                    edges.add("[" + i + ", " + j + "]");
-                }
-            }
+    public void removeEdge(int source, int target) {
+        if (hasNode(source) && hasNode(target)) {
+            adj.set(source, target, false);
         }
-
-        res += String.join(", ", edges);
-        res += "}";
-
-        return res;
     }
 }
