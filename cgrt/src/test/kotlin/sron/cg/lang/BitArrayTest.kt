@@ -22,7 +22,7 @@ import kotlin.test.*
 class BitArrayTest {
     @Test
     fun simpleTest() {
-        val ba = BitArray(5);
+        val ba = BitArray(5)
 
         assertTrue(ba.size == 5)
 

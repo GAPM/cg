@@ -37,6 +37,19 @@ enum class ControlType {
 
 abstract class Stmt(location: Location) : Node(location)
 
+abstract class CompoundStmt(val body: List<Stmt>, location: Location) : Stmt(location) {
+
+    override val scope by lazy {
+        Scope(parent.scope, this.toString())
+    }
+
+    init {
+        for (stmt in body) {
+            stmt.parent = this
+        }
+    }
+}
+
 class VarDec(val id: String, val type: Type, val expr: Expr?,
              location: Location) : Stmt(location) {
 
@@ -118,74 +131,32 @@ class IfBlock(val ifc: If, val elif: List<Elif>, val elsec: Else,
     }
 }
 
-class If(val expr: Expr, val body: List<Stmt>, location: Location) :
-        Stmt(location) {
-
-    override val scope by lazy {
-        Scope(parent.scope, this.toString())
-    }
-
+class If(val expr: Expr, body: List<Stmt>, location: Location) : CompoundStmt(body, location) {
     init {
         expr.parent = this
-        for (stmt in body) {
-            stmt.parent = this
-        }
     }
 }
 
-class Elif(val expr: Expr, val body: List<Stmt>, location: Location) :
-        Stmt(location) {
-
-    override val scope by lazy {
-        Scope(parent.scope, this.toString())
-    }
-
+class Elif(val expr: Expr, body: List<Stmt>, location: Location) : CompoundStmt(body, location) {
     init {
         expr.parent = this
-        for (stmt in body) {
-            stmt.parent = this
-        }
     }
 }
 
-class Else(val body: List<Stmt>, location: Location) : Stmt(location) {
-
-    override val scope by lazy {
-        Scope(parent.scope, this.toString())
-    }
-
-    init {
-        for (stmt in body) {
-            stmt.parent = this
-        }
-    }
-}
+class Else(body: List<Stmt>, location: Location) : CompoundStmt(body, location)
 
 class For(val initial: Assignment, val condition: Expr,
-          val modifier: Assignment, val body: List<Stmt>, location: Location) :
-        Stmt(location) {
-
-    override val scope by lazy {
-        Scope(parent.scope, this.toString())
-    }
-
+          val modifier: Assignment, body: List<Stmt>, location: Location) :
+        CompoundStmt(body, location) {
     init {
         initial.parent = this
         condition.parent = this
         modifier.parent = this
-        for (stmt in body) {
-            stmt.parent = this
-        }
     }
 }
 
-class While(val condition: Expr, val body: List<Stmt>, location: Location) :
-        Stmt(location) {
-
-    override val scope by lazy {
-        Scope(parent.scope, this.toString())
-    }
-
+class While(val condition: Expr, body: List<Stmt>, location: Location) :
+        CompoundStmt(body, location) {
     init {
         condition.parent = this
         for (stmt in body) {
