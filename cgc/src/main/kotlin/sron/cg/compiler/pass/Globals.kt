@@ -22,8 +22,6 @@ import sron.cg.compiler.ast.Unit
 import sron.cg.compiler.lang.AtomType
 import sron.cg.compiler.symbol.Function
 import sron.cg.compiler.symbol.Variable
-import sron.cg.compiler.util.Logger
-import kotlin.system.measureTimeMillis
 
 class Globals(val state: State) {
 
@@ -59,15 +57,12 @@ class Globals(val state: State) {
     }
 
     fun exec(ast: Unit) {
-        val ms = measureTimeMillis {
-            for (fd in ast.funcDef) {
-                fd.globals()
-            }
-
-            for (vd in ast.varDec) {
-                vd.globals()
-            }
+        for (fd in ast.funcDef) {
+            fd.globals()
         }
-        Logger.debug("${javaClass.simpleName}: $ms ms")
+
+        for (vd in ast.varDec) {
+            vd.globals()
+        }
     }
 }
