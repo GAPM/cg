@@ -23,7 +23,7 @@ import sron.cg.compiler.lang.AtomType
 import sron.cg.compiler.symbol.Function
 import sron.cg.compiler.symbol.Variable
 
-class Globals(val state: State) {
+class Globals(state: State) : Pass(state) {
 
     private fun FuncDef.globals() {
         val qry = state.symbolTable.findFunction(id, signature)
@@ -56,7 +56,7 @@ class Globals(val state: State) {
         }
     }
 
-    fun exec(ast: Unit) {
+    override fun exec(ast: Unit) {
         for (fd in ast.funcDef) {
             fd.globals()
         }
