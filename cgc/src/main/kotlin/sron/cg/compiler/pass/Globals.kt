@@ -18,7 +18,7 @@ package sron.cg.compiler.pass
 
 import sron.cg.compiler.*
 import sron.cg.compiler.ast.*
-import sron.cg.compiler.ast.Unit
+import sron.cg.compiler.ast.Init
 import sron.cg.compiler.lang.AtomType
 import sron.cg.compiler.symbol.Function
 import sron.cg.compiler.symbol.Variable
@@ -56,7 +56,7 @@ class Globals(state: State) : Pass(state) {
         }
     }
 
-    override fun exec(ast: Unit) {
+    override fun exec(ast: Init) {
         for (fd in ast.funcDef) {
             fd.globals()
         }

@@ -18,7 +18,7 @@ package sron.cg.compiler.internal
 
 import org.antlr.v4.runtime.ParserRuleContext
 import sron.cg.compiler.ast.*
-import sron.cg.compiler.ast.Unit
+import sron.cg.compiler.ast.Init
 import sron.cg.compiler.internal.CGParser.*
 import sron.cg.compiler.lang.*
 
@@ -251,11 +251,11 @@ private fun FuncDefContext.toASTNode(): FuncDef {
 
 /**
  * Retrieves a full AST from a [UnitContext], which is the top level rule of
- * the CG grammar. The result is an instance of the class [Unit], which is the
+ * the CG grammar. The result is an instance of the class [Init], which is the
  * root node in every CG AST.
  */
-fun ASTfromParseTree(unit: UnitContext): Unit {
-    val fds = unit.funcDef().map { it.toASTNode() }
-    val vds = unit.varDec().map { it.toASTNode() }
-    return Unit(fds, vds, unit.getLocation())
+fun ASTfromParseTree(init: InitContext): Init {
+    val fds = init.funcDef().map { it.toASTNode() }
+    val vds = init.varDec().map { it.toASTNode() }
+    return Init(fds, vds, init.getLocation())
 }

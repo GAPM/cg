@@ -156,7 +156,7 @@ stmt: simpleStmt ';'
     | compoundStmt
     ;
 
-unit: (funcDef | varDec ';')+;
+init: (funcDef | varDec ';')+;
 
 /* Non-visible */
 WHITESPACE: [ \t\r\n] -> skip;

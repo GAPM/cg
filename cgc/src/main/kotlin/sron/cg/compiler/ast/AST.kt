@@ -60,7 +60,7 @@ class FuncDef(val id: String, val type: Type, val params: List<Parameter>,
     }
 }
 
-class Unit(val funcDef: List<FuncDef>, val varDec: List<VarDec>,
+class Init(val funcDef: List<FuncDef>, val varDec: List<VarDec>,
            location: Location) : Node(location) {
 
     override val scope by lazy {

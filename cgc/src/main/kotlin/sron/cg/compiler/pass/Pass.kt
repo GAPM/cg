@@ -17,8 +17,8 @@
 package sron.cg.compiler.pass
 
 import sron.cg.compiler.State
-import sron.cg.compiler.ast.Unit
+import sron.cg.compiler.ast.Init
 
 abstract class Pass(val state: State) {
-    abstract fun exec(ast: Unit)
+    abstract fun exec(ast: Init)
 }

@@ -18,12 +18,11 @@ package sron.cg.compiler
 
 import org.antlr.v4.runtime.ANTLRInputStream
 import org.antlr.v4.runtime.CommonTokenStream
-import sron.cg.compiler.ast.Unit
+import sron.cg.compiler.ast.Init
 import sron.cg.compiler.exception.ErrorsInCodeException
 import sron.cg.compiler.exception.ParsingException
 import sron.cg.compiler.internal.*
-import sron.cg.compiler.pass.Globals
-import sron.cg.compiler.pass.Pass
+import sron.cg.compiler.pass.*
 import sron.cg.compiler.util.Logger
 import java.io.File
 
@@ -46,7 +45,7 @@ class Compiler(fileName: String, parameters: Parameters) {
         }
     }
 
-    private fun execPass(ctr: (State) -> Pass, ast: Unit) {
+    private fun execPass(ctr: (State) -> Pass, ast: Init) {
         val pass = ctr(state)
         pass.exec(ast)
     }
@@ -55,7 +54,7 @@ class Compiler(fileName: String, parameters: Parameters) {
      * Handles the compilation process.
      */
     fun compile() {
-        val parseTree = parser.unit()
+        val parseTree = parser.init()
 
         if (parser.numberOfSyntaxErrors > 0) {
             throw ParsingException()
