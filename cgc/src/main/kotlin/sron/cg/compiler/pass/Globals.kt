@@ -48,6 +48,8 @@ class Globals(state: State) : Pass(state) {
 
             if (qry != null && scope == qry.scope) {
                 state.errors += VariableRedeclaration(this, qry)
+            } else if (type == AtomType.void) {
+                state.errors += VoidVarDeclared(this)
             } else {
                 state.symbolTable += Variable(id, type, scope, location)
             }
