@@ -35,7 +35,9 @@ enum class ControlType {
     }
 }
 
-abstract class Stmt(location: Location) : Node(location)
+abstract class Stmt(location: Location) : Node(location) {
+    var returns = false
+}
 
 abstract class CompoundStmt(val body: List<Stmt>, location: Location) : Stmt(location) {
 
@@ -75,14 +77,15 @@ class Assignment(val lhs: Expr, val rhs: Expr, location: Location) :
     }
 }
 
-class Return(val expr: Expr, location: Location) : Stmt(location) {
+class Return(val expr: Expr?, location: Location) : Stmt(location) {
 
     override val scope by lazy {
         Scope(parent.scope, null)
     }
 
     init {
-        expr.parent = this
+        expr?.parent = this
+        returns = true
     }
 }
 

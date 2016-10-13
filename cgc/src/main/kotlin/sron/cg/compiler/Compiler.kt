@@ -64,6 +64,7 @@ class Compiler(fileName: String, parameters: Parameters) {
 
         // Verifying phase
         execPass(::Globals, ast)
+        execPass(::Structure, ast)
 
         if (state.errors.size > 0) {
             for (error in state.errors) {

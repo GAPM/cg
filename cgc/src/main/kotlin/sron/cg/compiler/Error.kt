@@ -16,8 +16,7 @@
 
 package sron.cg.compiler
 
-import sron.cg.compiler.ast.FuncDef
-import sron.cg.compiler.ast.VarDec
+import sron.cg.compiler.ast.*
 import sron.cg.compiler.symbol.Function
 import sron.cg.compiler.symbol.Variable
 
@@ -60,7 +59,46 @@ class VoidVarDeclared(vd: VarDec) : Error {
     override val id = 4
     override val msg =
             """
-            |${vd.location}
+            |${vd.location}:
             |  a variable can not be of type void
+            """.trimMargin()
+}
+
+class ControlNotInLoop(ctrl: Control) : Error {
+    override val id = 5
+    override val msg =
+            """
+            |${ctrl.location}:
+            |  ${ctrl.type.name.toLowerCase()} statement not inside loop
+            """.trimMargin()
+}
+
+class NonEmptyReturnInVoidFunction(ret: Return, fd: FuncDef) : Error {
+    override val id = 6
+    override val msg =
+            """
+            |${ret.location}:
+            |  return value is present in function ${fd.id}
+            |  which has return type void
+            """.trimMargin()
+}
+
+class EmptyReturnInNonVoidFunction(ret: Return, fd: FuncDef) : Error {
+    override val id = 7
+    override val msg =
+            """
+            |${ret.location}:
+            |  return value is missing in function ${fd.id}
+            |  which has return type ${fd.type}
+            """.trimMargin()
+}
+
+class MissingReturnStmtInFunction(fd: FuncDef) : Error {
+    override val id = 8
+    override val msg =
+            """
+            |${fd.location}:
+            |  return statement missing in function ${fd.id}
+            |  which has return type ${fd.type}
             """.trimMargin()
 }

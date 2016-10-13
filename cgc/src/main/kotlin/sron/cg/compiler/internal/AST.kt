@@ -149,7 +149,7 @@ private fun AssignmentStmtContext.toASTNode(): Assignment {
 }
 
 private fun ReturnStmtContext.toASTNode(): Return {
-    val expr = expr().toASTNode()
+    val expr = expr()?.toASTNode()
     return Return(expr, getLocation())
 }
 
