@@ -21,12 +21,10 @@ import sron.cg.compiler.symbol.Function
 import sron.cg.compiler.symbol.Variable
 
 interface Error {
-    val id: Int
     val msg: String
 }
 
 class FunctionRedefinition(fd: FuncDef, existing: Function) : Error {
-    override val id = 1
     override val msg =
             """
             |${fd.location}:
@@ -36,7 +34,6 @@ class FunctionRedefinition(fd: FuncDef, existing: Function) : Error {
 }
 
 class VariableRedeclaration(vd: VarDec, existing: Variable) : Error {
-    override val id = 2
     override val msg =
             """
             |${vd.location}:
@@ -46,7 +43,6 @@ class VariableRedeclaration(vd: VarDec, existing: Variable) : Error {
 }
 
 class GlobalVarMissingType(vd: VarDec) : Error {
-    override val id = 3
     override val msg =
             """
             |${vd.location}:
@@ -56,7 +52,6 @@ class GlobalVarMissingType(vd: VarDec) : Error {
 }
 
 class VoidVarDeclared(vd: VarDec) : Error {
-    override val id = 4
     override val msg =
             """
             |${vd.location}:
@@ -65,7 +60,6 @@ class VoidVarDeclared(vd: VarDec) : Error {
 }
 
 class ControlNotInLoop(ctrl: Control) : Error {
-    override val id = 5
     override val msg =
             """
             |${ctrl.location}:
@@ -74,7 +68,6 @@ class ControlNotInLoop(ctrl: Control) : Error {
 }
 
 class NonEmptyReturnInVoidFunction(ret: Return, fd: FuncDef) : Error {
-    override val id = 6
     override val msg =
             """
             |${ret.location}:
@@ -84,7 +77,6 @@ class NonEmptyReturnInVoidFunction(ret: Return, fd: FuncDef) : Error {
 }
 
 class EmptyReturnInNonVoidFunction(ret: Return, fd: FuncDef) : Error {
-    override val id = 7
     override val msg =
             """
             |${ret.location}:
@@ -94,7 +86,6 @@ class EmptyReturnInNonVoidFunction(ret: Return, fd: FuncDef) : Error {
 }
 
 class MissingReturnStmtInFunction(fd: FuncDef) : Error {
-    override val id = 8
     override val msg =
             """
             |${fd.location}:
