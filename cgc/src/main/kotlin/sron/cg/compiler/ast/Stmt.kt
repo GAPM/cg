@@ -37,6 +37,13 @@ enum class ControlType {
 
 abstract class Stmt(location: Location) : Node(location) {
     var returns = false
+    val funcDef by lazy {
+        var fd = parent
+        while (fd !is FuncDef) {
+            fd = fd.parent
+        }
+        fd as FuncDef
+    }
 }
 
 abstract class CompoundStmt(val body: List<Stmt>, location: Location) : Stmt(location) {

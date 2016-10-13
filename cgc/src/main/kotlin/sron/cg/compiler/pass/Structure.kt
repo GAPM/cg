@@ -31,19 +31,12 @@ class Structure(state: State) : Pass(state) {
     }
 
     private fun Return.structure() {
-        var fd = parent
-        while (fd !is FuncDef) {
-            fd = fd.parent
+        if (funcDef.type == AtomType.void && expr != null) {
+            state.errors += NonEmptyReturnInVoidFunction(this, funcDef)
         }
 
-        val type = fd.type
-
-        if (type == AtomType.void && expr != null) {
-            state.errors += NonEmptyReturnInVoidFunction(this, fd)
-        }
-
-        if (type != AtomType.void && expr == null) {
-            state.errors += EmptyReturnInNonVoidFunction(this, fd)
+        if (funcDef.type != AtomType.void && expr == null) {
+            state.errors += EmptyReturnInNonVoidFunction(this, funcDef)
         }
     }
 
