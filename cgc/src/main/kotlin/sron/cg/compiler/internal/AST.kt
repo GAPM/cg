@@ -18,7 +18,6 @@ package sron.cg.compiler.internal
 
 import org.antlr.v4.runtime.ParserRuleContext
 import sron.cg.compiler.ast.*
-import sron.cg.compiler.ast.Init
 import sron.cg.compiler.internal.CGParser.*
 import sron.cg.compiler.lang.*
 

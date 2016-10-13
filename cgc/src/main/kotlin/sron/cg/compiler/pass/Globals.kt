@@ -16,9 +16,9 @@
 
 package sron.cg.compiler.pass
 
-import sron.cg.compiler.*
+import sron.cg.compiler.State
 import sron.cg.compiler.ast.*
-import sron.cg.compiler.ast.Init
+import sron.cg.compiler.error.*
 import sron.cg.compiler.lang.AtomType
 import sron.cg.compiler.symbol.Function
 import sron.cg.compiler.symbol.Variable

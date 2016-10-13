@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-package sron.cg.compiler
+package sron.cg.compiler.error
 
-import sron.cg.compiler.error.Error
-import sron.cg.compiler.symbol.SymbolTable
-import java.util.*
+import sron.cg.compiler.ast.VarDec
 
-class State(val fileName: String, val parameters: Parameters) {
-    val errors = ArrayList<Error>()
-    val symbolTable = SymbolTable()
+interface Error {
+    val msg: String
+}
+
+class VoidVarDeclared(vd: VarDec) : Error {
+    override val msg =
+            """
+            |${vd.location}:
+            |  a variable can not be of type void
+            """.trimMargin()
 }

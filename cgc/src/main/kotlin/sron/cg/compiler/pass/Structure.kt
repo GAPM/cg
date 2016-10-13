@@ -16,8 +16,9 @@
 
 package sron.cg.compiler.pass
 
-import sron.cg.compiler.*
+import sron.cg.compiler.State
 import sron.cg.compiler.ast.*
+import sron.cg.compiler.error.*
 import sron.cg.compiler.lang.AtomType
 
 class Structure(state: State) : Pass(state) {

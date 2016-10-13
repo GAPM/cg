@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-package sron.cg.compiler
+package sron.cg.compiler.error
 
-import sron.cg.compiler.ast.*
+import sron.cg.compiler.ast.FuncDef
+import sron.cg.compiler.ast.VarDec
 import sron.cg.compiler.symbol.Function
 import sron.cg.compiler.symbol.Variable
-
-interface Error {
-    val msg: String
-}
 
 class FunctionRedefinition(fd: FuncDef, existing: Function) : Error {
     override val msg =
@@ -49,47 +46,4 @@ class GlobalVarMissingType(vd: VarDec) : Error {
             |  can not infer the type of global variables
             """.trimMargin()
 
-}
-
-class VoidVarDeclared(vd: VarDec) : Error {
-    override val msg =
-            """
-            |${vd.location}:
-            |  a variable can not be of type void
-            """.trimMargin()
-}
-
-class ControlNotInLoop(ctrl: Control) : Error {
-    override val msg =
-            """
-            |${ctrl.location}:
-            |  ${ctrl.type.name.toLowerCase()} statement not inside loop
-            """.trimMargin()
-}
-
-class NonEmptyReturnInVoidFunction(ret: Return, fd: FuncDef) : Error {
-    override val msg =
-            """
-            |${ret.location}:
-            |  return value is present in function ${fd.id}
-            |  which has return type void
-            """.trimMargin()
-}
-
-class EmptyReturnInNonVoidFunction(ret: Return, fd: FuncDef) : Error {
-    override val msg =
-            """
-            |${ret.location}:
-            |  return value is missing in function ${fd.id}
-            |  which has return type ${fd.type}
-            """.trimMargin()
-}
-
-class MissingReturnStmtInFunction(fd: FuncDef) : Error {
-    override val msg =
-            """
-            |${fd.location}:
-            |  return statement missing in function ${fd.id}
-            |  which has return type ${fd.type}
-            """.trimMargin()
 }
