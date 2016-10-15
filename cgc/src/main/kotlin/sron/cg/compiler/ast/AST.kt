@@ -52,7 +52,7 @@ class FuncDef(val id: String, val type: Type, val params: List<Parameter>,
         Scope(parent.scope, this.toString())
     }
 
-    val signature = Signature(params.map { it.type }, type)
+    val signature = Signature(params.map { it.type })
 
     init {
         params.forEach { it.parent = this }
