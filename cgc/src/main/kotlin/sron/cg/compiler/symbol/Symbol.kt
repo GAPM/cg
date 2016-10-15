@@ -45,6 +45,6 @@ class Function(id: String, val type: Type, val params: List<Variable>,
                scope: Scope, location: Location) :
         Symbol(id, SymType.FUNC, scope, location) {
     val signature by lazy {
-        Signature(params.map { it.type }, type)
+        Signature(params.map { it.type })
     }
 }

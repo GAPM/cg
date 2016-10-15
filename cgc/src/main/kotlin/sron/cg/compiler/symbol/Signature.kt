@@ -18,12 +18,12 @@ package sron.cg.compiler.symbol
 
 import sron.cg.compiler.lang.Type
 
-data class Signature(val params: List<Type>, val returnType: Type) {
+data class Signature(val params: List<Type>) {
 
     override fun toString(): String {
         val paramsStr = params.map {
             it.toString()
         }.joinToString(separator = ", ")
-        return "($paramsStr)${returnType.toString()}"
+        return "($paramsStr)"
     }
 }
