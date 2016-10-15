@@ -61,7 +61,9 @@ private fun LitContext.toASTNode(): Literal {
         }
         else -> throw IllegalStateException()
     }
-    return Literal(text, type, getLocation())
+    val lit = Literal(text, getLocation())
+    lit.type = type
+    return lit
 }
 
 private fun GraphLitContext.toASTNode(): GraphLit {
@@ -85,6 +87,13 @@ private fun FuncCallContext.toASTNode(): FunctionCall {
     return FunctionCall(name, expr, getLocation())
 }
 
+private fun CastContext.toASTNode(): Cast {
+    val type = type().toCGType()
+    val cast = Cast(expr().toASTNode(), getLocation())
+    cast.type = type
+    return cast
+}
+
 private fun ArrayLitContext.toASTNode(): ArrayLit {
     val expr = exprList().expr().map { it.toASTNode() }
     return ArrayLit(expr, getLocation())
@@ -95,8 +104,7 @@ private fun AtomContext.toASTNode(): Atom = when (this) {
     is VarNameContext -> VarName(IDENTIFIER().text, getLocation())
     is GraphContext -> graphLit().toASTNode()
     is FunctionCallContext -> funcCall().toASTNode()
-    is CastContext -> Cast(type().toCGType(), expr().toASTNode(),
-            getLocation())
+    is CastContext -> toASTNode()
     is ArrayContext -> arrayLit().toASTNode()
 
     else -> throw IllegalStateException()
@@ -249,7 +257,7 @@ private fun FuncDefContext.toASTNode(): FuncDef {
 }
 
 /**
- * Retrieves a full AST from a [UnitContext], which is the top level rule of
+ * Retrieves a full AST from a [InitContext], which is the top level rule of
  * the CG grammar. The result is an instance of the class [Init], which is the
  * root node in every CG AST.
  */

@@ -59,7 +59,7 @@ abstract class CompoundStmt(val body: List<Stmt>, location: Location) : Stmt(loc
     }
 }
 
-class VarDec(val id: String, val type: Type, val expr: Expr?,
+class VarDec(val id: String, var type: Type, val expr: Expr?,
              location: Location) : Stmt(location) {
 
     override val scope by lazy {

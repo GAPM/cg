@@ -16,8 +16,7 @@
 
 package sron.cg.compiler.ast
 
-import sron.cg.compiler.lang.Operator
-import sron.cg.compiler.lang.Type
+import sron.cg.compiler.lang.*
 import sron.cg.compiler.symbol.Scope
 
 enum class GraphType {
@@ -25,11 +24,13 @@ enum class GraphType {
     DIGRAPH
 }
 
-abstract class Expr(location: Location) : Stmt(location)
+abstract class Expr(location: Location) : Stmt(location) {
+    var type: Type = AtomType.UNKNOWN
+}
 
 abstract class Atom(location: Location) : Expr(location)
 
-class Literal(val text: String, val type: Type, location: Location) :
+class Literal(val text: String, location: Location) :
         Atom(location) {
 
     override val scope by lazy {
@@ -50,7 +51,7 @@ class VarName(val id: String, location: Location) : Atom(location) {
  */
 class Edge(val source: Expr, val target: Expr)
 
-class GraphLit(val type: GraphType, val size: Expr, val edges: List<Edge>,
+class GraphLit(val graphType: GraphType, val size: Expr, val edges: List<Edge>,
                location: Location) : Atom(location) {
 
     override val scope by lazy {
@@ -80,7 +81,7 @@ class FunctionCall(val id: String, args: List<Expr>, location: Location) :
     }
 }
 
-class Cast(val type: Type, val expr: Expr, location: Location) :
+class Cast(val expr: Expr, location: Location) :
         Atom(location) {
 
     override val scope by lazy {
