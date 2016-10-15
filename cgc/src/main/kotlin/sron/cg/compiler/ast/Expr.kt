@@ -67,7 +67,7 @@ class GraphLit(val graphType: GraphType, val size: Expr, val edges: List<Edge>,
     }
 }
 
-class FunctionCall(val id: String, args: List<Expr>, location: Location) :
+class FunctionCall(val id: String, val args: List<Expr>, location: Location) :
         Atom(location) {
 
     override val scope by lazy {
