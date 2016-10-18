@@ -88,9 +88,8 @@ private fun FuncCallContext.toASTNode(): FunctionCall {
 }
 
 private fun CastContext.toASTNode(): Cast {
-    val type = type().toCGType()
     val cast = Cast(expr().toASTNode(), getLocation())
-    cast.type = type
+    cast.type = type().toCGType()
     return cast
 }
 
