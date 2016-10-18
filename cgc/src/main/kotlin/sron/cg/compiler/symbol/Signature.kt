@@ -16,14 +16,17 @@
 
 package sron.cg.compiler.symbol
 
+import sron.cg.compiler.ast.Expr
 import sron.cg.compiler.lang.Type
+import java.util.*
 
-data class Signature(val params: List<Type>) {
-
+class Signature(types: List<Type>) : ArrayList<Type>(types) {
     override fun toString(): String {
-        val paramsStr = params.map {
-            it.toString()
-        }.joinToString(separator = ", ")
-        return "($paramsStr)"
+        return "(${joinToString()})"
+    }
+
+    companion object {
+        @JvmStatic
+        fun List<Expr>.signature() = Signature(map { it.type })
     }
 }
