@@ -94,7 +94,7 @@ private fun CastContext.toASTNode(): Cast {
 }
 
 private fun ArrayLitContext.toASTNode(): ArrayLit {
-    val expr = exprList().expr().map { it.toASTNode() }
+    val expr = expr().map { it.toASTNode() }
     return ArrayLit(expr, getLocation())
 }
 

@@ -113,7 +113,7 @@ expr: atom                                #Atomic
     ;
 
 exprList: (expr (',' expr)*)? ;
-arrayLit: '{' exprList '}';
+arrayLit: '{' (expr (',' expr)*) '}';
 
 varDec: 'var' IDENTIFIER type? ('=' expr)? ;
 
