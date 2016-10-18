@@ -32,6 +32,6 @@ enum class AtomType : Type {
     ERROR
 }
 
-data class ArrayType(private val type: Type) : Type {
-    override fun toString() = "[$type]"
+data class ArrayType(val innerType: Type) : Type {
+    override fun toString() = "[$innerType]"
 }
