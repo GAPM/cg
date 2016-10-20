@@ -43,7 +43,7 @@ class Globals(state: State) : Pass(state) {
     }
 
     private fun VarDec.globals() {
-        if (type != AtomType.UNKNOWN) {
+        if (type != AtomType.ERROR) {
             val qry = state.symbolTable.findVariable(id, scope)
 
             if (qry != null && scope == qry.scope) {

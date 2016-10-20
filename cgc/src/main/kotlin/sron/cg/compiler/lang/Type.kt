@@ -28,7 +28,6 @@ enum class AtomType : Type {
     digraph,
     void,
 
-    UNKNOWN,
     ERROR
 }
 

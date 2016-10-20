@@ -25,7 +25,7 @@ enum class GraphType {
 }
 
 abstract class Expr(location: Location) : Stmt(location) {
-    var type: Type = AtomType.UNKNOWN
+    var type: Type = AtomType.ERROR
 }
 
 abstract class Atom(location: Location) : Expr(location)

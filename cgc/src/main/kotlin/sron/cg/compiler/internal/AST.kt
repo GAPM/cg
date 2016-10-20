@@ -143,7 +143,7 @@ private fun ExprContext.toASTNode(): Expr = when (this) {
  */
 private fun VarDecContext.toASTNode(): VarDec {
     val name = IDENTIFIER().text
-    val type = type()?.toCGType() ?: AtomType.UNKNOWN
+    val type = type()?.toCGType() ?: AtomType.ERROR
     val init = expr()?.toASTNode() ?: null
     return VarDec(name, type, init, getLocation())
 }
