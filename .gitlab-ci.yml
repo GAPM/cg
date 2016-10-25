@@ -13,15 +13,3 @@ test:
   stage: test
   script:
     - ./gradlew -g /cache./gradle check
-
-deploy:
-  stage: deploy
-  script:
-    - ./gradlew -g /cache/.gradle clean build
-    - mv cgc/build/distributions/cgc.zip .
-  allow_failure: false
-  artifacts:
-    paths:
-      - cgc.zip
-  only:
-    - tags
