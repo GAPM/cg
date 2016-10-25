@@ -174,25 +174,24 @@ class Types(state: State) : Pass(state) {
         }
     }
 
-    private fun Expr.types() {
-        when (this) {
-            is Literal -> {
-            }//Type already known
-            is VarName -> this.types()
-            is GraphLit -> this.types()
-            is FunctionCall -> this.types()
-            is Cast -> this.types()
-            is ArrayLit -> this.types()
-            is ArrayAccess -> this.types()
-            is UnaryExpr -> this.types()
-            is BinaryExpr -> this.types()
+    private fun Expr.types() = when (this) {
+        is Literal -> {
+        }//Type already known
+        is VarName -> this.types()
+        is GraphLit -> this.types()
+        is FunctionCall -> this.types()
+        is Cast -> this.types()
+        is ArrayLit -> this.types()
+        is ArrayAccess -> this.types()
+        is UnaryExpr -> this.types()
+        is BinaryExpr -> this.types()
 
-            else -> throw IllegalStateException()
-        }
+        else -> throw IllegalStateException()
     }
 
     private fun VarDec.types() {
         expr?.let { expr.types() }
+        /* Type inference happens here */
 
         // Declaration does not have type and expression is not present
         if ((type == AtomType.ERROR && expr == null) || // or
@@ -211,9 +210,52 @@ class Types(state: State) : Pass(state) {
         }
     }
 
+    private fun Assignment.types() {
+        lhs.types()
+        rhs.types()
+
+        if (lhs is VarName || lhs is ArrayAccess) {
+            if (lhs.type != AtomType.ERROR && rhs.type != AtomType.ERROR &&
+                    lhs.type != rhs.type) {
+                state.errors += AssignmentTypeMismatch(this, lhs.type, rhs.type)
+            }
+        } else {
+            state.errors += NonAssignableExpression(this)
+        }
+    }
+
+    private fun Return.types() {
+        expr?.let {
+            it.types()
+
+            val fd = it.funcDef
+            if (it.type != AtomType.ERROR && it.type != fd.type) {
+                state.errors += InvalidReturn(this)
+            }
+        }
+    }
+
+    private fun Stmt.types() = when (this) {
+        is VarDec -> this.types()
+        is Assignment -> this.types()
+        is Return -> this.types()
+
+        else -> throw IllegalStateException()
+    }
+
+    private fun FuncDef.types() {
+        for (stmt in body) {
+            stmt.types()
+        }
+    }
+
     override fun exec(ast: Init) {
         for (vd in ast.varDec) {
             vd.types()
+        }
+
+        for (fd in ast.funcDef) {
+            fd.types()
         }
     }
 }

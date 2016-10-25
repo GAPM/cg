@@ -115,3 +115,24 @@ class InvalidBinaryExpr(be: BinaryExpr) : Error {
             |  invalid binary operation (${be.op}) over operands of types ${be.lhs.type} and ${be.rhs.type}
             """.trimMargin()
 }
+
+class NonAssignableExpression(a: Assignment) : Error {
+    override val msg =
+            """
+            |${a.location}:
+            |  non-assignable left hand expression in assignment
+            """.trimMargin()
+}
+
+class InvalidReturn(rt: Return) : Error {
+    override val msg: String
+
+    init {
+        val fd = rt.funcDef
+        val exprType = rt.expr!!.type
+        msg = """
+              |${rt.location}:
+              |  invalid return expression of type $exprType in function of type ${fd.type}
+              """.trimMargin()
+    }
+}
