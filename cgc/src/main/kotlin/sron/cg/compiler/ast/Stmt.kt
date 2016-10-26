@@ -51,12 +51,6 @@ abstract class CompoundStmt(val body: List<Stmt>, location: Location) : Stmt(loc
     override val scope by lazy {
         Scope(parent.scope, this.toString())
     }
-
-    init {
-        for (stmt in body) {
-            stmt.parent = this
-        }
-    }
 }
 
 class VarDec(val id: String, var type: Type, val expr: Expr?,
@@ -125,6 +119,32 @@ class Assert(val expr: Expr, location: Location) : Stmt(location) {
     }
 }
 
+class If(val expr: Expr, body: List<Stmt>, location: Location) : CompoundStmt(body, location) {
+    init {
+        expr.parent = this
+        for (stmt in body) {
+            stmt.parent = this
+        }
+    }
+}
+
+class Elif(val expr: Expr, body: List<Stmt>, location: Location) : CompoundStmt(body, location) {
+    init {
+        expr.parent = this
+        for (stmt in body) {
+            stmt.parent = this
+        }
+    }
+}
+
+class Else(body: List<Stmt>, location: Location) : CompoundStmt(body, location) {
+    init {
+        for (stmt in body) {
+            stmt.parent = this
+        }
+    }
+}
+
 class IfBlock(val ifc: If, val elif: List<Elif>, val elsec: Else?,
               location: Location) : Stmt(location) {
 
@@ -141,20 +161,6 @@ class IfBlock(val ifc: If, val elif: List<Elif>, val elsec: Else?,
     }
 }
 
-class If(val expr: Expr, body: List<Stmt>, location: Location) : CompoundStmt(body, location) {
-    init {
-        expr.parent = this
-    }
-}
-
-class Elif(val expr: Expr, body: List<Stmt>, location: Location) : CompoundStmt(body, location) {
-    init {
-        expr.parent = this
-    }
-}
-
-class Else(body: List<Stmt>, location: Location) : CompoundStmt(body, location)
-
 class For(val initial: Assignment, val condition: Expr,
           val modifier: Assignment, body: List<Stmt>, location: Location) :
         CompoundStmt(body, location) {
@@ -162,6 +168,9 @@ class For(val initial: Assignment, val condition: Expr,
         initial.parent = this
         condition.parent = this
         modifier.parent = this
+        for (stmt in body) {
+            stmt.parent = this
+        }
     }
 }
 
