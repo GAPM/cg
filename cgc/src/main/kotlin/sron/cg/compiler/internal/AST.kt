@@ -188,15 +188,19 @@ private fun SimpleStmtContext.toASTNode(): Stmt {
 
 private fun IfcContext.toASTNode(): IfBlock {
     val ifBody = stmt().map { it.toASTNode() }
-    val elseBody = elsec().stmt().map { it.toASTNode() }
-    val elif = elifc().map {
+    val ifc = If(expr().toASTNode(), ifBody, getLocation())
+
+    val elifs = elifc().map {
         val body = it.stmt().map { it.toASTNode() }
         Elif(it.expr().toASTNode(), body, it.getLocation())
     }
-    val ifc = If(expr().toASTNode(), ifBody, getLocation())
-    val elsec = Else(elseBody, getLocation())
 
-    return IfBlock(ifc, elif, elsec, getLocation())
+    val elsec = elsec()?.let {
+        val elseBody = elsec().stmt().map { it.toASTNode() }
+        Else(elseBody, it.getLocation())
+    }
+
+    return IfBlock(ifc, elifs, elsec, getLocation())
 }
 
 /**

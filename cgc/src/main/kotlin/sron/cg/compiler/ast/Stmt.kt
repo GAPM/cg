@@ -125,7 +125,7 @@ class Assert(val expr: Expr, location: Location) : Stmt(location) {
     }
 }
 
-class IfBlock(val ifc: If, val elif: List<Elif>, val elsec: Else,
+class IfBlock(val ifc: If, val elif: List<Elif>, val elsec: Else?,
               location: Location) : Stmt(location) {
 
     override val scope by lazy {
@@ -137,7 +137,7 @@ class IfBlock(val ifc: If, val elif: List<Elif>, val elsec: Else,
         for (ei in elif) {
             ei.parent = this
         }
-        elsec.parent = this
+        elsec?.parent = this
     }
 }
 

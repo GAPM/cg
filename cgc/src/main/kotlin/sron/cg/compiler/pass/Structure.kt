@@ -74,9 +74,11 @@ class Structure(state: State) : Pass(state) {
         val elifsReturns = elif.fold(true, { a, b -> a && b.returns })
 
         // Does the else block returns?
-        elsec.returns = analyzeBody(elsec.body)
+        val elseReturns = elsec?.let {
+            analyzeBody(elsec.body)
+        } ?: false
 
-        returns = ifc.returns && elifsReturns && elsec.returns
+        returns = ifc.returns && elifsReturns && elseReturns
     }
 
     private fun Stmt.structure() {
