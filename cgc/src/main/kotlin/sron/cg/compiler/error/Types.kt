@@ -136,3 +136,11 @@ class InvalidReturn(rt: Return) : Error {
               """.trimMargin()
     }
 }
+
+class NonBoolCondition(expr: Expr, word: String) : Error {
+    override val msg =
+            """
+            |${expr.location}:
+            |  non-bool condition in $word statement
+            """.trimMargin()
+}

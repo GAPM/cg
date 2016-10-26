@@ -235,10 +235,91 @@ class Types(state: State) : Pass(state) {
         }
     }
 
+    private fun Print.types() {
+        expr.types()
+    }
+
+    private fun Assert.types() {
+        expr.types()
+
+        if (expr.type != AtomType.ERROR && expr.type != AtomType.bool) {
+            state.errors += NonBoolCondition(expr, "assert")
+        }
+    }
+
+    private fun If.types() {
+        expr.types()
+
+        if (expr.type != AtomType.ERROR && expr.type != AtomType.bool) {
+            state.errors += NonBoolCondition(expr, "if")
+        }
+
+        for (stmt in body) {
+            stmt.types()
+        }
+    }
+
+    private fun Elif.types() {
+        expr.types()
+
+        if (expr.type != AtomType.ERROR && expr.type != AtomType.bool) {
+            state.errors += NonBoolCondition(expr, "elif")
+        }
+
+        for (stmt in body) {
+            stmt.types()
+        }
+    }
+
+    private fun Else.types() {
+        for (stmt in body) {
+            stmt.types()
+        }
+    }
+
+    private fun IfBlock.types() {
+        ifc.types()
+        elif.forEach { it.types() }
+        elsec?.types()
+    }
+
+    private fun For.types() {
+        initial.types()
+        condition.types()
+        modifier.types()
+
+        if (condition.type != AtomType.ERROR && condition.type != AtomType.bool) {
+            state.errors += NonBoolCondition(condition, "for")
+        }
+
+        for (stmt in body) {
+            stmt.types()
+        }
+    }
+
+    private fun While.types() {
+        condition.types()
+
+        if (condition.type != AtomType.ERROR && condition.type != AtomType.bool) {
+            state.errors += NonBoolCondition(condition, "while")
+        }
+
+        for (stmt in body) {
+            stmt.types()
+        }
+    }
+
     private fun Stmt.types() = when (this) {
         is VarDec -> this.types()
         is Assignment -> this.types()
         is Return -> this.types()
+        is Print -> this.types()
+        is Assert -> this.types()
+        is IfBlock -> this.types()
+        is For -> this.types()
+        is While -> this.types()
+        is Control -> {
+        }
 
         else -> throw IllegalStateException()
     }
