@@ -20,35 +20,11 @@ import sron.cg.compiler.ast.*
 import sron.cg.compiler.lang.Type
 import sron.cg.compiler.symbol.Signature.Companion.signature
 
-class VariableNotFoundInScope(vn: VarName) : Error {
+class ArrayLiteralTypeMismatch(ac: ArrayLit) : Error {
     override val msg =
             """
-            |${vn.location}:
-            |  variable ${vn.id} was not found in current scope
-            """.trimMargin()
-}
-
-class NonIntegerSize(gl: GraphLit) : Error {
-    override val msg =
-            """
-            |${gl.location}:
-            |  size not an integer in graph literal
-            """.trimMargin()
-}
-
-class NonIntegerNode(expr: Expr) : Error {
-    override val msg =
-            """
-            |${expr.location}:
-            |  node index not an integer
-            """.trimMargin()
-}
-
-class CanNotInferType(vd: VarDec) : Error {
-    override val msg =
-            """
-            |${vd.location}:
-            |  can not infer type for variable ${vd.id}
+            |${ac.location}:
+            |  can not infer the type of the array literal
             """.trimMargin()
 }
 
@@ -60,6 +36,14 @@ class AssignmentTypeMismatch(node: Node, lht: Type, rht: Type) : Error {
             """.trimMargin()
 }
 
+class CanNotInferType(vd: VarDec) : Error {
+    override val msg =
+            """
+            |${vd.location}:
+            |  can not infer type for variable ${vd.id}
+            """.trimMargin()
+}
+
 class FunctionNotFound(fc: FunctionCall) : Error {
     override val msg =
             """
@@ -68,11 +52,72 @@ class FunctionNotFound(fc: FunctionCall) : Error {
             """.trimMargin()
 }
 
+class InvalidBinaryExpr(be: BinaryExpr) : Error {
+    override val msg =
+            """
+            |${be.location}:
+            |  invalid binary operation (${be.op}) over operands of types ${be.lhs.type} and ${be.rhs.type}
+            """.trimMargin()
+}
+
 class InvalidCast(c: Cast) : Error {
     override val msg =
             """
             |${c.location}:
             |  can not cast type ${c.expr.type} to type ${c.type}
+            """.trimMargin()
+}
+
+class InvalidReturn(rt: Return) : Error {
+    override val msg: String
+
+    init {
+        val fd = rt.funcDef
+        val exprType = rt.expr!!.type
+        msg = """
+              |${rt.location}:
+              |  invalid return expression of type $exprType in function of type ${fd.type}
+              """.trimMargin()
+    }
+}
+
+class InvalidUnaryExpr(ue: UnaryExpr) : Error {
+    override val msg =
+            """
+            |${ue.location}:
+            |  invalid unary operation (${ue.op}) over operand of type ${ue.expr.type}
+            """.trimMargin()
+}
+
+class NonAssignableExpression(a: Assignment) : Error {
+    override val msg =
+            """
+            |${a.location}:
+            |  non-assignable left hand expression in assignment
+            """.trimMargin()
+}
+
+class NonBoolCondition(expr: Expr, word: String) : Error {
+    override val msg =
+            """
+            |${expr.location}:
+            |  non-bool condition in $word statement
+            """.trimMargin()
+}
+
+class NonIntegerNode(expr: Expr) : Error {
+    override val msg =
+            """
+            |${expr.location}:
+            |  node index not an integer
+            """.trimMargin()
+}
+
+class NonIntegerSize(gl: GraphLit) : Error {
+    override val msg =
+            """
+            |${gl.location}:
+            |  size not an integer in graph literal
             """.trimMargin()
 }
 
@@ -92,55 +137,10 @@ class TypeNotSubscriptable(ac: ArrayAccess) : Error {
             """.trimMargin()
 }
 
-class ArrayLiteralTypeMismatch(ac: ArrayLit) : Error {
+class VariableNotFoundInScope(vn: VarName) : Error {
     override val msg =
             """
-            |${ac.location}:
-            |  can not infer the type of the array literal
-            """.trimMargin()
-}
-
-class InvalidUnaryExpr(ue: UnaryExpr) : Error {
-    override val msg =
-            """
-            |${ue.location}:
-            |  invalid unary operation (${ue.op}) over operand of type ${ue.expr.type}
-            """.trimMargin()
-}
-
-class InvalidBinaryExpr(be: BinaryExpr) : Error {
-    override val msg =
-            """
-            |${be.location}:
-            |  invalid binary operation (${be.op}) over operands of types ${be.lhs.type} and ${be.rhs.type}
-            """.trimMargin()
-}
-
-class NonAssignableExpression(a: Assignment) : Error {
-    override val msg =
-            """
-            |${a.location}:
-            |  non-assignable left hand expression in assignment
-            """.trimMargin()
-}
-
-class InvalidReturn(rt: Return) : Error {
-    override val msg: String
-
-    init {
-        val fd = rt.funcDef
-        val exprType = rt.expr!!.type
-        msg = """
-              |${rt.location}:
-              |  invalid return expression of type $exprType in function of type ${fd.type}
-              """.trimMargin()
-    }
-}
-
-class NonBoolCondition(expr: Expr, word: String) : Error {
-    override val msg =
-            """
-            |${expr.location}:
-            |  non-bool condition in $word statement
+            |${vn.location}:
+            |  variable ${vn.id} was not found in current scope
             """.trimMargin()
 }

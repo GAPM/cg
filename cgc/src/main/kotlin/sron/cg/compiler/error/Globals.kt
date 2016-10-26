@@ -30,6 +30,14 @@ class FunctionRedefinition(fd: FuncDef, existing: Function) : Error {
             """.trimMargin()
 }
 
+class GlobalVarMissingType(vd: VarDec) : Error {
+    override val msg =
+            """
+            |${vd.location}:
+            |  can not infer the type of global variables
+            """.trimMargin()
+}
+
 class VariableRedeclaration(vd: VarDec, existing: Variable) : Error {
     override val msg =
             """
@@ -37,13 +45,4 @@ class VariableRedeclaration(vd: VarDec, existing: Variable) : Error {
             |  redeclaration of variable ${vd.id} in same scope
             |  already declared at ${existing.location}
             """.trimMargin()
-}
-
-class GlobalVarMissingType(vd: VarDec) : Error {
-    override val msg =
-            """
-            |${vd.location}:
-            |  can not infer the type of global variables
-            """.trimMargin()
-
 }

@@ -26,15 +26,6 @@ class ControlNotInLoop(ctrl: Control) : Error {
             """.trimMargin()
 }
 
-class NonEmptyReturnInVoidFunction(ret: Return, fd: FuncDef) : Error {
-    override val msg =
-            """
-            |${ret.location}:
-            |  return value is present in function ${fd.id}
-            |  which has return type void
-            """.trimMargin()
-}
-
 class EmptyReturnInNonVoidFunction(ret: Return, fd: FuncDef) : Error {
     override val msg =
             """
@@ -50,5 +41,14 @@ class MissingReturnStmtInFunction(fd: FuncDef) : Error {
             |${fd.location}:
             |  return statement missing in function ${fd.id}
             |  which has return type ${fd.type}
+            """.trimMargin()
+}
+
+class NonEmptyReturnInVoidFunction(ret: Return, fd: FuncDef) : Error {
+    override val msg =
+            """
+            |${ret.location}:
+            |  return value is present in function ${fd.id}
+            |  which has return type void
             """.trimMargin()
 }
