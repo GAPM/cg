@@ -245,7 +245,7 @@ private fun StmtContext.toASTNode(): Stmt {
  * Transforms a [ParamListContext] into a list of [Parameter] AST nodes.
  */
 private fun ParamListContext.toASTNode(): List<Parameter> = param().map {
-    Parameter(it.text, it.type().toCGType(), it.getLocation())
+    Parameter(it.IDENTIFIER().text, it.type().toCGType(), it.getLocation())
 }
 
 /**

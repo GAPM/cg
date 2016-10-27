@@ -27,6 +27,6 @@ class Signature(types: List<Type>) : ArrayList<Type>(types) {
 
     companion object {
         @JvmStatic
-        fun List<Expr>.signature() = Signature(map { it.type })
+        fun List<Expr>.signature() = Signature(map(Expr::type))
     }
 }
