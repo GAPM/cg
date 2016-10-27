@@ -24,47 +24,53 @@ import sron.cg.compiler.symbol.Function
 import sron.cg.compiler.symbol.Variable
 
 class Globals(state: State) : Pass(state) {
+    private fun VarDec.globals() {
+        if (expr != null) {
+            state.errors += ExpressionForbidden(this)
+        }
+
+        if (type == AtomType.ERROR) {
+            state.errors += GlobalVarMissingType(this)
+        } else {
+            val gv = state.symbolTable.findVariable(id, scope)
+            if (gv != null) {
+                state.errors += VariableRedeclaration(this, gv)
+            } else {
+                state.symbolTable += Variable(id, type, scope, location)
+            }
+        }
+    }
 
     private fun FuncDef.globals() {
         val qry = state.symbolTable.findFunction(id, signature)
 
-        if (qry == null) {
-            val paramsVars = params.map {
-                Variable(it.id, it.type, scope, it.location)
-            }
-
-            val fd = Function(id, type, paramsVars, scope, location)
-
-            fd.params.forEach { state.symbolTable += it }
-            state.symbolTable += fd
-        } else {
+        if (qry != null) {
             state.errors += FunctionRedefinition(this, qry)
+            return
         }
-    }
+        val paramList = arrayListOf<Variable>()
 
-    private fun VarDec.globals() {
-        if (type != AtomType.ERROR) {
-            val qry = state.symbolTable.findVariable(id, scope)
-
-            if (qry != null && scope == qry.scope) {
-                state.errors += VariableRedeclaration(this, qry)
-            } else if (type == AtomType.void) {
-                state.errors += VoidVarDeclared(this)
+        for (param in params) {
+            val prm = state.symbolTable.findVariableInScope(param.id, param.scope)
+            if (prm != null) {
+                state.errors += ParameterRedefinition(param, prm)
             } else {
-                state.symbolTable += Variable(id, type, scope, location)
+                val new = Variable(param.id, param.type, param.scope, param.location)
+                state.symbolTable += new
+                paramList += new
             }
-        } else {
-            state.errors += GlobalVarMissingType(this)
         }
+
+        state.symbolTable += Function(id, type, paramList, scope, location)
     }
 
     override fun exec(ast: Init) {
-        for (fd in ast.funcDef) {
-            fd.globals()
-        }
-
         for (vd in ast.varDec) {
             vd.globals()
+        }
+
+        for (fd in ast.funcDef) {
+            fd.globals()
         }
     }
 }

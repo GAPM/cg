@@ -16,16 +16,23 @@
 
 package sron.cg.compiler.error
 
-import sron.cg.compiler.ast.FuncDef
-import sron.cg.compiler.ast.VarDec
+import sron.cg.compiler.ast.*
 import sron.cg.compiler.symbol.Function
 import sron.cg.compiler.symbol.Variable
+
+class ExpressionForbidden(vd: VarDec) : Error {
+    override val msg =
+            """
+            |${vd.location}:
+            |  initialization expression forbidden for global variables
+            """.trimMargin()
+}
 
 class FunctionRedefinition(fd: FuncDef, existing: Function) : Error {
     override val msg =
             """
             |${fd.location}:
-            |  redefinition of function ${fd.id} with signature ${fd.signature}
+            |  redefinition of function `${fd.id}´ with signature ${fd.signature}
             |  already defined at ${existing.location}
             """.trimMargin()
 }
@@ -34,7 +41,16 @@ class GlobalVarMissingType(vd: VarDec) : Error {
     override val msg =
             """
             |${vd.location}:
-            |  can not infer the type of global variables
+            |  definition of global variable `${vd.id}´ lacks type
+            """.trimMargin()
+}
+
+class ParameterRedefinition(param: Parameter, variable: Variable) : Error {
+    override val msg =
+            """
+            |${param.location}:
+            |  redefinition of parameter `${param.id}´
+            |  already defined at ${variable.location}
             """.trimMargin()
 }
 
@@ -42,7 +58,7 @@ class VariableRedeclaration(vd: VarDec, existing: Variable) : Error {
     override val msg =
             """
             |${vd.location}:
-            |  redeclaration of variable ${vd.id} in same scope
+            |  redeclaration of variable `${vd.id}´ in the same scope
             |  already declared at ${existing.location}
             """.trimMargin()
 }

@@ -26,6 +26,12 @@ class SymbolTable : LinkedList<Symbol>() {
                 .maxBy { it.scope.size } as? Variable
     }
 
+    fun findVariableInScope(id: String, scope: Scope): Variable? {
+        return filter { it.symType == SymType.VAR }
+                .filter { it.id == id }
+                .filter { it.scope == scope }.firstOrNull() as? Variable
+    }
+
     fun findFunction(id: String, signature: Signature): Function? {
         return filter { it.symType == SymType.FUNC }
                 .filter { it.id == id }
