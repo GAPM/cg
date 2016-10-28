@@ -56,7 +56,7 @@ object Operations {
 
     fun findUnary(op: Operator, arg: Type) =
             unary.filter { it.op == op && it.arg == arg }.firstOrNull()?.result
-                    ?: AtomType.ERROR
+                    ?: ERROR
 
     fun findBinary(op: Operator, args: Pair<Type, Type>) =
             binary.filter { it.op == op }
@@ -64,5 +64,5 @@ object Operations {
                         val (lhs, rhs) = it.args
                         val (l, r) = args
                         (lhs == l && rhs == r) || (lhs == r && rhs == l)
-                    }.firstOrNull()?.result ?: AtomType.ERROR
+                    }.firstOrNull()?.result ?: ERROR
 }

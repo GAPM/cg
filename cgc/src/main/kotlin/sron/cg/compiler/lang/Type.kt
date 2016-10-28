@@ -18,6 +18,8 @@ package sron.cg.compiler.lang
 
 interface Type
 
+object ERROR : Type
+
 enum class AtomType : Type {
     int,
     float,
@@ -26,9 +28,7 @@ enum class AtomType : Type {
     string,
     graph,
     digraph,
-    void,
-
-    ERROR
+    void
 }
 
 data class ArrayType(val innerType: Type) : Type {

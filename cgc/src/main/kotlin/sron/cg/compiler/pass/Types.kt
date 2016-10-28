@@ -27,7 +27,7 @@ class Types(state: State) : Pass(state) {
     private fun VarName.types() {
         val variable = state.symbolTable.findVariable(id, scope)
         if (variable == null) {
-            type = AtomType.ERROR
+            type = ERROR
             state.errors += VariableNotFoundInScope(this)
         } else {
             type = variable.type
@@ -42,7 +42,7 @@ class Types(state: State) : Pass(state) {
 
         size.types()
         if (size.type != AtomType.int) {
-            type = AtomType.ERROR
+            type = ERROR
             state.errors += NonIntegerSize(this)
         }
 
@@ -51,12 +51,12 @@ class Types(state: State) : Pass(state) {
             edge.target.types()
 
             if (edge.source.type != AtomType.int) {
-                type = AtomType.ERROR
+                type = ERROR
                 state.errors += NonIntegerNode(edge.source)
             }
 
             if (edge.target.type != AtomType.int) {
-                type = AtomType.ERROR
+                type = ERROR
                 state.errors += NonIntegerNode(edge.target)
             }
         }
@@ -67,7 +67,7 @@ class Types(state: State) : Pass(state) {
 
         args.forEach {
             it.types()
-            if (it.type == AtomType.ERROR) {
+            if (it.type == ERROR) {
                 error = true
             }
         }
@@ -75,12 +75,12 @@ class Types(state: State) : Pass(state) {
         val function = state.symbolTable.findFunction(id, args.signature())
 
         if (error) {
-            type = AtomType.ERROR
+            type = ERROR
         } else {
             if (function != null) {
                 type = function.type
             } else {
-                type = AtomType.ERROR
+                type = ERROR
                 state.errors += FunctionNotFound(this)
             }
         }
@@ -89,8 +89,8 @@ class Types(state: State) : Pass(state) {
     private fun Cast.types() {
         expr.types()
 
-        if (expr.type != AtomType.ERROR && !Casts.isValid(expr.type, type)) {
-            type = AtomType.ERROR
+        if (expr.type != ERROR && !Casts.isValid(expr.type, type)) {
+            type = ERROR
             state.errors += InvalidCast(this)
         }
     }
@@ -99,7 +99,7 @@ class Types(state: State) : Pass(state) {
         val first = elems[0].type
         for (i in 1..elems.size - 1) {
             if (elems[i].type != first) {
-                type = AtomType.ERROR
+                type = ERROR
                 state.errors += ArrayLiteralTypeMismatch(this)
                 break
             }
@@ -112,7 +112,7 @@ class Types(state: State) : Pass(state) {
         subscript.types()
 
         if (subscript.type != AtomType.int) {
-            type = AtomType.ERROR
+            type = ERROR
             state.errors += SubscriptTypeNotInt(this)
         } else if (array is VarName) { // Array is a variable
             val variable = state.symbolTable.findVariable(array.id, scope)
@@ -120,21 +120,21 @@ class Types(state: State) : Pass(state) {
                 if (variable.type is ArrayType) {
                     type = variable.type.innerType
                 } else {
-                    type = AtomType.ERROR
+                    type = ERROR
                     state.errors += TypeNotSubscriptable(this)
                 }
             } else {
-                type = AtomType.ERROR
+                type = ERROR
                 state.errors += VariableNotFoundInScope(array)
             }
         } else if (array is ArrayLit) { // Array is a literal
-            if (array.type == AtomType.ERROR) {
-                type = AtomType.ERROR
+            if (array.type == ERROR) {
+                type = ERROR
             } else {
                 type = (array.type as ArrayType).innerType
             }
         } else {
-            type = AtomType.ERROR
+            type = ERROR
             state.errors += TypeNotSubscriptable(this)
         }
     }
@@ -142,17 +142,17 @@ class Types(state: State) : Pass(state) {
     private fun UnaryExpr.types() {
         expr.types()
 
-        if (expr.type != AtomType.ERROR) {
+        if (expr.type != ERROR) {
             val result = Operations.findUnary(op, expr.type)
 
-            if (result != AtomType.ERROR) {
+            if (result != ERROR) {
                 type = result
             } else {
-                type = AtomType.ERROR
+                type = ERROR
                 state.errors += InvalidUnaryExpr(this)
             }
         } else {
-            type = AtomType.ERROR
+            type = ERROR
         }
     }
 
@@ -160,17 +160,17 @@ class Types(state: State) : Pass(state) {
         lhs.types()
         rhs.types()
 
-        if (lhs.type != AtomType.ERROR && rhs.type != AtomType.ERROR) {
+        if (lhs.type != ERROR && rhs.type != ERROR) {
             val result = Operations.findBinary(op, lhs.type to rhs.type)
 
-            if (result != AtomType.ERROR) {
+            if (result != ERROR) {
                 type = result
             } else {
-                type = AtomType.ERROR
+                type = ERROR
                 state.errors += InvalidBinaryExpr(this)
             }
         } else {
-            type = AtomType.ERROR
+            type = ERROR
         }
     }
 
@@ -194,15 +194,15 @@ class Types(state: State) : Pass(state) {
         /* Type inference happens here */
 
         // Declaration does not have type and expression is not present
-        if ((type == AtomType.ERROR && expr == null) || // or
+        if ((type == ERROR && expr == null) || // or
                 // expression is present but it's type can not be infered
-                (expr != null && expr.type == AtomType.ERROR)) {
+                (expr != null && expr.type == ERROR)) {
             state.errors += CanNotInferType(this)
-        } else if (type == AtomType.ERROR && expr != null
-                && expr.type != AtomType.ERROR) {
+        } else if (type == ERROR && expr != null
+                && expr.type != ERROR) {
             type = expr.type
             state.symbolTable += Variable(id, type, scope, location)
-        } else if (type != AtomType.ERROR && expr != null &&
+        } else if (type != ERROR && expr != null &&
                 expr.type != type) {
             state.errors += AssignmentTypeMismatch(this, type, expr.type)
         } else {
@@ -215,7 +215,7 @@ class Types(state: State) : Pass(state) {
         rhs.types()
 
         if (lhs is VarName || lhs is ArrayAccess) {
-            if (lhs.type != AtomType.ERROR && rhs.type != AtomType.ERROR &&
+            if (lhs.type != ERROR && rhs.type != ERROR &&
                     lhs.type != rhs.type) {
                 state.errors += AssignmentTypeMismatch(this, lhs.type, rhs.type)
             }
@@ -229,7 +229,7 @@ class Types(state: State) : Pass(state) {
             it.types()
 
             val fd = it.funcDef
-            if (it.type != AtomType.ERROR && it.type != fd.type) {
+            if (it.type != ERROR && it.type != fd.type) {
                 state.errors += InvalidReturn(this)
             }
         }
@@ -242,7 +242,7 @@ class Types(state: State) : Pass(state) {
     private fun Assert.types() {
         expr.types()
 
-        if (expr.type != AtomType.ERROR && expr.type != AtomType.bool) {
+        if (expr.type != ERROR && expr.type != AtomType.bool) {
             state.errors += NonBoolCondition(expr, "assert")
         }
     }
@@ -250,7 +250,7 @@ class Types(state: State) : Pass(state) {
     private fun If.types() {
         expr.types()
 
-        if (expr.type != AtomType.ERROR && expr.type != AtomType.bool) {
+        if (expr.type != ERROR && expr.type != AtomType.bool) {
             state.errors += NonBoolCondition(expr, "if")
         }
 
@@ -262,7 +262,7 @@ class Types(state: State) : Pass(state) {
     private fun Elif.types() {
         expr.types()
 
-        if (expr.type != AtomType.ERROR && expr.type != AtomType.bool) {
+        if (expr.type != ERROR && expr.type != AtomType.bool) {
             state.errors += NonBoolCondition(expr, "elif")
         }
 
@@ -288,7 +288,7 @@ class Types(state: State) : Pass(state) {
         condition.types()
         modifier.types()
 
-        if (condition.type != AtomType.ERROR && condition.type != AtomType.bool) {
+        if (condition.type != ERROR && condition.type != AtomType.bool) {
             state.errors += NonBoolCondition(condition, "for")
         }
 
@@ -300,7 +300,7 @@ class Types(state: State) : Pass(state) {
     private fun While.types() {
         condition.types()
 
-        if (condition.type != AtomType.ERROR && condition.type != AtomType.bool) {
+        if (condition.type != ERROR && condition.type != AtomType.bool) {
             state.errors += NonBoolCondition(condition, "while")
         }
 
@@ -325,6 +325,16 @@ class Types(state: State) : Pass(state) {
     }
 
     private fun FuncDef.types() {
+        for (param in params) {
+            val v = state.symbolTable.findVariable(param.id, param.scope)
+
+            if (v != null) {
+
+            } else {
+
+            }
+        }
+
         for (stmt in body) {
             stmt.types()
         }

@@ -19,7 +19,7 @@ package sron.cg.compiler.pass
 import sron.cg.compiler.State
 import sron.cg.compiler.ast.*
 import sron.cg.compiler.error.*
-import sron.cg.compiler.lang.AtomType
+import sron.cg.compiler.lang.ERROR
 import sron.cg.compiler.symbol.Function
 import sron.cg.compiler.symbol.Variable
 
@@ -29,7 +29,7 @@ class Globals(state: State) : Pass(state) {
             state.errors += ExpressionForbidden(this)
         }
 
-        if (type == AtomType.ERROR) {
+        if (type == ERROR) {
             state.errors += GlobalVarMissingType(this)
         } else {
             val gv = state.symbolTable.findVariable(id, scope)
