@@ -190,20 +190,23 @@ class Types(state: State) : Pass(state) {
     }
 
     private fun VarDec.types() {
-        expr?.let { expr.types() }
-        /* Type inference happens here */
+        /* Type inference occurs in this function */
+        val v = state.symbolTable.findVariableInScope(id, scope)
 
-        // Declaration does not have type and expression is not present
-        if ((type == ERROR && expr == null) || // or
-                // expression is present but it's type can not be infered
-                (expr != null && expr.type == ERROR)) {
+        // Don't try to infer if variable is already declared
+        if (v != null) {
+            state.errors += VariableRedeclaration(this, v)
+            return
+        }
+
+        expr?.let { expr.types() }
+
+        if (type == ERROR && (expr == null || expr.type == ERROR)) {
             state.errors += CanNotInferType(this)
-        } else if (type == ERROR && expr != null
-                && expr.type != ERROR) {
+        } else if (type == ERROR && expr != null && expr.type != ERROR) {
             type = expr.type
             state.symbolTable += Variable(id, type, scope, location)
-        } else if (type != ERROR && expr != null &&
-                expr.type != type) {
+        } else if (type != ERROR && expr != null && expr.type != type) {
             state.errors += AssignmentTypeMismatch(this, type, expr.type)
         } else {
             state.symbolTable += Variable(id, type, scope, location)
