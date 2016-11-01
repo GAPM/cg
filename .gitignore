@@ -1,14 +1,9 @@
-// C/C++ with QtCreator
-*.o
-build-grp*
-CMakeLists.txt.user
-
 // Idea, Gradle and Maven
-build
+*.iml
+*.ipr
+*.iws
 .gradle
 .idea
-*.iml
+build
 classes
-/grpc/.nb-gradle/
-
-prueba.jar
+out
