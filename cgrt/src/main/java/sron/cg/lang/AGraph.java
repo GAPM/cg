@@ -17,8 +17,8 @@
 package sron.cg.lang;
 
 abstract class AGraph {
-    private int size;
-    BitMatrix adj;
+    private final int size;
+    final BitMatrix adj;
 
     AGraph(int size) {
         this.size = size;
