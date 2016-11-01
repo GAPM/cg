@@ -310,6 +310,7 @@ class Types(state: State) : Pass(state) {
     }
 
     private fun Stmt.types() = when (this) {
+        is Expr -> this.types()
         is VarDec -> this.types()
         is Assignment -> this.types()
         is Return -> this.types()
@@ -325,16 +326,6 @@ class Types(state: State) : Pass(state) {
     }
 
     private fun FuncDef.types() {
-        for (param in params) {
-            val v = state.symbolTable.findVariable(param.id, param.scope)
-
-            if (v != null) {
-
-            } else {
-
-            }
-        }
-
         for (stmt in body) {
             stmt.types()
         }
