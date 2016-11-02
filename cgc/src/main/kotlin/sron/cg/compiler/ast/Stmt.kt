@@ -60,6 +60,10 @@ class VarDec(val id: String, var type: Type, val expr: Expr?,
         Scope(parent.scope, null)
     }
 
+    val isGlobal by lazy {
+        parent is Init
+    }
+
     init {
         expr?.parent = this
     }

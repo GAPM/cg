@@ -191,6 +191,12 @@ class Types(state: State) : Pass(state) {
 
     private fun VarDec.types() {
         /* Type inference occurs in this function */
+
+        //Ignore global variables
+        if (isGlobal) {
+            return
+        }
+
         val v = state.symbolTable.findVariableInScope(id, scope)
 
         // Don't try to infer if variable is already declared
