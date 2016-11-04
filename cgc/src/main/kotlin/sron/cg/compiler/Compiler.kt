@@ -46,8 +46,13 @@ class Compiler(fileName: String, parameters: Parameters) {
     }
 
     private fun execPass(ctr: (State) -> Pass, ast: Init) {
+        val start = System.currentTimeMillis()
+
         val pass = ctr(state)
         pass.exec(ast)
+
+        val ms = System.currentTimeMillis() - start
+        Logger.debug("${pass.javaClass.name}: $ms ms")
     }
 
     /**
