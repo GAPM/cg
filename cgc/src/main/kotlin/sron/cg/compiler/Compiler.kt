@@ -19,6 +19,7 @@ package sron.cg.compiler
 import org.antlr.v4.runtime.ANTLRInputStream
 import org.antlr.v4.runtime.CommonTokenStream
 import sron.cg.compiler.ast.Init
+import sron.cg.compiler.backend.jvm.JVMCodeGen
 import sron.cg.compiler.exception.ErrorsInCodeException
 import sron.cg.compiler.exception.ParsingException
 import sron.cg.compiler.internal.*
@@ -71,6 +72,9 @@ class Compiler(fileName: String, parameters: Parameters) {
         execPass(::Globals, ast)
         execPass(::Structure, ast)
         execPass(::Types, ast)
+
+        // Only backend available at the time
+        execPass(::JVMCodeGen, ast)
 
         if (state.errors.size > 0) {
             for (error in state.errors) {
