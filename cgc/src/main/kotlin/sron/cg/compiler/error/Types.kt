@@ -19,6 +19,7 @@ package sron.cg.compiler.error
 import sron.cg.compiler.ast.*
 import sron.cg.compiler.lang.Type
 import sron.cg.compiler.symbol.Signature.Companion.signature
+import sron.cg.compiler.symbol.Variable
 
 class ArrayLiteralTypeMismatch(ac: ArrayLit) : Error {
     override val msg =
@@ -41,6 +42,15 @@ class CanNotInferType(vd: VarDec) : Error {
             """
             |${vd.location}:
             |  can not infer type for variable ${vd.id}
+            """.trimMargin()
+}
+
+class DifferentKindDec(vd: VarDec, existing: Variable) : Error {
+    override val msg =
+            """
+            |${vd.location}:
+            |  variable `${vd.id}´ redeclared with different kind
+            |  already declared at ${existing.location}
             """.trimMargin()
 }
 

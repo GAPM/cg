@@ -27,6 +27,12 @@ enum class SymType {
     FUNC
 }
 
+enum class VarKind {
+    GLOBAL,
+    LOCAL,
+    PARAMETER
+}
+
 /**
  * Abstract class of all the symbols in the symbol table
  */
@@ -35,8 +41,8 @@ abstract class Symbol(val id: String, val symType: SymType, val scope: Scope, va
 /**
  * Represents a variable in the symbol table
  */
-class Variable(id: String, val type: Type, scope: Scope, location: Location) :
-        Symbol(id, SymType.VAR, scope, location)
+class Variable(id: String, val type: Type, val kind: VarKind, scope: Scope,
+               location: Location) : Symbol(id, SymType.VAR, scope, location)
 
 /**
  * Represents a function in the symbol table

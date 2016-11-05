@@ -21,6 +21,7 @@ import sron.cg.compiler.ast.*
 import sron.cg.compiler.error.*
 import sron.cg.compiler.lang.*
 import sron.cg.compiler.symbol.Signature.Companion.signature
+import sron.cg.compiler.symbol.VarKind
 import sron.cg.compiler.symbol.Variable
 
 class Types(state: State) : Pass(state) {
@@ -72,11 +73,11 @@ class Types(state: State) : Pass(state) {
             }
         }
 
-        val function = state.symbolTable.findFunction(id, args.signature())
-
         if (error) {
             type = ERROR
         } else {
+            val function = state.symbolTable.findFunction(id, args.signature())
+
             if (function != null) {
                 type = function.type
             } else {
@@ -197,11 +198,15 @@ class Types(state: State) : Pass(state) {
             return
         }
 
-        val v = state.symbolTable.findVariableInScope(id, scope)
+        val v = state.symbolTable.findVariable(id, scope)
 
         // Don't try to infer if variable is already declared
-        if (v != null) {
-            state.errors += VariableRedeclaration(this, v)
+        if (v != null && v.kind != VarKind.GLOBAL) {
+            if (v.kind == VarKind.LOCAL) {
+                state.errors += VariableRedeclaration(this, v)
+            } else if (v.kind == VarKind.PARAMETER) {
+                state.errors += DifferentKindDec(this, v)
+            }
             return
         }
 
@@ -211,11 +216,11 @@ class Types(state: State) : Pass(state) {
             state.errors += CanNotInferType(this)
         } else if (type == ERROR && expr != null && expr.type != ERROR) {
             type = expr.type
-            state.symbolTable += Variable(id, type, scope, location)
+            state.symbolTable += Variable(id, type, VarKind.LOCAL, scope, location)
         } else if (type != ERROR && expr != null && expr.type != type) {
             state.errors += AssignmentTypeMismatch(this, type, expr.type)
         } else {
-            state.symbolTable += Variable(id, type, scope, location)
+            state.symbolTable += Variable(id, type, VarKind.LOCAL, scope, location)
         }
     }
 

@@ -20,8 +20,8 @@ import sron.cg.compiler.State
 import sron.cg.compiler.ast.*
 import sron.cg.compiler.error.*
 import sron.cg.compiler.lang.ERROR
+import sron.cg.compiler.symbol.*
 import sron.cg.compiler.symbol.Function
-import sron.cg.compiler.symbol.Variable
 
 class Globals(state: State) : Pass(state) {
     private fun VarDec.globals() {
@@ -36,7 +36,7 @@ class Globals(state: State) : Pass(state) {
             if (gv != null) {
                 state.errors += VariableRedeclaration(this, gv)
             } else {
-                state.symbolTable += Variable(id, type, scope, location)
+                state.symbolTable += Variable(id, type, VarKind.GLOBAL, scope, location)
             }
         }
     }
@@ -51,11 +51,12 @@ class Globals(state: State) : Pass(state) {
         val paramList = arrayListOf<Variable>()
 
         for (param in params) {
-            val prm = state.symbolTable.findVariableInScope(param.id, param.scope)
-            if (prm != null) {
+            val prm = state.symbolTable.findVariable(param.id, param.scope)
+            if (prm != null && prm.kind != VarKind.GLOBAL) {
                 state.errors += ParameterRedefinition(param, prm)
             } else {
-                val new = Variable(param.id, param.type, param.scope, param.location)
+                val new = Variable(param.id, param.type, VarKind.PARAMETER,
+                        param.scope, param.location)
                 state.symbolTable += new
                 paramList += new
             }
