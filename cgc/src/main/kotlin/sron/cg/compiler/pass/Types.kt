@@ -115,28 +115,16 @@ class Types(state: State) : Pass(state) {
         if (subscript.type != AtomType.int) {
             type = ERROR
             state.errors += SubscriptTypeNotInt(this)
-        } else if (array is VarName) { // Array is a variable
-            val variable = state.symbolTable.findVariable(array.id, scope)
-            if (variable != null) {
-                if (variable.type is ArrayType) {
-                    type = variable.type.innerType
-                } else {
-                    type = ERROR
-                    state.errors += TypeNotSubscriptable(this)
-                }
-            } else {
-                type = ERROR
-                state.errors += VariableNotFoundInScope(array)
-            }
-        } else if (array is ArrayLit) { // Array is a literal
-            if (array.type == ERROR) {
-                type = ERROR
-            } else {
+            return
+        }
+
+        if (array.type != ERROR) {
+            if (array.type is ArrayType) {
                 type = (array.type as ArrayType).innerType
+            } else {
+                type = ERROR
+                state.errors += TypeNotSubscriptable(this)
             }
-        } else {
-            type = ERROR
-            state.errors += TypeNotSubscriptable(this)
         }
     }
 
