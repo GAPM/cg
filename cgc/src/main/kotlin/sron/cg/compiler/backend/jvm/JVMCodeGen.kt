@@ -50,7 +50,8 @@ class JVMCodeGen(state: State) : Pass(state) {
         cw.visit(V1_8, ACC_SUPER + ACC_PUBLIC, className, null,
                 "java/lang/Object", null)
 
-        constructor(cw, className)
+        init(cw, className)
+        clinit(cw, ast.varDec, className)
 
         for (vd in ast.varDec) {
             vd.globalGen()

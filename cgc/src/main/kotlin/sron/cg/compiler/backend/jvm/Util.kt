@@ -50,6 +50,15 @@ fun Type.jvmDescriptor(): String = when (this) {
     else -> throw IllegalStateException()
 }
 
+fun Type.arrayDescriptor(): String = when (this) {
+    AtomType.string -> "java/lang/String"
+    AtomType.graph -> GRAPH_CLASS_NAME
+    AtomType.digraph -> DIGRAPH_CLASS_NAME
+    is ArrayType -> "[${this.innerType.jvmDescriptor()}"
+
+    else -> throw IllegalStateException()
+}
+
 fun toJVMSignature(s: Signature, ret: Type): String {
     val params = s.map(Type::jvmDescriptor).joinToString(separator = "")
     return "($params)${ret.jvmDescriptor()}"
