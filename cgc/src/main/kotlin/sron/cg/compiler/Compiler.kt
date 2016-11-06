@@ -73,15 +73,15 @@ class Compiler(fileName: String, parameters: Parameters) {
         execPass(::Structure, ast)
         execPass(::Types, ast)
 
-        // Only backend available at the time
-        execPass(::JVMCodeGen, ast)
-
         if (state.errors.size > 0) {
             for (error in state.errors) {
                 Logger.error("${state.fileName}:${error.msg}\n")
             }
 
             throw ErrorsInCodeException()
+        } else {
+            // Only backend available at the time
+            execPass(::JVMCodeGen, ast)
         }
     }
 }
