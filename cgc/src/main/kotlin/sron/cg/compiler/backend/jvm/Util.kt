@@ -19,6 +19,8 @@ package sron.cg.compiler.backend.jvm
 import sron.cg.compiler.lang.*
 import sron.cg.compiler.symbol.Signature
 
+const val BITARRAY_CLASS_NAME = "sron/cg/lang/BitArray"
+const val BITMATRIX_CLASS_NAME = "sron/cg/lang/BitMatrix"
 const val GRAPH_CLASS_NAME = "sron/cg/lang/Graph"
 const val DIGRAPH_CLASS_NAME = "sron/cg/lang/DiGraph"
 
@@ -33,9 +35,17 @@ fun AtomType.jvmDescriptor(): String = when (this) {
     AtomType.void -> "V"
 }
 
+fun ArrayType.jvmDescriptor() = if (innerType == AtomType.bool) {
+    "L$BITARRAY_CLASS_NAME;"
+} else if (innerType == ArrayType(AtomType.bool)) {
+    "L$BITMATRIX_CLASS_NAME;"
+} else {
+    "[${innerType.jvmDescriptor()}"
+}
+
 fun Type.jvmDescriptor(): String = when (this) {
     is AtomType -> this.jvmDescriptor()
-    is ArrayType -> "[${innerType.jvmDescriptor()}"
+    is ArrayType -> this.jvmDescriptor()
 
     else -> throw IllegalStateException()
 }
