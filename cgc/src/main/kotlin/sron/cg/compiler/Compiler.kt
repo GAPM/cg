@@ -20,6 +20,7 @@ import org.antlr.v4.runtime.ANTLRInputStream
 import org.antlr.v4.runtime.CommonTokenStream
 import sron.cg.compiler.ast.Init
 import sron.cg.compiler.backend.jvm.JVMCodeGen
+import sron.cg.compiler.backend.jvm.JVMPrepGen
 import sron.cg.compiler.exception.ErrorsInCodeException
 import sron.cg.compiler.exception.ParsingException
 import sron.cg.compiler.internal.*
@@ -81,6 +82,7 @@ class Compiler(fileName: String, parameters: Parameters) {
             throw ErrorsInCodeException()
         } else {
             // Only backend available at the time
+            execPass(::JVMPrepGen, ast)
             execPass(::JVMCodeGen, ast)
         }
     }
