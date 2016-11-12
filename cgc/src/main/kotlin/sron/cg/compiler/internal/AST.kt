@@ -144,7 +144,7 @@ private fun ExprContext.toASTNode(): Expr = when (this) {
 private fun VarDecContext.toASTNode(): VarDec {
     val name = IDENTIFIER().text
     val type = type()?.toCGType() ?: ERROR
-    val init = expr()?.toASTNode() ?: null
+    val init = expr()?.toASTNode()
     return VarDec(name, type, init, getLocation())
 }
 
