@@ -200,6 +200,11 @@ class Types(state: State) : Pass(state) {
 
         expr?.let { expr.types() }
 
+        if (type == AtomType.void) {
+            state.errors += VoidVarDeclared(this)
+            return
+        }
+
         if (type == ERROR && (expr == null || expr.type == ERROR)) {
             state.errors += CanNotInferType(this)
         } else if (type == ERROR && expr != null && expr.type != ERROR) {

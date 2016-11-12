@@ -19,6 +19,7 @@ package sron.cg.compiler.pass
 import sron.cg.compiler.State
 import sron.cg.compiler.ast.*
 import sron.cg.compiler.error.*
+import sron.cg.compiler.lang.AtomType
 import sron.cg.compiler.lang.ERROR
 import sron.cg.compiler.symbol.*
 import sron.cg.compiler.symbol.Function
@@ -31,6 +32,8 @@ class Globals(state: State) : Pass(state) {
 
         if (type == ERROR) {
             state.errors += GlobalVarMissingType(this)
+        } else if (type == AtomType.void) {
+            state.errors += VoidVarDeclared(this)
         } else {
             val gv = state.symbolTable.findVariable(id, scope)
             if (gv != null) {
