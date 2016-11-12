@@ -26,13 +26,7 @@ class Scope(parent: Scope? = null, own: String? = null) : ArrayList<String>() {
 
     fun isPrefix(other: Scope): Boolean {
         if (size <= other.size) {
-            for (i in indices) {
-                if (this[i] != other[i]) {
-                    return false
-                }
-            }
-
-            return true
+            return indices.none { this[it] != other[it] }
         }
 
         return false
