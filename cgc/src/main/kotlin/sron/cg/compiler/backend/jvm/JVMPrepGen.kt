@@ -84,6 +84,7 @@ class JVMPrepGen(state: State) : Pass(state) {
         }
 
         JVM.varIndex[function] = map
+        idx = 0
     }
 
     override fun exec(ast: Init) {
